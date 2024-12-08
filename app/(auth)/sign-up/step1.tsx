@@ -129,6 +129,7 @@ const Step1 = () => {
               <TextInput
                 className="placeholder:body-1 h-[58px] w-full rounded-[10px] border border-gray-20 px-4 placeholder:text-gray-40 focus:border-primary"
                 placeholder="비밀번호를 입력해주세요"
+                autoCapitalize="none"
                 secureTextEntry
                 accessibilityLabel="비밀번호 입력"
                 accessibilityHint="비밀번호를 입력해주세요."
@@ -141,6 +142,7 @@ const Step1 = () => {
               <TextInput
                 className="placeholder:body-1 h-[58px] w-full rounded-[10px] border border-gray-20 px-4 placeholder:text-gray-40 focus:border-primary"
                 placeholder="비밀번호를 한번 더 입력해주세요"
+                autoCapitalize="none"
                 secureTextEntry
                 accessibilityLabel="비밀번호 재입력"
                 accessibilityHint="비밀번호를 한번 더 입력해주세요"

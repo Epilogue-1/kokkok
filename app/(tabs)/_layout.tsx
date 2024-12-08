@@ -65,10 +65,13 @@ export default function TabsLayout() {
             borderTopWidth: 1,
             borderTopColor: colors.gray[20],
             height: 80,
-            justifyContent: "center",
-            alignItems: "center",
             flexDirection: "row",
-            paddingBottom: Platform.OS === "android" ? 24 : 16,
+            ...(Platform.OS === "android" && {
+              paddingBottom: 24,
+              justifyContent: "center",
+              alignItems: "center",
+            }),
+            ...(Platform.OS === "ios" && { paddingTop: 8 }),
           },
         }}
       >

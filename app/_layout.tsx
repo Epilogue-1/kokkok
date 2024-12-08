@@ -2,6 +2,7 @@ import { useReactQueryDevTools } from "@dev-plugins/react-query";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useState } from "react";
+import Toast from "react-native-toast-message";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { Session } from "@supabase/supabase-js";
 
@@ -11,7 +12,6 @@ import { HeaderWithBack } from "@/components/Header";
 import { supabase } from "@/utils/supabase";
 import { useOnlineManager } from "@/hooks/useOnlineManager";
 import { useAppState } from "@/hooks/useAppState";
-import Toast from "react-native-toast-message";
 import { ToastConfig } from "@/components/ToastConfig";
 
 SplashScreen.preventAutoHideAsync();
@@ -61,7 +61,12 @@ export default function RootLayout() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Stack>
+      <Stack
+        screenOptions={{
+          gestureEnabled: true,
+          gestureDirection: "horizontal",
+        }}
+      >
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
