@@ -1,7 +1,7 @@
 import { showToast } from "@/components/ToastConfig";
 import { NOTIFICATION_TYPE } from "@/types/Notification.interface";
 import type { UserProfile } from "@/types/User.interface";
-import { shorten_comment } from "@/utils/formMessage";
+import { shortenMessage } from "@/utils/formMessage";
 import {
   acceptFriendRequest,
   checkFriendRequest,
@@ -173,7 +173,7 @@ const useManageFriend = () => {
         queryClient.invalidateQueries({ queryKey: ["poke", friend.id] });
         showToast(
           "success",
-          `👈 ${shorten_comment(friend.username, 10)}님을 콕! 찔렀어요`,
+          `👈 ${shortenMessage(friend.username, 10)}님을 콕! 찔렀어요`,
         );
       },
       onError: (error) => {
