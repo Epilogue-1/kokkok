@@ -25,6 +25,20 @@ export default function PostGrid({ refetch, posts, isError }: PostGridProps) {
   const router = useRouter();
   const flatListRef = useRef<FlatList>(null);
 
+  const handleScrollToTop = useCallback(() => {
+    flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
+    refetch();
+  }, [refetch]);
+
+  useEffect(() => {
+    const subscription = DeviceEventEmitter.addListener(
+      "SCROLL_MY_PAGE_TO_TOP",
+      handleScrollToTop,
+    );
+
+    return () => subscription.remove();
+  }, [handleScrollToTop]);
+
   if (isError) {
     return (
       <View className="mt-8 flex-1 items-center justify-center bg-gray-5">
@@ -52,20 +66,6 @@ export default function PostGrid({ refetch, posts, isError }: PostGridProps) {
       </View>
     );
   }
-
-  const handleScrollToTop = useCallback(() => {
-    flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
-    refetch();
-  }, [refetch]);
-
-  useEffect(() => {
-    const subscription = DeviceEventEmitter.addListener(
-      "SCROLL_MY_PAGE_TO_TOP",
-      handleScrollToTop,
-    );
-
-    return () => subscription.remove();
-  }, [handleScrollToTop]);
 
   return (
     <View className="mt-[32px] h-full bg-gray-5">

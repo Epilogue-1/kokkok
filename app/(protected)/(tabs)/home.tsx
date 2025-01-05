@@ -95,8 +95,8 @@ export default function Home() {
 
   const handleScrollToTop = useCallback(() => {
     flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
-    refetch();
-  }, [refetch]);
+    onRefresh();
+  }, [onRefresh]);
 
   useEffect(() => {
     const subscription = DeviceEventEmitter.addListener(

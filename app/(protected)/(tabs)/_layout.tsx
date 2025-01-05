@@ -100,22 +100,26 @@ export default function TabsLayout() {
           listeners={({ navigation, route }) => ({
             tabPress: () => {
               const rootState = navigation.getState();
-              if (rootState.routes[rootState.index].name === route.name) {
-                const nestedState = rootState.routes[rootState.index].state as {
-                  index: number;
-                  routeNames: string[];
-                };
-                if (nestedState) {
-                  const topTabIndex = nestedState.index;
-                  const topTabName = nestedState.routeNames[topTabIndex];
-                  if (topTabName === "index") {
-                    DeviceEventEmitter.emit("SCROLL_FRIEND_TO_TOP");
-                  } else if (topTabName === "request") {
-                    DeviceEventEmitter.emit("SCROLL_REQUEST_TO_TOP");
-                  }
-                } else {
-                  DeviceEventEmitter.emit("SCROLL_FRIEND_TO_TOP");
-                }
+              if (rootState.routes[rootState.index].name !== route.name) return;
+
+              const nestedState = rootState.routes[rootState.index].state as {
+                index: number;
+                routeNames: string[];
+              };
+              if (!nestedState?.routeNames) {
+                DeviceEventEmitter.emit("SCROLL_FRIEND_TO_TOP");
+                return;
+              }
+
+              const topTabName = nestedState.routeNames[nestedState.index];
+              const eventMap = {
+                index: "SCROLL_FRIEND_TO_TOP",
+                request: "SCROLL_REQUEST_TO_TOP",
+              };
+
+              const eventName = eventMap[topTabName as keyof typeof eventMap];
+              if (eventName) {
+                DeviceEventEmitter.emit(eventName);
               }
             },
           })}
