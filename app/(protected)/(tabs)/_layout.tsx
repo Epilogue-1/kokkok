@@ -82,7 +82,7 @@ export default function TabsLayout() {
             tabBarIcon: ({ color }) => <TabIcon color={color} name="HOME" />,
           }}
           listeners={({ navigation, route }) => ({
-            tabPress: (e) => {
+            tabPress: () => {
               const state = navigation.getState();
               if (state.routes[state.index].name === route.name) {
                 DeviceEventEmitter.emit("SCROLL_HOME_TO_TOP");
@@ -98,15 +98,13 @@ export default function TabsLayout() {
             tabBarIcon: ({ color }) => <TabIcon color={color} name="FRIEND" />,
           }}
           listeners={({ navigation, route }) => ({
-            tabPress: (e) => {
+            tabPress: () => {
               const rootState = navigation.getState();
               if (rootState.routes[rootState.index].name === route.name) {
-                const nestedState = rootState.routes[rootState.index].state as
-                  | {
-                      index: number;
-                      routeNames: string[];
-                    }
-                  | undefined;
+                const nestedState = rootState.routes[rootState.index].state as {
+                  index: number;
+                  routeNames: string[];
+                };
                 if (nestedState) {
                   const topTabIndex = nestedState.index;
                   const topTabName = nestedState.routeNames[topTabIndex];
@@ -115,6 +113,8 @@ export default function TabsLayout() {
                   } else if (topTabName === "request") {
                     DeviceEventEmitter.emit("SCROLL_REQUEST_TO_TOP");
                   }
+                } else {
+                  DeviceEventEmitter.emit("SCROLL_FRIEND_TO_TOP");
                 }
               }
             },
@@ -150,7 +150,7 @@ export default function TabsLayout() {
             tabBarIcon: ({ color }) => <TabIcon color={color} name="MY_PAGE" />,
           }}
           listeners={({ navigation, route }) => ({
-            tabPress: (e) => {
+            tabPress: () => {
               const state = navigation.getState();
               if (state.routes[state.index].name === route.name) {
                 DeviceEventEmitter.emit("SCROLL_MY_PAGE_TO_TOP");
