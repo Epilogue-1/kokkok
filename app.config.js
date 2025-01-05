@@ -17,9 +17,9 @@ module.exports = {
       bundleIdentifier: "com.epilogue.kokkok",
       infoPlist: {
         NSPhotoLibraryUsageDescription:
-          "사용자가 사진을 선택할 수 있도록 앨범 접근 권한이 필요합니다.",
+          "프로필 사진 업로드와 게시물 작성 시 사진 첨부를 위해 앨범 접근 권한이 필요합니다.",
         NSCameraUsageDescription:
-          "사진 촬영을 위해 카메라 접근 권한이 필요합니다.",
+          "프로필 사진 촬영과 게시물에 새로운 사진을 추가하기 위해 카메라 접근 권한이 필요합니다.",
         UIViewControllerBasedStatusBarAppearance: true,
       },
     },
