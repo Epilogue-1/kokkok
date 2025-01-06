@@ -110,7 +110,11 @@ export default function PostDetail() {
           onCommentsPress={() => setIsCommentsVisible(true)}
           onAuthorPress={onOpenLikedAuthor}
           onDeletePress={() => {
-            openModal({ type: "DELETE_POST", postId: Number(postId) });
+            openModal({
+              type: "DELETE_POST",
+              postId: Number(postId),
+              isDetail: true,
+            });
           }}
         />
       )}

@@ -4,10 +4,7 @@ import { useAtom } from "jotai";
 import { useEffect, useRef } from "react";
 import { Animated, Easing, Modal, View } from "react-native";
 
-// Delete Modals
 import { DeleteCommentModal, DeletePostModal } from "./DeleteModals";
-
-// List Modals
 import {
   SelectCommentDeleteModal,
   SelectFriendRequestModal,
@@ -16,43 +13,28 @@ import {
   SelectProfileEditModal,
   SelectProfileImageEditModal,
 } from "./ListModals";
-
-// One Button Modals
 import {
   EmailCheckModal,
   PasswordResetCompleteModal,
   PasswordResetEmailCheckModal,
   PostUploadFailModal,
 } from "./OneButtonModals";
-
-// Two Button Modals
+import RestDayModal from "./RestDayModal";
 import {
   AccountDeleteModal,
   PostNotFoundModal,
   SignOutModal,
 } from "./TwoButtonModals";
 
-// Custom Modal
-import RestDayModal from "./RestDayModal";
-
-/**
- * @description
- * 모달 상태를 전역에서 관리하며, 조건에 맞춰 모달을 노출합니다.
- */
 export default function ModalContainer() {
   const [modalState] = useAtom(modalStateAtom);
   const { closeModal } = useModal();
   const { isOpen, modal, position, previousPosition } = modalState;
 
   // 모달 애니메이션
-  const fadeAnim = useRef(new Animated.Value(1)).current; // 투명도
-  const slideAnim = useRef(new Animated.Value(0)).current; // 슬라이딩(세로)
+  const fadeAnim = useRef(new Animated.Value(1)).current;
+  const slideAnim = useRef(new Animated.Value(0)).current;
 
-  /**
-   * 모달 열릴 때 실행되는 애니메이션 처리
-   * - position === "bottom"으로 열릴 때 : slideAnim
-   * - "bottom" -> "center" 변경 시 : fadeAnim
-   */
   useEffect(() => {
     if (!isOpen) return;
 
@@ -90,7 +72,9 @@ export default function ModalContainer() {
     switch (modal.type) {
       /* -------------------------------- Delete Modals -------------------------------- */
       case "DELETE_POST":
-        return <DeletePostModal postId={modal.postId} />;
+        return (
+          <DeletePostModal postId={modal.postId} isDetail={modal.isDetail} />
+        );
       case "DELETE_COMMENT":
         return (
           <DeleteCommentModal
