@@ -2,7 +2,7 @@ import { supabase } from "@/utils/supabase";
 import type { Session } from "@supabase/supabase-js";
 import type { QueryClient } from "@tanstack/react-query";
 import * as SecureStore from "expo-secure-store";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 async function updateUserInfo(session: Session | null) {
   try {
@@ -26,39 +26,42 @@ export function useAuthSession(queryClient: QueryClient) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
+  // 세션 상태를 업데이트하는 함수를 분리
+  const updateSessionState = useCallback(
+    async (session: Session | null) => {
+      try {
+        await updateUserInfo(session);
+        setIsLoggedIn(!!session);
+        if (session) queryClient.clear();
+      } catch (error) {
+        console.error("세션 상태 업데이트 중 오류 발생:", error);
+      }
+    },
+    [queryClient],
+  );
+
   useEffect(() => {
     supabase.auth
       .getSession()
       .then(async ({ data: { session } }) => {
-        await updateUserInfo(session);
-        setIsLoggedIn(!!session);
-        setIsLoading(false);
+        await updateSessionState(session);
       })
       .catch(async (error) => {
         console.error("세션 조회 및 저장 중 오류 발생:", error);
-        setIsLoggedIn(false);
-        await updateUserInfo(null);
+        await updateSessionState(null);
+      })
+      .finally(() => {
         setIsLoading(false);
       });
-  }, []);
 
-  useEffect(() => {
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    supabase.auth.onAuthStateChange(async (_event, session) => {
       try {
-        await updateUserInfo(session);
-        setIsLoggedIn(!!session);
-        queryClient.clear();
+        await updateSessionState(session);
       } catch (error) {
         console.error("인증 상태 업데이트 중 오류 발생:", session, error);
       }
     });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [queryClient]);
+  }, [updateSessionState]);
 
   return { isLoggedIn, isLoading };
 }
