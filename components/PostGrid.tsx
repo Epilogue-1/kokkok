@@ -1,6 +1,8 @@
 import images from "@/constants/images";
 import { useRouter } from "expo-router";
+import { useCallback, useEffect, useRef } from "react";
 import {
+  DeviceEventEmitter,
   Dimensions,
   FlatList,
   Image,
@@ -14,12 +16,28 @@ interface Post {
 }
 
 interface PostGridProps {
+  refetch: () => void;
   posts: Post[] | null;
   isError?: boolean;
 }
 
-export default function PostGrid({ posts, isError }: PostGridProps) {
+export default function PostGrid({ refetch, posts, isError }: PostGridProps) {
   const router = useRouter();
+  const flatListRef = useRef<FlatList>(null);
+
+  const handleScrollToTop = useCallback(() => {
+    flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
+    refetch();
+  }, [refetch]);
+
+  useEffect(() => {
+    const subscription = DeviceEventEmitter.addListener(
+      "SCROLL_MY_PAGE_TO_TOP",
+      handleScrollToTop,
+    );
+
+    return () => subscription.remove();
+  }, [handleScrollToTop]);
 
   if (isError) {
     return (
@@ -52,6 +70,7 @@ export default function PostGrid({ posts, isError }: PostGridProps) {
   return (
     <View className="mt-[32px] h-full bg-gray-5">
       <FlatList
+        ref={flatListRef}
         data={posts}
         renderItem={({ item }) => {
           const size = Dimensions.get("window").width / 3;

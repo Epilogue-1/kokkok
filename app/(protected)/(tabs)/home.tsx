@@ -11,9 +11,10 @@ import useRefresh from "@/hooks/useRefresh";
 import { getPostLikes, getPosts } from "@/utils/supabase";
 import { useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
+  DeviceEventEmitter,
   Dimensions,
   FlatList,
   Image,
@@ -33,6 +34,7 @@ export default function Home() {
   const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
   const [selectedAuthorId, setSelectedAuthorId] = useState<string | null>(null);
   const [isLikedModalVisible, setIsLikedModalVisible] = useState(false);
+  const flatListRef = useRef<FlatList>(null);
   const { openModal } = useModal();
 
   const router = useRouter();
@@ -91,9 +93,24 @@ export default function Home() {
     handleLoadId();
   }, []);
 
+  const handleScrollToTop = useCallback(() => {
+    flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
+    onRefresh();
+  }, [onRefresh]);
+
+  useEffect(() => {
+    const subscription = DeviceEventEmitter.addListener(
+      "SCROLL_HOME_TO_TOP",
+      handleScrollToTop,
+    );
+
+    return () => subscription.remove();
+  }, [handleScrollToTop]);
+
   return (
     <SafeAreaView edges={[]} className="flex-1 items-center justify-center">
       <FlatList
+        ref={flatListRef}
         data={data?.pages.flatMap((page) => page.data) ?? []}
         keyExtractor={(item) => item.id.toString()}
         contentContainerStyle={{ gap: 10 }}

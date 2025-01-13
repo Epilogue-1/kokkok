@@ -20,6 +20,7 @@ export default function MyPage() {
     data: posts,
     isLoading: isPostsLoading,
     isError: isPostsError,
+    refetch,
   } = useFetchData(
     ["userPosts"],
     () => getMyPosts(),
@@ -43,6 +44,7 @@ export default function MyPage() {
             }
           />
           <PostGrid
+            refetch={refetch}
             posts={
               posts
                 ? posts.map((post) => ({ ...post, id: post.id.toString() }))

@@ -1,5 +1,10 @@
-import { useEffect } from "react";
-import { ActivityIndicator, FlatList, View } from "react-native";
+import { useCallback, useEffect, useRef } from "react";
+import {
+  ActivityIndicator,
+  DeviceEventEmitter,
+  FlatList,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import ErrorScreen from "@/components/ErrorScreen";
@@ -20,6 +25,7 @@ const LIMIT = 12;
 
 export default function Request() {
   const queryClient = useQueryClient();
+  const flatListRef = useRef<FlatList>(null);
 
   // 유저의 친구 요청 정보 조회
   const {
@@ -28,6 +34,7 @@ export default function Request() {
     isFetchingNextPage,
     error,
     loadMore,
+    refetch,
   } = useInfiniteLoad({
     queryFn: getFriendRequests,
     queryKey: ["friendRequests"],
@@ -36,11 +43,13 @@ export default function Request() {
   const hasRequests = !!requestData?.pages[0].total;
 
   // 친구 요청창에 focus 들어올 때마다 친구목록 새로고침
-  useFocusEffect(() => {
-    if (!isFetchingNextPage) {
-      queryClient.invalidateQueries({ queryKey: ["friendRequests"] });
-    }
-  });
+  useFocusEffect(
+    useCallback(() => {
+      if (!isFetchingNextPage) {
+        queryClient.invalidateQueries({ queryKey: ["friendRequests"] });
+      }
+    }, [isFetchingNextPage, queryClient]),
+  );
 
   // 친구 요청이 추가되면 쿼리 다시 패치하도록 정보 구독
   useEffect(() => {
@@ -60,6 +69,20 @@ export default function Request() {
     };
   }, [queryClient.invalidateQueries]);
 
+  const handleScrollToTop = useCallback(() => {
+    flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
+    refetch();
+  }, [refetch]);
+
+  useEffect(() => {
+    const subscription = DeviceEventEmitter.addListener(
+      "SCROLL_REQUEST_TO_TOP",
+      handleScrollToTop,
+    );
+
+    return () => subscription.remove();
+  }, [handleScrollToTop]);
+
   // 에러 스크린
   if (error) {
     return <ErrorScreen errorMessage={error.message} />;
@@ -73,6 +96,7 @@ export default function Request() {
   return (
     <SafeAreaView edges={[]} className="flex-1 bg-white">
       <FlatList
+        ref={flatListRef}
         className="w-full grow px-8"
         data={hasRequests ? requestData.pages.flatMap((page) => page.data) : []}
         keyExtractor={(request) => String(request.requestId)}
