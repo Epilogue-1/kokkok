@@ -50,7 +50,7 @@ export default function PostGrid({ posts, isError }: PostGridProps) {
   }
 
   return (
-    <View className="mt-[32px] h-full bg-gray-5">
+    <View className="mt-[32px] flex-1 bg-gray-5">
       <FlatList
         data={posts}
         renderItem={({ item }) => {
