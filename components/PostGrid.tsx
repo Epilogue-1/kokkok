@@ -68,7 +68,7 @@ export default function PostGrid({ refetch, posts, isError }: PostGridProps) {
   }
 
   return (
-    <View className="mt-[32px] h-full bg-gray-5">
+    <View className="mt-[32px] flex-1 bg-gray-5">
       <FlatList
         ref={flatListRef}
         data={posts}
