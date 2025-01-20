@@ -160,6 +160,7 @@ export function AccountDeleteModal() {
     onSuccess: async () => {
       // 탈퇴 후 로그아웃
       await supabase.auth.signOut();
+      closeModal();
     },
     onError: () => {
       showToast("error", "탈퇴 도중 오류가 발생했습니다.");
