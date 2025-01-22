@@ -190,7 +190,7 @@ export async function resetPassword(email: string) {
     // OAuth 사용자인 경우 비밀번호 재설정 불가
     if (userData?.isOAuth) {
       throw new Error(
-        "간편 로그인으로 가입된 계정입니다. 소셜 로그인을 이용해주세요.",
+        "간편 로그인으로 가입된 계정입니다. 간편 로그인을 이용해주세요.",
       );
     }
 
