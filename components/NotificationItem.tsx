@@ -32,12 +32,12 @@ export function NotificationItem({
             style={{ width: 48, height: 48, borderRadius: 9999 }}
           />
 
-          <View className="gap-[4px] w-[198px]">
-            <Text className="title-4 text-gray-90" numberOfLines={1}>
+          <View className="gap-[4px] w-[204px]">
+            <Text className="body-2 text-gray-90" numberOfLines={1}>
               {message.title}
             </Text>
             {type === "like" || type === "commentLike" ? (
-              <Text className="title-4 text-gray-90" numberOfLines={1}>
+              <Text className="body-2 text-gray-90" numberOfLines={1}>
                 {message.content}
               </Text>
             ) : (

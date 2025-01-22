@@ -26,7 +26,11 @@ export default function PostDetail() {
 
   const router = useRouter();
 
-  const { data: post, error: postError } = useFetchData(
+  const {
+    data: post,
+    error: postError,
+    isLoading: isPostLoading,
+  } = useFetchData(
     ["post", postId],
     () => getPost(Number(postId)),
     "포스트를 불러오는데 실패했습니다.",
@@ -45,9 +49,9 @@ export default function PostDetail() {
   useFocusEffect(
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useCallback(() => {
-      if (!postError && post) return;
+      if (isPostLoading || (!postError && post)) return;
       openModal({ type: "POST_NOT_FOUND" });
-    }, [postError, post]),
+    }, [isPostLoading, postError, post]),
   );
 
   const onOpenLikedAuthor = useCallback(() => {
@@ -106,7 +110,11 @@ export default function PostDetail() {
           onCommentsPress={() => setIsCommentsVisible(true)}
           onAuthorPress={onOpenLikedAuthor}
           onDeletePress={() => {
-            openModal({ type: "DELETE_POST", postId: Number(postId) });
+            openModal({
+              type: "DELETE_POST",
+              postId: Number(postId),
+              isDetail: true,
+            });
           }}
         />
       )}

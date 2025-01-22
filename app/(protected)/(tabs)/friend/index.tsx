@@ -1,5 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import ErrorScreen from "@/components/ErrorScreen";
 import { FriendItem } from "@/components/FriendItem";
@@ -23,6 +23,7 @@ export default function Friend() {
     isFetchingNextPage,
     error,
     loadMore,
+    refetch,
   } = useInfiniteLoad({
     queryFn: getFriends(keyword),
     queryKey: ["friends", keyword],
@@ -35,11 +36,13 @@ export default function Friend() {
   }, 200);
 
   // 친구창에 focus 들어올 때마다 친구목록 새로고침 (검색중일 때 제외)
-  useFocusEffect(() => {
-    if (!keyword && !isFetchingNextPage) {
-      queryClient.invalidateQueries({ queryKey: ["friends"] });
-    }
-  });
+  useFocusEffect(
+    useCallback(() => {
+      if (!keyword && !isFetchingNextPage) {
+        queryClient.invalidateQueries({ queryKey: ["friends"] });
+      }
+    }, [queryClient, keyword, isFetchingNextPage]),
+  );
 
   // 친구의 운동 정보가 바뀌면 쿼리 다시 패치하도록 정보 구독
   useEffect(() => {
@@ -80,6 +83,7 @@ export default function Friend() {
 
   return (
     <SearchLayout
+      refetch={refetch}
       data={friends}
       onChangeKeyword={handleKeywordChange}
       loadMore={loadMore}

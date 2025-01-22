@@ -100,6 +100,33 @@ export function EmailCheckModal() {
 }
 
 /* -------------------------------------------------------------------------- */
+/*                         PasswordResetCompleteModal                         */
+/* -------------------------------------------------------------------------- */
+/**
+ * @description
+ * 비밀번호 재설정 완료 안내 모달입니다.
+ */
+export function PasswordResetCompleteModal() {
+  const { closeModal } = useModal();
+  const router = useRouter();
+
+  const handleConfirm = () => {
+    closeModal();
+    router.replace("/home");
+  };
+
+  return (
+    <OneButtonModal
+      onClose={handleConfirm}
+      onPress={handleConfirm}
+      emoji="HAPPY"
+      contents={"비밀번호가 변경되었습니다"}
+      buttonText="확인"
+    />
+  );
+}
+
+/* -------------------------------------------------------------------------- */
 /*                           PostUploadFailModal                              */
 /* -------------------------------------------------------------------------- */
 /**
@@ -121,6 +148,33 @@ export function PostUploadFailModal() {
       buttonText="확인"
       onClose={handleClose}
       onPress={handleClose}
+    />
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/*                         PasswordResetEmailCheckModal                        */
+/* -------------------------------------------------------------------------- */
+/**
+ * @description
+ * 비밀번호 재설정 시 이메일 인증을 위해 안내하는 모달입니다.
+ */
+export function PasswordResetEmailCheckModal() {
+  const { closeModal } = useModal();
+  const router = useRouter();
+
+  const handleConfirm = () => {
+    closeModal();
+    router.push("/password-reset/step2");
+  };
+
+  return (
+    <OneButtonModal
+      onClose={handleConfirm}
+      onPress={handleConfirm}
+      emoji="HAPPY"
+      contents={"이메일로 전송된\n인증 코드를 확인해주세요!"}
+      buttonText="확인"
     />
   );
 }

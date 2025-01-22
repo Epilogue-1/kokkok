@@ -1,8 +1,8 @@
 import images from "@/constants/images";
 import { passwordResetFormAtom } from "@/contexts/auth";
+import { useModal } from "@/hooks/useModal";
 import { updateNewPassword } from "@/utils/supabase";
 import { validateResetPasswordForm } from "@/utils/validation";
-import { useRouter } from "expo-router";
 import { useAtom } from "jotai";
 import { useState } from "react";
 import {
@@ -18,8 +18,8 @@ import {
 } from "react-native";
 
 const Step3 = () => {
-  const router = useRouter();
   const [_, setResetEmail] = useAtom(passwordResetFormAtom);
+  const { openModal } = useModal();
   const [isLoading, setIsLoading] = useState(false);
   const [resetPassword, setResetPassword] = useState({
     newPassword: "",
@@ -27,6 +27,8 @@ const Step3 = () => {
   });
 
   const handleResetPassword = async () => {
+    if (isLoading) return;
+
     try {
       setIsLoading(true);
       const validationError = validateResetPasswordForm(
@@ -41,7 +43,9 @@ const Step3 = () => {
 
       await updateNewPassword(resetPassword.newPassword);
       setResetEmail({ email: "" });
-      router.replace("/home");
+
+      // 비밀번호 변경 완료 모달 표시
+      openModal({ type: "PASSWORD_RESET_COMPLETE" });
     } catch (error) {
       const errorMessage =
         error instanceof Error

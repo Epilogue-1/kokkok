@@ -25,6 +25,7 @@ export default function ProfileSection({
             className="size-[88px] rounded-full"
             accessibilityLabel="프로필 이미지"
             accessibilityRole="image"
+            resizeMode="cover"
           />
           <Text
             className="title-3 flex-1"

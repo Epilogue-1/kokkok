@@ -62,9 +62,8 @@ export function ListModal({
 /* -------------------------------------------------------------------------- */
 /*                      SelectPostEditDeleteModal                             */
 /* -------------------------------------------------------------------------- */
-/**
- * 게시물 수정, 삭제 모달
- */
+
+// 게시글 수정/삭제 모달
 export function SelectPostEditDeleteModal({
   position,
   postId,
@@ -100,9 +99,8 @@ export function SelectPostEditDeleteModal({
 /* -------------------------------------------------------------------------- */
 /*                       SelectCommentDeleteModal                             */
 /* -------------------------------------------------------------------------- */
-/**
- * 댓글 삭제 모달
- */
+
+// 댓글 삭제 모달
 export function SelectCommentDeleteModal({
   position,
   postId,
@@ -142,9 +140,7 @@ interface ProfileEditModalProps {
   >;
 }
 
-/**
- * 프로필 이미지 선택/삭제 모달
- */
+// 프로필 이미지 선택/삭제 모달
 export function SelectProfileImageEditModal({
   setProfileInput,
 }: ProfileEditModalProps) {
@@ -221,9 +217,8 @@ export function SelectProfileImageEditModal({
 /* -------------------------------------------------------------------------- */
 /*                        SelectProfileEditModal                              */
 /* -------------------------------------------------------------------------- */
-/**
- * 프로필 편집 페이지로 이동하는 모달
- */
+
+// 프로필 수정 모달
 export function SelectProfileEditModal() {
   const { closeModal } = useModal();
   const router = useRouter();
@@ -256,9 +251,7 @@ export interface ImageItem {
 
 export const IMAGE_LIMIT = 5;
 
-/**
- * 공통 이미지 옵션
- */
+// 이미지 선택 옵션
 export const IMAGE_OPTIONS: ImagePickerOptions = {
   mediaTypes: ["images"],
   allowsEditing: true,
@@ -275,9 +268,7 @@ interface SelectPostUploadImageModalProps {
   isLoading: boolean;
 }
 
-/**
- * 게시글 업로드 시 이미지 선택(갤러리/카메라) 모달
- */
+// 게시글 업로드 이미지 선택(카메라/앨범) 모달
 export function SelectPostUploadImageModal({
   imageItems,
   setImageItems,
@@ -286,9 +277,7 @@ export function SelectPostUploadImageModal({
 }: SelectPostUploadImageModalProps) {
   const { closeModal } = useModal();
 
-  /**
-   * 이미지 최적화 후 리스트에 추가
-   */
+  // 이미지 최적화 후 처리
   const handleImageProcess = useCallback(
     async (result: ImagePickerResult) => {
       if (result.canceled) return;
@@ -323,9 +312,7 @@ export function SelectPostUploadImageModal({
     [imageItems, setImageItems, flatListRef],
   );
 
-  /**
-   * 카메라 또는 갤러리 권한 체크
-   */
+  // 카메라 / 앨범 권한 체크
   const checkPermission = useCallback(async (type: "camera" | "gallery") => {
     const permissionFn =
       type === "camera"
@@ -350,9 +337,7 @@ export function SelectPostUploadImageModal({
     return true;
   }, []);
 
-  /**
-   * 갤러리에서 이미지 선택
-   */
+  // 갤러리에서 이미지 선택
   const pickImage = async () => {
     if (isLoading || imageItems.length >= IMAGE_LIMIT) {
       showToast("fail", "이미지는 5개까지 선택가능해요");
@@ -365,9 +350,7 @@ export function SelectPostUploadImageModal({
     await handleImageProcess(result);
   };
 
-  /**
-   * 카메라 촬영
-   */
+  // 카메라 촬영
   const takePhoto = async () => {
     if (isLoading || imageItems.length >= IMAGE_LIMIT) {
       showToast("fail", "이미지는 5개까지 선택가능해요");
@@ -385,16 +368,16 @@ export function SelectPostUploadImageModal({
       position={"center"}
       buttons={[
         {
-          text: "갤러리",
+          text: "카메라",
           onPress: async () => {
-            await pickImage();
+            await takePhoto();
             closeModal();
           },
         },
         {
-          text: "카메라",
+          text: "갤러리",
           onPress: async () => {
-            await takePhoto();
+            await pickImage();
             closeModal();
           },
         },

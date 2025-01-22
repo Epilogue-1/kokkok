@@ -1,10 +1,10 @@
 import { passwordResetFormAtom } from "@/contexts/auth";
+import { useModal } from "@/hooks/useModal";
 import { resetPassword } from "@/utils/supabase";
 import { validatePasswordResetEmail } from "@/utils/validation";
 import images from "@constants/images";
-import { useRouter } from "expo-router";
 import { useAtom } from "jotai";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   Alert,
   Image,
@@ -18,8 +18,9 @@ import {
 } from "react-native";
 
 const Step1 = () => {
-  const router = useRouter();
   const [resetEmail, setResetEmail] = useAtom(passwordResetFormAtom);
+  const { openModal } = useModal();
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     return () => {
@@ -28,6 +29,9 @@ const Step1 = () => {
   }, [setResetEmail]);
 
   const handleSendEmail = async () => {
+    if (isLoading) return;
+
+    setIsLoading(true);
     try {
       // 이메일 유효성 검사
       const validationError = await validatePasswordResetEmail(
@@ -39,7 +43,9 @@ const Step1 = () => {
       }
 
       await resetPassword(resetEmail.email);
-      router.push("/password-reset/step2");
+
+      // 이메일 인증 모달 표시
+      openModal({ type: "PASSWORD_RESET_EMAIL_CHECK" });
     } catch (error: unknown) {
       Alert.alert(
         "비밀번호 재설정 실패",
@@ -47,6 +53,8 @@ const Step1 = () => {
           ? error.message
           : "비밀번호 재설정에 실패했습니다.",
       );
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -76,10 +84,15 @@ const Step1 = () => {
           </View>
 
           <TouchableOpacity
-            className="mt-10 h-[62px] w-full items-center justify-center rounded-[10px] bg-primary"
+            className={`mt-10 h-[62px] w-full items-center justify-center rounded-[10px] ${
+              isLoading ? "bg-gray-20" : "bg-primary"
+            }`}
             onPress={handleSendEmail}
+            disabled={isLoading}
           >
-            <Text className="heading-2 text-white">인증번호 발송</Text>
+            <Text className="heading-2 text-white">
+              {isLoading ? "인증번호 전송 중..." : "인증번호 발송"}
+            </Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

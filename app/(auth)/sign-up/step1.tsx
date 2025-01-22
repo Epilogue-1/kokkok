@@ -4,7 +4,7 @@ import { validateSignUpFormWithSupabase } from "@/utils/validation";
 import images from "@constants/images";
 import { signUpFormAtom } from "@contexts/auth";
 import { useAtom } from "jotai";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Alert,
   Image,
@@ -22,6 +22,12 @@ const Step1 = () => {
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { openModal } = useModal();
+
+  useEffect(() => {
+    return () => {
+      setSignUpForm({ email: "", username: "", password: "" });
+    };
+  }, [setSignUpForm]);
 
   const handleContinue = async () => {
     if (isLoading) return;

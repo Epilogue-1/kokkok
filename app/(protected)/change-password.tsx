@@ -1,7 +1,7 @@
 import useFetchData from "@/hooks/useFetchData";
+import { useModal } from "@/hooks/useModal";
 import { getCurrentUser, updateNewPassword } from "@/utils/supabase";
 import { validateChangePasswordForm } from "@/utils/validation";
-import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
   Alert,
@@ -15,7 +15,8 @@ import {
 } from "react-native";
 
 const ChangePassword = () => {
-  const router = useRouter();
+  const { openModal } = useModal();
+  const [isLoading, setIsLoading] = useState(false);
 
   const [resetPassword, setResetPassword] = useState({
     currentPassword: "",
@@ -30,6 +31,9 @@ const ChangePassword = () => {
   );
 
   const handleResetPassword = async () => {
+    if (isLoading) return;
+
+    setIsLoading(true);
     try {
       const validationError = await validateChangePasswordForm(
         currentUser?.email || "",
@@ -45,7 +49,8 @@ const ChangePassword = () => {
 
       await updateNewPassword(resetPassword.newPassword);
 
-      router.replace("/home");
+      // 비밀번호 변경 완료 모달 표시
+      openModal({ type: "PASSWORD_RESET_COMPLETE" });
     } catch (error) {
       // 에러메시지 한글로 변환
       const errorMessage =
@@ -57,6 +62,8 @@ const ChangePassword = () => {
           : "비밀번호 변경에 실패했습니다.";
 
       Alert.alert("알림", errorMessage);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -107,10 +114,15 @@ const ChangePassword = () => {
           </View>
 
           <TouchableOpacity
-            className="mt-10 h-[62px] w-full items-center justify-center rounded-[10px] bg-primary"
+            className={`mt-10 h-[62px] w-full items-center justify-center rounded-[10px] ${
+              isLoading ? "bg-gray-20" : "bg-primary"
+            }`}
             onPress={handleResetPassword}
+            disabled={isLoading}
           >
-            <Text className="heading-2 text-white">완료</Text>
+            <Text className="heading-2 text-white">
+              {isLoading ? "변경 중..." : "완료"}
+            </Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

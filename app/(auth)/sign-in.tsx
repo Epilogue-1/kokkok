@@ -11,7 +11,7 @@ import {
 import { signIn, supabase } from "@/utils/supabase";
 import { validateSignInForm } from "@/utils/validation";
 import icons from "@constants/icons";
-import images from "@constants/images";
+import images, { DEFAULT_AVATAR_URL } from "@constants/images";
 import type { Provider } from "@supabase/supabase-js";
 import { makeRedirectUri } from "expo-auth-session";
 import * as QueryParams from "expo-auth-session/build/QueryParams";
@@ -58,6 +58,18 @@ const SignIn = () => {
       options: {
         redirectTo,
         skipBrowserRedirect: true,
+        // OAuth 스코프 설정 구글이면 이메일과 프로필, 깃허브면 이메일과 사용자 정보
+        scopes:
+          provider === "google" ? "email profile" : "read:user user:email",
+        queryParams:
+          provider === "google"
+            ? {
+                prompt: "select_account",
+                access_type: "offline",
+              }
+            : {
+                login: "true",
+              },
       },
     });
     if (error) throw error;
@@ -86,11 +98,7 @@ const SignIn = () => {
             username:
               session.user.user_metadata.full_name ||
               session.user.email.split("@")[0],
-            avatarUrl:
-              session.user.user_metadata.avatar_url ||
-              `https://ui-avatars.com/api/?name=${encodeURIComponent(
-                session.user.email,
-              )}`,
+            avatarUrl: DEFAULT_AVATAR_URL,
             isOAuth: true,
           });
 

@@ -3,13 +3,11 @@ import {
   type NotificationType,
 } from "@/types/Notification.interface";
 
-const COMMENT_MAX_LENGTH = 18;
-
-export const shorten_comment = (
-  comment: string,
-  maxLength = COMMENT_MAX_LENGTH,
-) =>
-  `"${comment.length > maxLength ? comment.slice(0, maxLength).concat("...") : comment}"`;
+export const shortenMessage = (message: string, maxLength: number) => {
+  // 이모지는 두 바이트 이상일 수 있기 때문에 Array.from 사용해서 이모지 처리
+  const commentArray = Array.from(message);
+  return `${commentArray.length > maxLength ? commentArray.slice(0, maxLength).join("").concat("...") : message}`;
+};
 
 interface FormMessageProps {
   type: NotificationType;
@@ -31,11 +29,11 @@ export function formMessage({
     },
     [NOTIFICATION_TYPE.COMMENT]: {
       title: `${username}님의 댓글`,
-      content: shorten_comment(comment || ""),
+      content: `"${comment}"`,
     },
     [NOTIFICATION_TYPE.MENTION]: {
       title: `${username}님의 멘션`,
-      content: shorten_comment(comment || ""),
+      content: `"${comment}"`,
     },
     [NOTIFICATION_TYPE.COMMENT_LIKE]: {
       title: `${username}님이`,

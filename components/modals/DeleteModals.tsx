@@ -4,6 +4,7 @@ import { deleteComment, deletePost } from "@/utils/supabase";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Text, TouchableOpacity, View } from "react-native";
 
+import { useRouter } from "expo-router";
 import { showToast } from "../ToastConfig";
 
 /* -------------------------------------------------------------------------- */
@@ -52,15 +53,13 @@ export function DeleteModal({
   );
 }
 
-/* -------------------------------------------------------------------------- */
-/*                           게시글 삭제 모달                                 */
-/* -------------------------------------------------------------------------- */
-/**
- * @description
- * 게시글을 삭제하는 모달. React Query로 삭제 Mutate 요청을 보낸다.
- */
-export function DeletePostModal({ postId }: { postId: number }) {
+// 게시글 삭제 모달
+export function DeletePostModal({
+  postId,
+  isDetail,
+}: { postId: number; isDetail?: boolean }) {
   const queryClient = useQueryClient();
+  const router = useRouter();
   const { closeModal } = useModal();
 
   const deletePostMutation = useMutation({
@@ -71,6 +70,11 @@ export function DeletePostModal({ postId }: { postId: number }) {
       showToast("success", "게시글이 삭제되었어요.");
       // 게시글 리스트/상세 등 관련된 쿼리 무효화
       queryClient.invalidateQueries({ queryKey: ["posts"] });
+
+      if (isDetail) {
+        queryClient.invalidateQueries({ queryKey: ["userPosts"] });
+        router.back();
+      }
     },
     onError: () => {
       showToast("fail", "게시글 삭제에 실패했어요.");
@@ -88,13 +92,7 @@ export function DeletePostModal({ postId }: { postId: number }) {
   return <DeleteModal onClose={closeModal} onDelete={handleDelete} />;
 }
 
-/* -------------------------------------------------------------------------- */
-/*                             댓글 삭제 모달                                 */
-/* -------------------------------------------------------------------------- */
-/**
- * @description
- * 댓글을 삭제하는 모달. React Query로 삭제 Mutate 요청을 보낸다.
- */
+// 댓글 삭제 모달
 export function DeleteCommentModal({
   postId,
   commentId,

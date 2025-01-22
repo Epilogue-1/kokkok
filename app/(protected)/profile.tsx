@@ -85,7 +85,7 @@ const Profile = () => {
                     : images.AvatarInput
                 }
                 className="size-[236px] rounded-full"
-                resizeMode="contain"
+                resizeMode="cover"
               />
               <Icons.CameraIcon
                 style={{ position: "absolute", bottom: 12, right: 14 }}
