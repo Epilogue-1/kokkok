@@ -104,7 +104,7 @@ export const validateEmailWithSupabase = async (
     .single();
 
   if (userData?.isOAuth) {
-    return { message: "소셜 로그인으로 가입된 계정입니다.", field: "email" };
+    return { message: "간편 로그인으로 가입된 계정입니다.", field: "email" };
   }
 
   if (userData?.email) {
