@@ -1,14 +1,14 @@
-import { View } from "react-native";
+import { View, type ViewStyle } from "react-native";
 
 interface SkeletonProps {
   className?: string;
-  width: number;
-  height: number;
+  width?: ViewStyle["width"];
+  height?: ViewStyle["height"];
   count?: number;
   circle?: boolean;
 }
 
-export function Skeleton({
+export default function Skeleton({
   className = "",
   width,
   height,
@@ -19,9 +19,8 @@ export function Skeleton({
     <>
       {Array.from({ length: count }, (_, index) => (
         <View
-          // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-          key={`skeleton-${index}`}
-          className={`w-full animate-pulse ${circle ? "rounded-full" : "rounded-[5px]"} ${className}`}
+          key={`skeleton-component-${index}of${count}`}
+          className={`animate-pulse bg-gray-20 ${circle ? "rounded-full" : "rounded-[5px]"} ${className}`}
           style={{ width, height }}
           aria-hidden={true}
         />

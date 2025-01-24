@@ -1,3 +1,4 @@
+import { Skeleton } from "@/components/Skeleton";
 import colors from "@/constants/colors";
 import Icons from "@/constants/icons";
 import images from "@/constants/images";
@@ -297,6 +298,7 @@ export default function CommentsSection({
           showsHorizontalScrollIndicator={false}
           ListEmptyComponent={
             isFetching ? (
+              // true ? (
               <View>
                 {[...Array(5)].map((_, index) => (
                   <View
@@ -312,7 +314,7 @@ export default function CommentsSection({
                         <View className="h-[13px] w-10 rounded-md bg-gray-25" />
                       </View>
 
-                      <View className="size-[28px] rounded-full bg-gray-25" />
+                      <Skeleton width={28} height={28} circle />
                     </View>
 
                     <View className="gap-[13px]">
