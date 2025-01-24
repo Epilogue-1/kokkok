@@ -41,7 +41,7 @@ export default function PostGrid({ refetch, posts, isError }: PostGridProps) {
 
   if (isError) {
     return (
-      <View className="mt-8 flex-1 items-center justify-center bg-gray-5">
+      <View className="flex-1 items-center justify-center bg-gray-5">
         <Image
           source={images.ErrorPost}
           className="h-[178px] w-[234px]"
@@ -55,7 +55,7 @@ export default function PostGrid({ refetch, posts, isError }: PostGridProps) {
 
   if (!posts || posts.length === 0) {
     return (
-      <View className="mt-8 flex-1 items-center justify-center bg-gray-5">
+      <View className="flex-1 items-center justify-center bg-gray-5">
         <Image
           source={images.NoPost}
           className="h-[178px] w-[234px]"
@@ -68,7 +68,7 @@ export default function PostGrid({ refetch, posts, isError }: PostGridProps) {
   }
 
   return (
-    <View className="mt-[32px] flex-1 bg-gray-5">
+    <View className="flex-1 bg-gray-5">
       <FlatList
         ref={flatListRef}
         data={posts}

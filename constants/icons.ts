@@ -1,6 +1,6 @@
 import BackIcon from "@/assets/icons/back.svg";
-import BellIcon from "@/assets/icons/bell.svg";
 import BellWithDotIcon from "@/assets/icons/bell-with-dot.svg";
+import BellIcon from "@/assets/icons/bell.svg";
 import CalendarIcon from "@/assets/icons/calendar.svg";
 import CameraIcon from "@/assets/icons/camera.svg";
 import ChevronLeftIcon from "@/assets/icons/chevron-left.svg";
@@ -19,6 +19,8 @@ import HeartIcon from "@/assets/icons/heart.svg";
 import HomeIcon from "@/assets/icons/home.svg";
 import KakaoIcon from "@/assets/icons/kakao.svg";
 import KebabMenuIcon from "@/assets/icons/kebab.svg";
+import TableListIcon from "@/assets/icons/list_table.svg";
+import WindowListIcon from "@/assets/icons/list_window.svg";
 import MeatballIcon from "@/assets/icons/meatball.svg";
 import PlusIcon from "@/assets/icons/plus.svg";
 import ProfileIcon from "@/assets/icons/profile.svg";
@@ -56,4 +58,6 @@ export default {
   TrashCanIcon,
   KebabMenuIcon,
   CameraIcon,
+  TableListIcon,
+  WindowListIcon,
 };
