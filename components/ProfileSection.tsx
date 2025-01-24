@@ -17,25 +17,16 @@ export default function ProfileSection({
   onSettingsPress,
 }: ProfileSectionProps) {
   return (
-    <View className="mt-6 px-5">
-      <View className="w-full flex-row justify-between pr-5">
-        <View className="w-full flex-row items-center gap-6">
-          <Image
-            source={avatarUrl ? { uri: avatarUrl } : images.AvaTarDefault}
-            className="size-[88px] rounded-full"
-            accessibilityLabel="프로필 이미지"
-            accessibilityRole="image"
-            resizeMode="cover"
-          />
-          <Text
-            className="title-3 flex-1"
-            numberOfLines={1}
-            ellipsizeMode="tail"
-          >
-            {username}
-          </Text>
-        </View>
-        <View>
+    <View className="relative bg-primary">
+      <Image
+        source={avatarUrl ? { uri: avatarUrl } : images.AvaTarDefault}
+        className="absolute top-[52px] left-[16px] z-10 size-[100px] rounded-full border-[1.5px] border-white"
+        accessibilityLabel="프로필 이미지"
+        accessibilityRole="image"
+        resizeMode="cover"
+      />
+      <View className="mt-[98px] rounded-t-[3px] bg-white px-4">
+        <View className="mt-[22px] w-full flex-row justify-end">
           <TouchableOpacity
             onPress={onSettingsPress}
             accessibilityRole="button"
@@ -47,12 +38,18 @@ export default function ProfileSection({
             />
           </TouchableOpacity>
         </View>
-      </View>
-
-      <View className="mt-4 rounded-[10px] bg-[#f0f0f0] p-4">
-        <Text className="body-5 text-gray-80">
-          {description || "소개글을 입력해주세요"}
-        </Text>
+        <View className="mt-[22px] w-full flex-row items-center gap-6">
+          <Text
+            className="title-3 flex-1"
+            numberOfLines={1}
+            ellipsizeMode="tail"
+          >
+            {username}
+          </Text>
+        </View>
+        <View className="mt-[8px] mb-[25px]">
+          <Text className="body-5 text-gray-80">{description}</Text>
+        </View>
       </View>
     </View>
   );
