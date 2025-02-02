@@ -9,6 +9,7 @@ import {
 } from "react-native";
 
 import CalendarNavigator from "@/components/CalendarNavigator";
+import { Skeleton } from "@/components/Skeleton";
 import WorkoutCalendar from "@/components/WorkoutCalendar";
 import icons from "@/constants/icons";
 import useCalendar from "@/hooks/useCalendar";
@@ -74,10 +75,14 @@ export default function History() {
   return (
     <ScrollView className="flex-1 bg-white px-[24px] pt-[18px]">
       <View className="flex-row items-center">
-        <Text className="heading-1 grow">
-          {month}월 <Text className="text-primary">{workoutDays}</Text>일 운동
-          완료!
-        </Text>
+        {isLoading ? (
+          <Skeleton className="mr-auto" width={180} height={20} />
+        ) : (
+          <Text className="heading-1 grow">
+            {month}월 <Text className="text-primary">{workoutDays}</Text>일 운동
+            완료!
+          </Text>
+        )}
 
         <SetRestDayButton
           onPress={() => {
