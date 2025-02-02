@@ -9,7 +9,6 @@ import {
 } from "react-native";
 
 import CalendarNavigator from "@/components/CalendarNavigator";
-import { CalendarSkeleton } from "@/components/Skeleton";
 import WorkoutCalendar from "@/components/WorkoutCalendar";
 import icons from "@/constants/icons";
 import useCalendar from "@/hooks/useCalendar";
@@ -46,6 +45,8 @@ export default function History() {
     getCurrentUser,
     "현재 사용자를 불러올 수 없습니다.",
   );
+
+  const isLoading = isUserLoading || isHistoriesLoading;
 
   const userCreatedDate = currentUser
     ? new Date(currentUser.createdAt)
@@ -101,16 +102,12 @@ export default function History() {
           }
         />
 
-        {isUserLoading || isHistoriesLoading ? (
-          // {true ? (
-          <CalendarSkeleton />
-        ) : (
-          <WorkoutCalendar
-            startingDate={userCreatedDate}
-            currentDate={date}
-            workoutStatuses={histories}
-          />
-        )}
+        <WorkoutCalendar
+          startingDate={userCreatedDate}
+          currentDate={date}
+          workoutStatuses={histories}
+          isLoading={isLoading}
+        />
       </View>
 
       <FaceExplanation />
