@@ -1,32 +1,38 @@
 import { View } from "react-native";
+import Skeleton from "./Skeleton";
 
-export default function CommentSkeleton() {
+interface CommentSkeletonProps {
+  count?: number;
+}
+
+export default function CommentSkeleton({ count = 1 }: CommentSkeletonProps) {
   return (
-    <View className="mb-4 animate-pulse">
-      {/* header */}
-      <View className="flex-row items-center justify-between pb-[13px]">
-        <View className="flex-1 flex-row items-center gap-2">
-          <View className="size-12 rounded-full bg-gray-25" />
-          <View className="max-w-[80%] gap-1">
-            <View className="h-[16px] w-20 rounded-md bg-gray-25" />
-            <View className="h-[10px] w-12 rounded-md bg-gray-25" />
+    <>
+      {Array.from({ length: count }, (_, index) => (
+        <View
+          key={`comment-skeleton-${index}of${count}`}
+          className="mb-4 gap-[13px] pb-[16px]"
+          aria-hidden={true}
+        >
+          {/* header */}
+          <View className="flex-row items-center justify-between gap-[8px]">
+            <Skeleton width={48} height={48} circle />
+
+            <View className="flex-1 items-start gap-2">
+              <Skeleton width={64} height={16} />
+              <Skeleton width={42} height={13} />
+            </View>
+
+            <Skeleton width={28} height={28} circle />
           </View>
-        </View>
-        <View className="flex-row items-center gap-1">
-          <View className="size-6 rounded-full bg-gray-25" />
-          <View className="size-6 rounded-full bg-gray-25" />
-        </View>
-      </View>
 
-      {/* contents */}
-      <View className="pb-[13px]">
-        <View className="h-[18px] w-[90%] rounded-md bg-gray-25" />
-      </View>
+          {/* contents */}
+          <Skeleton width="100%" height={18} />
 
-      {/* reply button */}
-      <View className="pb-[5px]">
-        <View className="h-[14px] w-16 rounded-md bg-gray-25" />
-      </View>
-    </View>
+          {/* reply button */}
+          <Skeleton width={42} height={14} />
+        </View>
+      ))}
+    </>
   );
 }

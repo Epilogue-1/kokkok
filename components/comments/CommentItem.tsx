@@ -242,6 +242,7 @@ export default function CommentItem({
           )}
         </View>
       </View>
+
       {/* contents */}
       <View className="flex-1 flex-row flex-wrap pb-[13px]">
         <Text
@@ -310,12 +311,10 @@ export default function CommentItem({
               ListFooterComponent={() =>
                 isFetchingNextPage ? <CommentSkeleton /> : null
               }
-              // ListFooterComponent={() => (true ? <CommentSkeleton /> : null)}
             />
           )}
 
           {!replyData && isFetching && <CommentSkeleton />}
-          {/* {true && <CommentSkeleton />} */}
 
           {(totalReplies > 1 || hasNextPage) &&
             !!(
