@@ -255,8 +255,7 @@ export const IMAGE_LIMIT = 5;
 export const IMAGE_OPTIONS: ImagePickerOptions = {
   mediaTypes: ["images"],
   allowsEditing: true,
-  aspect: [1, 1],
-  quality: 0.5,
+  quality: 1,
   exif: false,
   legacy: Platform.OS === "android",
 };
@@ -294,8 +293,18 @@ export function SelectPostUploadImageModal({
             ...result.assets[0],
             uri: optimizedUri,
             mimeType: "image/webp",
-            width: 520,
-            height: 520,
+            width: (() => {
+              const { width, height } = result.assets[0];
+              if (width <= 720 && height <= 720) return width;
+              if (width > height) return 720;
+              return Math.floor((width / height) * 720);
+            })(),
+            height: (() => {
+              const { width, height } = result.assets[0];
+              if (width <= 720 && height <= 720) return height;
+              if (width > height) return Math.floor((height / width) * 720);
+              return 720;
+            })(),
           },
         };
 

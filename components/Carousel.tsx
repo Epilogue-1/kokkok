@@ -77,14 +77,23 @@ export default function Carousel({
             key={`carousel-item-${index}-${item}`}
           >
             <View style={{ width: screenWidth, height: imageHeight }}>
-              <Image
-                source={{ uri: item }}
-                className="size-full"
-                resizeMode="cover"
-                onError={(e) =>
-                  console.error("Image loading error:", e.nativeEvent.error)
-                }
-              />
+              <View className="relative flex-1 overflow-hidden">
+                <Image
+                  accessibilityRole="image"
+                  source={{ uri: item }}
+                  className="absolute inset-0 size-full"
+                  blurRadius={10}
+                />
+                <View className="absolute inset-0 bg-black/80" />
+                <Image
+                  accessibilityRole="image"
+                  source={{ uri: item }}
+                  className="size-full"
+                  style={{
+                    resizeMode: "contain",
+                  }}
+                />
+              </View>
 
               {/* heart animation */}
               <Animated.View

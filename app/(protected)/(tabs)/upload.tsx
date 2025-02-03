@@ -226,15 +226,11 @@ export default function Upload() {
                 onLongPress={drag}
                 delayLongPress={200}
                 activeOpacity={0.7}
-                className="relative"
+                className="relative size-[152px]"
                 disabled={uploadPostMutation.isPending}
               >
-                <Image
-                  source={{ uri: item.uri }}
-                  className="size-[152px] rounded-[10px]"
-                />
                 <TouchableOpacity
-                  className="-top-3 -right-3 absolute size-8 items-center justify-center rounded-full border-2 border-white bg-gray-25"
+                  className="-top-3 -right-3 absolute z-20 size-8 items-center justify-center rounded-full border-2 border-white bg-gray-25"
                   onPress={() =>
                     setImageItems((prev) =>
                       prev.filter((_, idx) => idx !== getIndex()),
@@ -244,10 +240,28 @@ export default function Upload() {
                 >
                   <Icons.XIcon width={16} height={16} color={colors.white} />
                 </TouchableOpacity>
+
+                <View className="relative flex-1 overflow-hidden rounded-[10px]">
+                  <Image
+                    accessibilityRole="image"
+                    source={{ uri: item.uri }}
+                    className="absolute inset-0 size-full"
+                    blurRadius={10}
+                  />
+                  <View className="absolute inset-0 bg-black/80" />
+                  <Image
+                    accessibilityRole="image"
+                    source={{ uri: item.uri }}
+                    className="size-full"
+                    style={{
+                      resizeMode: "contain",
+                    }}
+                  />
+                </View>
               </TouchableOpacity>
             </ScaleDecorator>
           )}
-          className="flex-shrink-0 flex-grow-0 pt-6"
+          className="flex-shrink-0 flex-grow-0 pt-6 pb-7"
           contentContainerStyle={{ gap: 16 }}
           containerStyle={{ paddingHorizontal: 16 }}
           autoscrollSpeed={70}
@@ -278,7 +292,7 @@ export default function Upload() {
         />
 
         {/* 글 입력란 */}
-        <View className="w-full items-center justify-center px-6 pt-7">
+        <View className="w-full items-center justify-center px-6">
           <TextInput
             className="body-1 h-[120px] w-full rounded-[10px] border border-gray-20 p-4"
             placeholder="자유롭게 글을 적어주세요. (선택)"
