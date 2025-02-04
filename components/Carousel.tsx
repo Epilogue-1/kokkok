@@ -80,13 +80,20 @@ export default function Carousel({
               <View className="relative flex-1 overflow-hidden">
                 <Image
                   accessibilityRole="image"
+                  accessibilityLabel="blur-background-image"
                   source={{ uri: item }}
                   className="absolute inset-0 size-full"
+                  style={{
+                    resizeMode: "cover",
+                  }}
                   blurRadius={10}
+                  fadeDuration={0}
+                  progressiveRenderingEnabled={true}
                 />
                 <View className="absolute inset-0 bg-black/80" />
                 <Image
                   accessibilityRole="image"
+                  accessibilityLabel="carousel-image"
                   source={{ uri: item }}
                   className="size-full"
                   style={{

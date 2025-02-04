@@ -246,7 +246,12 @@ export default function Upload() {
                     accessibilityRole="image"
                     source={{ uri: item.uri }}
                     className="absolute inset-0 size-full"
+                    style={{
+                      resizeMode: "cover",
+                    }}
                     blurRadius={10}
+                    fadeDuration={0}
+                    progressiveRenderingEnabled={true}
                   />
                   <View className="absolute inset-0 bg-black/80" />
                   <Image
