@@ -1,3 +1,4 @@
+import BlurredImageCard from "@/components/BlurredImageCard";
 import { showToast } from "@/components/ToastConfig";
 import type { ImageItem } from "@/components/modals/ListModals";
 import colors from "@/constants/colors";
@@ -15,14 +16,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type * as ImagePicker from "expo-image-picker";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useRef, useState } from "react";
-import {
-  Alert,
-  Image,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Alert, Text, TextInput, TouchableOpacity, View } from "react-native";
 import DraggableFlatList, {
   ScaleDecorator,
 } from "react-native-draggable-flatlist";
@@ -242,26 +236,7 @@ export default function Upload() {
                 </TouchableOpacity>
 
                 <View className="relative flex-1 overflow-hidden rounded-[10px]">
-                  <Image
-                    accessibilityRole="image"
-                    source={{ uri: item.uri }}
-                    className="absolute inset-0 size-full"
-                    style={{
-                      resizeMode: "cover",
-                    }}
-                    blurRadius={10}
-                    fadeDuration={0}
-                    progressiveRenderingEnabled={true}
-                  />
-                  <View className="absolute inset-0 bg-black/80" />
-                  <Image
-                    accessibilityRole="image"
-                    source={{ uri: item.uri }}
-                    className="size-full"
-                    style={{
-                      resizeMode: "contain",
-                    }}
-                  />
+                  <BlurredImageCard uri={item.uri} />
                 </View>
               </TouchableOpacity>
             </ScaleDecorator>

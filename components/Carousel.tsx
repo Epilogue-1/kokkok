@@ -1,10 +1,10 @@
 import colors from "@/constants/colors";
 import Icons from "@/constants/icons";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Dimensions,
   FlatList,
-  Image,
+  Image as RNImage,
   TouchableWithoutFeedback,
   View,
 } from "react-native";
@@ -13,14 +13,16 @@ import Animated, {
   withSpring,
   withTiming,
 } from "react-native-reanimated";
+import BlurredImageCard from "./BlurredImageCard";
 import PageIndicator from "./PageIndicator";
 
 interface CarouselProps {
   images: string[];
   onDoubleTap?: () => void;
-  showHeart?: boolean; // 추가
+  showHeart?: boolean;
 }
 
+// ViewToken 타입 정의
 type ViewToken = {
   item: string;
   key: string;
@@ -33,9 +35,62 @@ export default function Carousel({
   onDoubleTap,
   showHeart,
 }: CarouselProps) {
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [maxRatio, setMaxRatio] = useState(1); // 기본값은 1(=1:1) 최대 4:5(=1.25)로 제한
   const screenWidth = Dimensions.get("window").width;
-  const imageHeight = screenWidth * (1 / 1); // n:n 비율 유지
+  const imageHeight = screenWidth * maxRatio;
+
+  /**
+   * 마운트 시점 혹은 images 배열이 바뀔 때마다
+   * 각 이미지의 크기를 가져와 비율(height/width)을 구합니다.
+   * 구한 비율들 중 최대값을 찾고,
+   * 그 최대값이 4:5(=1.25)를 넘어가지 않게 제한합니다.
+   */
+  useEffect(() => {
+    if (!images || images.length === 0) {
+      setMaxRatio(1);
+      return;
+    }
+
+    let isCanceled = false;
+
+    // 각 이미지별 height/width 비율을 구한 뒤, 그 중 최대값 사용
+    Promise.all(
+      images.map((uri) => {
+        return new Promise<number>((resolve) => {
+          RNImage.getSize(
+            uri,
+            (width, height) => {
+              const ratio = height / width;
+              resolve(ratio);
+            },
+            () => {
+              // 만약 getSize 실패 시 기본값 1(1:1)로 처리
+              resolve(1);
+            },
+          );
+        });
+      }),
+    )
+      .then((ratios) => {
+        if (isCanceled) return;
+        // 비율 중 최댓값
+        const biggestRatio = Math.max(...ratios);
+        // 최소 1, 최대 1.25로 클램프
+        const clampedRatio = Math.min(Math.max(biggestRatio, 1), 1.25);
+        setMaxRatio(clampedRatio);
+      })
+      .catch(() => {
+        // 에러 발생 시 1(=1:1)로 초기화
+        if (!isCanceled) setMaxRatio(1);
+      });
+
+    return () => {
+      isCanceled = true;
+    };
+  }, [images]);
+
+  // FlatList에서 현재 보여지는 아이템의 index를 추적
+  const [activeIndex, setActiveIndex] = useState(0);
 
   const onViewableItemsChanged = useCallback(
     ({ viewableItems }: { viewableItems: ViewToken[] }) => {
@@ -56,12 +111,15 @@ export default function Carousel({
   let lastTap = 0;
   const handleDoubleTap = () => {
     if (!onDoubleTap) return;
-
     const now = Date.now();
-    if (lastTap && now - lastTap < 300) onDoubleTap();
-    else lastTap = now;
+    if (lastTap && now - lastTap < 300) {
+      onDoubleTap();
+    } else {
+      lastTap = now;
+    }
   };
 
+  // 좋아요 하트 표시 애니메이션
   const heartStyle = useAnimatedStyle(() => ({
     opacity: withTiming(showHeart ? 0.8 : 0, { duration: 500 }),
     transform: [{ scale: withSpring(showHeart ? 1 : 0.1) }],
@@ -77,35 +135,24 @@ export default function Carousel({
             key={`carousel-item-${index}-${item}`}
           >
             <View style={{ width: screenWidth, height: imageHeight }}>
-              <View className="relative flex-1 overflow-hidden">
-                <Image
-                  accessibilityRole="image"
-                  accessibilityLabel="blur-background-image"
-                  source={{ uri: item }}
-                  className="absolute inset-0 size-full"
-                  style={{
-                    resizeMode: "cover",
-                  }}
-                  blurRadius={10}
-                  fadeDuration={0}
-                  progressiveRenderingEnabled={true}
-                />
-                <View className="absolute inset-0 bg-black/80" />
-                <Image
-                  accessibilityRole="image"
-                  accessibilityLabel="carousel-image"
-                  source={{ uri: item }}
-                  className="size-full"
-                  style={{
-                    resizeMode: "contain",
-                  }}
-                />
+              <View
+                style={{ flex: 1, position: "relative", overflow: "hidden" }}
+              >
+                <BlurredImageCard uri={item} />
               </View>
 
-              {/* heart animation */}
+              {/* 하트 애니메이션 */}
               <Animated.View
-                className="absolute flex size-full items-center justify-center"
-                style={[heartStyle]}
+                style={[
+                  {
+                    position: "absolute",
+                    width: "100%",
+                    height: "100%",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  },
+                  heartStyle,
+                ]}
               >
                 <Icons.HeartIcon
                   width={96}
@@ -122,12 +169,11 @@ export default function Carousel({
         showsHorizontalScrollIndicator={false}
         onViewableItemsChanged={onViewableItemsChanged}
         viewabilityConfig={viewabilityConfig}
-        removeClippedSubviews={true}
+        removeClippedSubviews
         initialNumToRender={1}
         maxToRenderPerBatch={2}
         windowSize={3}
       />
-
       <PageIndicator
         className="pt-[10px]"
         total={images.length}
