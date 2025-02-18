@@ -1,19 +1,21 @@
 import { useCallback } from "react";
-import { Alert, Platform, Text, TouchableOpacity, View } from "react-native";
+import { Alert, Text, TouchableOpacity, View } from "react-native";
 import type { FlatList } from "react-native-gesture-handler";
 
-import * as ImagePicker from "expo-image-picker";
+import * as ExpoImagePicker from "expo-image-picker";
 import * as Linking from "expo-linking";
 import { useRouter } from "expo-router";
 
 import { RELATION_TYPE, type RelationType } from "@/types/Friend.interface";
 import type { ListButton, ModalPosition } from "@/types/Modal.interface";
-import type { ImagePickerOptions, ImagePickerResult } from "expo-image-picker";
 
 import useManageFriend from "@/hooks/useManageFriend";
 import { useModal } from "@/hooks/useModal";
 import optimizeImage from "@/utils/optimizeImage";
 import { showToast } from "../ToastConfig";
+
+import checkPermission from "@/utils/checkImagePermission";
+import ImagePicker from "react-native-image-crop-picker";
 
 /* -------------------------------------------------------------------------- */
 /*                                ListModal                                   */
@@ -148,7 +150,7 @@ export function SelectProfileImageEditModal({
 
   const requestLibraryPermissions = async () => {
     const { status, accessPrivileges } =
-      await ImagePicker.requestMediaLibraryPermissionsAsync();
+      await ExpoImagePicker.requestMediaLibraryPermissionsAsync();
     const isDenied = status !== "granted" && accessPrivileges !== "limited";
 
     if (isDenied) {
@@ -173,7 +175,7 @@ export function SelectProfileImageEditModal({
     const allowed = await requestLibraryPermissions();
     if (!allowed) return;
 
-    const result = await ImagePicker.launchImageLibraryAsync({
+    const result = await ExpoImagePicker.launchImageLibraryAsync({
       mediaTypes: ["images"],
       allowsEditing: true,
       aspect: [1, 1],
@@ -246,19 +248,24 @@ export interface ImageItem {
   type: "prev" | "new";
   index: number;
   uri: string;
-  imagePickerAsset?: ImagePicker.ImagePickerAsset;
+  imagePickerAsset?: {
+    uri: string;
+    width: number;
+    height: number;
+    mimeType: string;
+  };
 }
 
 export const IMAGE_LIMIT = 5;
 
 // 이미지 선택 옵션
-export const IMAGE_OPTIONS: ImagePickerOptions = {
-  mediaTypes: ["images"],
-  allowsEditing: true,
-  quality: 1,
-  exif: false,
-  legacy: Platform.OS === "android",
-};
+// export const IMAGE_OPTIONS: ImagePickerOptions = {
+//   mediaTypes: ["images"],
+//   allowsEditing: true,
+//   quality: 1,
+//   exif: false,
+//   legacy: Platform.OS === "android",
+// };
 
 interface SelectPostUploadImageModalProps {
   imageItems: ImageItem[];
@@ -278,11 +285,14 @@ export function SelectPostUploadImageModal({
 
   // 이미지 최적화 후 처리
   const handleImageProcess = useCallback(
-    async (result: ImagePickerResult) => {
+    async (result: {
+      canceled: boolean;
+      assets: { uri: string; width: number; height: number };
+    }) => {
       if (result.canceled) return;
 
       try {
-        const originUri = result.assets[0].uri;
+        const originUri = result.assets.uri;
         const optimizedUri = await optimizeImage(originUri);
 
         const newImage: ImageItem = {
@@ -290,17 +300,16 @@ export function SelectPostUploadImageModal({
           uri: optimizedUri,
           index: imageItems.length,
           imagePickerAsset: {
-            ...result.assets[0],
             uri: optimizedUri,
             mimeType: "image/webp",
             width: (() => {
-              const { width, height } = result.assets[0];
+              const { width, height } = result.assets;
               if (width <= 720 && height <= 720) return width;
               if (width > height) return 720;
               return Math.floor((width / height) * 720);
             })(),
             height: (() => {
-              const { width, height } = result.assets[0];
+              const { width, height } = result.assets;
               if (width <= 720 && height <= 720) return height;
               if (width > height) return Math.floor((height / width) * 720);
               return 720;
@@ -321,31 +330,6 @@ export function SelectPostUploadImageModal({
     [imageItems, setImageItems, flatListRef],
   );
 
-  // 카메라 / 앨범 권한 체크
-  const checkPermission = useCallback(async (type: "camera" | "gallery") => {
-    const permissionFn =
-      type === "camera"
-        ? ImagePicker.requestCameraPermissionsAsync
-        : ImagePicker.requestMediaLibraryPermissionsAsync;
-
-    const { status } = await permissionFn();
-
-    if (status !== "granted") {
-      Alert.alert(
-        `${type === "camera" ? "카메라" : "사진"} 접근 권한 필요`,
-        `${
-          type === "camera" ? "카메라를 사용" : "사진을 업로드"
-        }하기 위해 접근 권한이 필요합니다. 설정에서 권한을 허용해주세요.`,
-        [
-          { text: "취소", style: "cancel" },
-          { text: "설정으로 이동", onPress: () => Linking.openSettings() },
-        ],
-      );
-      return false;
-    }
-    return true;
-  }, []);
-
   // 갤러리에서 이미지 선택
   const pickImage = async () => {
     if (isLoading || imageItems.length >= IMAGE_LIMIT) {
@@ -355,7 +339,24 @@ export function SelectPostUploadImageModal({
 
     if (!(await checkPermission("gallery"))) return;
 
-    const result = await ImagePicker.launchImageLibraryAsync(IMAGE_OPTIONS);
+    const result = await ImagePicker.openPicker({
+      cropping: true,
+      multiple: false,
+      mediaType: "photo",
+      compressImageQuality: 1,
+      includeBase64: false,
+      freeStyleCropEnabled: true,
+    }).then((res) => {
+      return {
+        canceled: false,
+        assets: {
+          uri: res.path,
+          width: res.width,
+          height: res.height,
+        },
+      };
+    });
+
     await handleImageProcess(result);
   };
 
@@ -368,7 +369,24 @@ export function SelectPostUploadImageModal({
 
     if (!(await checkPermission("camera"))) return;
 
-    const result = await ImagePicker.launchCameraAsync(IMAGE_OPTIONS);
+    const result = await ImagePicker.openCamera({
+      cropping: true,
+      multiple: false,
+      mediaType: "photo",
+      compressImageQuality: 1,
+      includeBase64: false,
+      freeStyleCropEnabled: true,
+    }).then((res) => {
+      return {
+        canceled: false,
+        assets: {
+          uri: res.path,
+          width: res.width,
+          height: res.height,
+        },
+      };
+    });
+
     await handleImageProcess(result);
   };
 
