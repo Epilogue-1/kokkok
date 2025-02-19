@@ -11,6 +11,7 @@ import type * as ImagePicker from "expo-image-picker";
 import * as SecureStore from "expo-secure-store";
 import { AppState } from "react-native";
 
+import type { ImagePickerAsset } from "@/components/modals/ListModals";
 import type { InfiniteResponse } from "@/hooks/useInfiniteLoad";
 import {
   RELATION_TYPE,
@@ -405,7 +406,7 @@ export const getPosts = async ({
       endindex: (page + 1) * limit - 1,
     });
 
-    if (error) throw new Error("게시글을 가져오는데 실패했습니다.");
+    if (error) throw new Error(error.message);
 
     return {
       data,
@@ -521,7 +522,8 @@ export async function toggleLikePost(postId: number) {
 export async function createPost({
   contents,
   images,
-}: { contents?: string; images: ImagePicker.ImagePickerAsset[] }) {
+  ratio,
+}: { contents?: string; images: ImagePickerAsset[]; ratio: number }) {
   try {
     const userId = await getUserIdFromStorage();
 
@@ -547,6 +549,7 @@ export async function createPost({
         {
           userId: userId,
           images: validImageUrls,
+          ratio,
           contents: postContents || "",
         },
       ])
@@ -571,11 +574,13 @@ export async function updatePost({
   postId,
   images,
   prevImages,
+  ratio,
   contents,
 }: {
   postId: number;
-  images: { imagePickerAsset: ImagePicker.ImagePickerAsset; index: number }[];
+  images: { imagePickerAsset: ImagePickerAsset; index: number }[];
   prevImages: { uri: string; index: number }[];
+  ratio: number;
   contents: string;
 }) {
   try {
@@ -612,7 +617,7 @@ export async function updatePost({
     // 게시글 수정
     const { data: updatedPost, error: updateError } = await supabase
       .from("post")
-      .update({ contents, images: allImagesUrl })
+      .update({ contents, images: allImagesUrl, ratio })
       .eq("id", postId)
       .select("*, user: userId (id, username, avatarUrl)")
       .single();
@@ -1063,7 +1068,7 @@ export async function checkFriendRequest(requestId: string): Promise<boolean> {
   const { data, error } = await supabase
     .from("friendRequest")
     .select("id")
-    .eq("id", requestId);
+    .eq("id", Number(requestId));
 
   if (error) throw error;
   if (!data) throw new Error("친구 요청을 불러올 수 없습니다.");

@@ -17,6 +17,7 @@ interface PostItemProps {
     avatar: string;
   };
   images: string[];
+  ratio: number;
   contents?: string | null;
   liked: boolean;
   likedAuthorAvatars?: string[];
@@ -38,6 +39,7 @@ interface PostItemProps {
 export default function PostItem({
   author,
   images,
+  ratio,
   contents,
   liked,
   likedAuthorAvatars,
@@ -148,12 +150,13 @@ export default function PostItem({
         )}
       </View>
 
-      {/* carousel */}
+      {/* images carousel */}
       <View className="h-max w-full bg-white pb-1">
         <Carousel
           images={images}
           onDoubleTap={onDoubleTap}
           showHeart={showHeart}
+          ratio={ratio}
         />
       </View>
 

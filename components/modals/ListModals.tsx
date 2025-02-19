@@ -14,6 +14,7 @@ import { useModal } from "@/hooks/useModal";
 import optimizeImage from "@/utils/optimizeImage";
 import { showToast } from "../ToastConfig";
 
+import calculatePostRatio from "@/utils/calculatePostRatio";
 import checkPermission from "@/utils/checkImagePermission";
 import ImagePicker from "react-native-image-crop-picker";
 
@@ -248,24 +249,19 @@ export interface ImageItem {
   type: "prev" | "new";
   index: number;
   uri: string;
-  imagePickerAsset?: {
+  imagePickerAsset?: ImagePickerAsset;
+  ratio: number;
+}
+
+export type ImagePickerAsset = 
+  {
     uri: string;
     width: number;
     height: number;
     mimeType: string;
   };
-}
 
 export const IMAGE_LIMIT = 5;
-
-// 이미지 선택 옵션
-// export const IMAGE_OPTIONS: ImagePickerOptions = {
-//   mediaTypes: ["images"],
-//   allowsEditing: true,
-//   quality: 1,
-//   exif: false,
-//   legacy: Platform.OS === "android",
-// };
 
 interface SelectPostUploadImageModalProps {
   imageItems: ImageItem[];
@@ -315,6 +311,10 @@ export function SelectPostUploadImageModal({
               return 720;
             })(),
           },
+          ratio: calculatePostRatio({
+            width: result.assets.width,
+            height: result.assets.height,
+          }),
         };
 
         setImageItems((prev) => [...prev, newImage]);

@@ -1,6 +1,9 @@
 import BlurredImageCard from "@/components/BlurredImageCard";
 import { showToast } from "@/components/ToastConfig";
-import type { ImageItem } from "@/components/modals/ListModals";
+import type {
+  ImageItem,
+  ImagePickerAsset,
+} from "@/components/modals/ListModals";
 import colors from "@/constants/colors";
 import Icons from "@/constants/icons";
 import useFetchData from "@/hooks/useFetchData";
@@ -13,7 +16,6 @@ import {
   updatePost,
 } from "@/utils/supabase";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import type * as ImagePicker from "expo-image-picker";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useRef, useState } from "react";
 import { Alert, Text, TextInput, TouchableOpacity, View } from "react-native";
@@ -56,7 +58,9 @@ export default function Upload() {
         .filter((item) => item.type === "new")
         .map((item) => item.imagePickerAsset!)
         .filter(Boolean);
-      return createPost({ contents, images: newImages });
+      const ratio = Math.max(...imageItems.map((item) => item.ratio));
+
+      return createPost({ contents, images: newImages, ratio });
     },
     onSuccess: () => {
       showToast("success", "글이 작성되었어요!");
@@ -82,10 +86,7 @@ export default function Upload() {
 
       const sortedImages = imageItems.sort((a, b) => a.index - b.index);
       const [prevImages, newImages] = sortedImages.reduce<
-        [
-          ImageItem[],
-          { imagePickerAsset: ImagePicker.ImagePickerAsset; index: number }[],
-        ]
+        [ImageItem[], ImagePickerAsset[]]
       >(
         ([prev, next], item) => {
           if (item.type === "prev") {
@@ -93,11 +94,11 @@ export default function Upload() {
               uri: item.uri,
               index: item.index,
               type: "prev",
+              ratio: item.ratio,
             });
           } else if (item.imagePickerAsset) {
             next.push({
-              imagePickerAsset: item.imagePickerAsset,
-              index: item.index,
+              ...item.imagePickerAsset,
             });
           }
           return [prev, next];
@@ -105,7 +106,17 @@ export default function Upload() {
         [[], []],
       );
 
-      return updatePost({ postId, contents, images: newImages, prevImages });
+      const formattedNewImages = newImages.map((image, index) => ({
+        imagePickerAsset: image,
+        index,
+      }));
+      return updatePost({
+        postId,
+        contents,
+        images: formattedNewImages,
+        prevImages,
+        ratio: Math.max(...imageItems.map((item) => item.ratio)),
+      });
     },
     onSuccess: () => {
       showToast("success", "글이 수정되었어요!");
@@ -182,8 +193,13 @@ export default function Upload() {
           return;
         }
 
-        const prevImageItems: ImageItem[] = (data.data.images ?? []).map(
-          (uri, index) => ({ type: "prev", uri, index }),
+        const prevImageItems: ImageItem[] = (data.data?.images ?? []).map(
+          (uri, index) => ({
+            type: "prev",
+            uri,
+            index,
+            ratio: data.data?.ratio ?? 1,
+          }),
         ); // 기존 이미지 목록 설정
 
         setImageItems(prevImageItems);

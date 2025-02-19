@@ -1,10 +1,9 @@
 import colors from "@/constants/colors";
 import Icons from "@/constants/icons";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import {
   Dimensions,
   FlatList,
-  Image as RNImage,
   TouchableWithoutFeedback,
   View,
 } from "react-native";
@@ -20,6 +19,7 @@ interface CarouselProps {
   images: string[];
   onDoubleTap?: () => void;
   showHeart?: boolean;
+  ratio: number;
 }
 
 // ViewToken 타입 정의
@@ -34,60 +34,10 @@ export default function Carousel({
   images,
   onDoubleTap,
   showHeart,
+  ratio,
 }: CarouselProps) {
-  const [maxRatio, setMaxRatio] = useState(1); // 기본값은 1(=1:1) 최대 4:5(=1.25)로 제한
   const screenWidth = Dimensions.get("window").width;
-  const imageHeight = screenWidth * maxRatio;
-
-  /**
-   * 마운트 시점 혹은 images 배열이 바뀔 때마다
-   * 각 이미지의 크기를 가져와 비율(height/width)을 구합니다.
-   * 구한 비율들 중 최대값을 찾고,
-   * 그 최대값이 4:5(=1.25)를 넘어가지 않게 제한합니다.
-   */
-  useEffect(() => {
-    if (!images || images.length === 0) {
-      setMaxRatio(1);
-      return;
-    }
-
-    let isCanceled = false;
-
-    // 각 이미지별 height/width 비율을 구한 뒤, 그 중 최대값 사용
-    Promise.all(
-      images.map((uri) => {
-        return new Promise<number>((resolve) => {
-          RNImage.getSize(
-            uri,
-            (width, height) => {
-              const ratio = height / width;
-              resolve(ratio);
-            },
-            () => {
-              // 만약 getSize 실패 시 기본값 1(1:1)로 처리
-              resolve(1);
-            },
-          );
-        });
-      }),
-    )
-      .then((ratios) => {
-        if (isCanceled) return;
-        // 비율 중 최댓값
-        const biggestRatio = Math.max(...ratios);
-        // 최소 1, 최대 1.25로 클램프
-        const clampedRatio = Math.min(Math.max(biggestRatio, 1), 1.25);
-        setMaxRatio(clampedRatio);
-      })
-      .catch(() => {
-        // 에러 발생 시 1(=1:1)로 초기화
-        if (!isCanceled) setMaxRatio(1);
-      });
-
-    return () => {
-      isCanceled = true;
-    };
-  }, [images]);
+  const imageHeight = screenWidth * ratio;
 
   // FlatList에서 현재 보여지는 아이템의 index를 추적
   const [activeIndex, setActiveIndex] = useState(0);
