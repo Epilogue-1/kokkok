@@ -31,7 +31,7 @@ interface HeaderProps {
 
 export function Header({ name }: HeaderProps) {
   return (
-    <SafeAreaView edges={["top"]} className="border-gray-25 border-b bg-white">
+    <SafeAreaView edges={["top"]} className="border-gray-10 border-b bg-white">
       <View className="h-14 items-center justify-center">
         <Text className="heading-2">{HEADER_TITLE[name]}</Text>
       </View>
@@ -41,14 +41,14 @@ export function Header({ name }: HeaderProps) {
 
 export function HeaderWithBack({ name }: HeaderProps) {
   return (
-    <SafeAreaView edges={["top"]} className="border-gray-25 border-b bg-white">
+    <SafeAreaView edges={["top"]} className="border-gray-10 border-b bg-white">
       <View className="h-14 items-center justify-center px-4">
         <TouchableOpacity
           onPress={() => router.back()}
           accessibilityLabel="뒤로가기"
           className="absolute left-4"
         >
-          <icons.BackIcon width={24} height={24} color="#727272" />
+          <icons.ChevronLeftIcon width={24} height={24} color="#727272" />
         </TouchableOpacity>
         <Text className="heading-2">{HEADER_TITLE[name]}</Text>
       </View>
@@ -84,7 +84,7 @@ export function HeaderWithNotification({ name }: HeaderProps) {
   }
 
   return (
-    <SafeAreaView edges={["top"]} className="border-gray-25 border-b bg-white">
+    <SafeAreaView edges={["top"]} className="border-gray-10 border-b bg-white">
       <View className="h-14 flex-row items-center justify-between px-4">
         {/* 홈의 경우 로고 이미지 사용 */}
         {name === "HOME" ? (
@@ -124,7 +124,7 @@ export function HeaderWithUsername({
   return (
     <SafeAreaView
       edges={isMyPage ? ["top"] : []}
-      className="border-gray-25 border-b bg-white"
+      className="border-gray-10 border-b bg-white"
     >
       <View className="h-14 flex-row items-center gap-6 px-4">
         <TouchableOpacity
@@ -132,7 +132,7 @@ export function HeaderWithUsername({
           accessibilityLabel="뒤로가기"
           className=""
         >
-          <icons.BackIcon width={24} height={24} color="#727272" />
+          <icons.ChevronLeftIcon width={24} height={24} color="#727272" />
         </TouchableOpacity>
         <View className="w-[285px] flex-row items-center">
           <Text

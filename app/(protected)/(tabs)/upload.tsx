@@ -271,7 +271,7 @@ export default function Upload() {
                 }
                 disabled={uploadPostMutation.isPending}
               >
-                <Icons.PlusIcon width={24} height={24} color={colors.white} />
+                <Icons.CameraIcon width={24} height={24} color={colors.white} />
               </TouchableOpacity>
             ) : null
           }

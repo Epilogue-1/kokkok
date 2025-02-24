@@ -1,6 +1,5 @@
-import BackIcon from "@/assets/icons/back.svg";
-import BellIcon from "@/assets/icons/bell.svg";
 import BellWithDotIcon from "@/assets/icons/bell-with-dot.svg";
+import BellIcon from "@/assets/icons/bell.svg";
 import CalendarIcon from "@/assets/icons/calendar.svg";
 import CameraIcon from "@/assets/icons/camera.svg";
 import ChevronLeftIcon from "@/assets/icons/chevron-left.svg";
@@ -49,7 +48,6 @@ export default {
   MeatballIcon,
   PlusIcon,
   ProfileIcon,
-  BackIcon,
   XIcon,
   SearchIcon,
   SettingIcon,
