@@ -34,7 +34,7 @@ export default function Carousel({
   images,
   onDoubleTap,
   showHeart,
-  ratio,
+  ratio = 1,
 }: CarouselProps) {
   const screenWidth = Dimensions.get("window").width;
   const imageHeight = screenWidth * ratio;

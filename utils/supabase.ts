@@ -542,6 +542,8 @@ export async function createPost({
       (url): url is string => url !== undefined,
     );
 
+    const aspectRatio = ratio || 1;
+
     // 게시물 생성
     const { data: newPost, error: postError } = await supabase
       .from("post")
@@ -549,7 +551,7 @@ export async function createPost({
         {
           userId: userId,
           images: validImageUrls,
-          ratio,
+          ratio: aspectRatio,
           contents: postContents || "",
         },
       ])
