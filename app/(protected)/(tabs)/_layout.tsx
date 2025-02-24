@@ -75,7 +75,7 @@ export default function TabsLayout() {
               <TouchableOpacity
                 onPress={props.onPress}
                 activeOpacity={1}
-                className={`h-[80px] items-center justify-center pt-[4px] ${Platform.OS === "android" ? "pb-[10px]" : ""}`}
+                className={`h-[80px] items-center justify-center pt-[4px] ${Platform.OS === "android" ? "pb-[10px]" : "pb-[20px]"}`}
               >
                 {props.children}
               </TouchableOpacity>
