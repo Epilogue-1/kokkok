@@ -1,5 +1,11 @@
 import { Tabs } from "expo-router";
-import { DeviceEventEmitter, Platform, Text, View } from "react-native";
+import {
+  DeviceEventEmitter,
+  Platform,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 import { HeaderWithBack, HeaderWithNotification } from "@/components/Header";
 import useSubscribeNotification from "@/hooks/useSubscribeNotification";
@@ -25,7 +31,7 @@ const TAP_ICONS = {
 type TapType = keyof typeof TAP_ICONS;
 
 const TAP_NAME = {
-  HOME: "홈",
+  HOME: "Home",
   FRIEND: "친구",
   HISTORY: "기록",
   MY_PAGE: "마이",
@@ -40,9 +46,18 @@ const TabIcon = ({
   color: string;
   name: TapType;
 }) => (
-  <View className="w-fit items-center justify-center gap-0">
+  <View className="w-full items-center justify-center gap-0">
     {TAP_ICONS[name](color)}
-    <Text className="caption-1" style={{ color }}>
+    <Text
+      className="caption-1"
+      numberOfLines={1}
+      style={{
+        color,
+        minWidth: 50,
+        minHeight: 20,
+        textAlign: "center",
+      }}
+    >
       {TAP_NAME[name]}
     </Text>
   </View>
@@ -55,6 +70,17 @@ export default function TabsLayout() {
     <>
       <Tabs
         screenOptions={{
+          tabBarButton: (props) => {
+            return (
+              <TouchableOpacity
+                onPress={props.onPress}
+                activeOpacity={1}
+                className={`h-[80px] items-center justify-center pt-[4px] ${Platform.OS === "android" ? "pb-[10px]" : ""}`}
+              >
+                {props.children}
+              </TouchableOpacity>
+            );
+          },
           tabBarShowLabel: false,
           tabBarActiveTintColor: colors.gray[90],
           tabBarInactiveTintColor: colors.gray[55],
@@ -66,11 +92,9 @@ export default function TabsLayout() {
             height: 80,
             flexDirection: "row",
             ...(Platform.OS === "android" && {
-              paddingBottom: 24,
               justifyContent: "center",
               alignItems: "center",
             }),
-            ...(Platform.OS === "ios" && { paddingTop: 8 }),
           },
         }}
       >
@@ -131,11 +155,10 @@ export default function TabsLayout() {
             title: "Upload",
             tabBarStyle: { display: "none" },
             tabBarIcon: () => (
-              <View className="size-12 items-center justify-center rounded-full bg-primary p-3">
+              <View className="size-[48px] items-center justify-center rounded-full bg-primary p-[12px] ">
                 <icons.PlusIcon width={24} height={24} color={colors.white} />
               </View>
             ),
-            href: "/upload",
           }}
         />
         <Tabs.Screen
