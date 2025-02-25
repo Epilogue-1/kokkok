@@ -11,7 +11,6 @@ import {
   deleteComment,
   getCommentLikes,
   getComments,
-  getCurrentUser,
 } from "@/utils/supabase";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { LinearGradient } from "expo-linear-gradient";
@@ -80,13 +79,6 @@ export default function CommentsSection({
     isLikedModalVisible,
   );
 
-  // 유저 정보 가져오기
-  const { data: currentUser } = useFetchData(
-    ["currentUser"],
-    getCurrentUser,
-    "사용자 정보를 불러오는데 실패했습니다.",
-  );
-
   // 댓글 가져오기
   const { data, isFetching, isFetchingNextPage, refetch, loadMore } =
     useInfiniteLoad({
@@ -148,6 +140,8 @@ export default function CommentsSection({
       queryClient.invalidateQueries({ queryKey: ["comments", postId] });
       queryClient.invalidateQueries({ queryKey: ["posts"] });
       queryClient.invalidateQueries({ queryKey: ["replies"] });
+
+      inputRef.current?.blur();
     },
     onError: () => {
       showToast("fail", "댓글 작성에 실패했어요!");
@@ -416,18 +410,8 @@ export default function CommentsSection({
         )}
 
         <View
-          className={`z-10 h-20 flex-row items-center gap-4 bg-white px-[18px] pt-4 ${Platform.OS === "ios" ? "pb-8" : "pb-4"}`}
+          className={`z-10 h-20 flex-row items-center bg-white px-[18px] pt-[16px] ${Platform.OS === "ios" ? "pb-8" : "pb-4"}`}
         >
-          <Image
-            source={
-              currentUser?.avatarUrl
-                ? { uri: currentUser.avatarUrl }
-                : images.AvaTarDefault
-            }
-            resizeMode="cover"
-            className="size-12 rounded-full"
-          />
-
           <MentionInput
             ref={inputRef}
             value={comment}

@@ -259,11 +259,11 @@ export default function PostItem({
                 }}
               />
             ))}
-            {likedAuthorAvatars.length > 2 && (
-              <Text className="body-5 pl-[2px] text-gray-90">
-                외 여러 명이 좋아해요
-              </Text>
-            )}
+            <Text className="body-5 pl-[2px] text-gray-90">
+              {likedAuthorAvatars.length > 2
+                ? "외 여러 명이 좋아해요"
+                : "이 좋아해요"}
+            </Text>
           </TouchableOpacity>
         )}
 
