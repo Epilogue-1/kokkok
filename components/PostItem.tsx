@@ -226,7 +226,7 @@ export default function PostItem({
                 color={colors.gray[70]}
               />
               <View className="flex-1 flex-row items-center gap-[6px]">
-                <Text className="title-5 flex-shrink-0 text-nowrap text-gray-70">
+                <Text className="title-5 flex-shrink-0 text-nowrap text-gray-80">
                   {comment.author.name}
                 </Text>
 
