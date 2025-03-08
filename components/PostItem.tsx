@@ -195,7 +195,7 @@ export default function PostItem({
 
       {/* content & comments */}
       {(!!contents?.length || !!comment?.content?.length) && (
-        <View className="gap-[4px] bg-white px-[16px] pt-[12px]">
+        <View className="gap-[8px] bg-white px-[16px] pt-[12px]">
           {/* content */}
           {!!contents?.length && (
             <Pressable
