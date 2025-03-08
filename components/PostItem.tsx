@@ -1,6 +1,5 @@
 import colors from "@/constants/colors";
 import icons from "@/constants/icons";
-import Icons from "@/constants/icons";
 import { default as imgs } from "@/constants/images";
 import { useTruncateText } from "@/hooks/useTruncateText";
 import { diffDate } from "@/utils/formatDate";
@@ -220,7 +219,7 @@ export default function PostItem({
               onPress={() => onCommentsPress(postId)}
               className="flex-row"
             >
-              <Icons.threadIcon
+              <icons.threadIcon
                 width={24}
                 height={24}
                 color={colors.gray[70]}
