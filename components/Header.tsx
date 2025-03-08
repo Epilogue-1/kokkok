@@ -76,7 +76,7 @@ export function HeaderWithNotification({ name }: HeaderProps) {
           onPress={() => router.push("/user/search")}
           accessibilityLabel="친구 찾기"
         >
-          <icons.PlusIcon width={24} height={24} color={colors.gray[90]} />
+          <icons.AddIcon width={24} height={24} color={colors.gray[100]} />
         </TouchableOpacity>
       );
 
@@ -106,7 +106,7 @@ export function HeaderWithNotification({ name }: HeaderProps) {
             {hasNewNotification ? (
               <icons.BellWithDotIcon width={24} height={24} />
             ) : (
-              <icons.BellIcon width={24} height={24} />
+              <icons.BellIcon width={24} height={24} color={colors.gray[100]} />
             )}
           </TouchableOpacity>
         </View>

@@ -1,3 +1,4 @@
+import AddIcon from "@/assets/icons/add.svg";
 import BellWithDotIcon from "@/assets/icons/bell-with-dot.svg";
 import BellIcon from "@/assets/icons/bell.svg";
 import CalendarIcon from "@/assets/icons/calendar.svg";
@@ -28,6 +29,7 @@ import TrashCanIcon from "@/assets/icons/trash_can.svg";
 import XIcon from "@/assets/icons/x.svg";
 
 export default {
+  AddIcon,
   BellIcon,
   BellWithDotIcon,
   CalendarIcon,
