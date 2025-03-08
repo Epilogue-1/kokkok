@@ -220,7 +220,7 @@ export default function CommentsSection({
       <View className="flex-1">
         <View className="relative w-full pb-2.5">
           <LinearGradient
-            colors={["rgba(255, 255, 255, 1)", "rgba(255, 255, 255, 0)"]}
+            colors={["#f8f8f8", "rgba(255, 255, 255, 0)"]}
             start={[0, 0]}
             end={[0, 1]}
             style={{
@@ -409,7 +409,7 @@ export default function CommentsSection({
         )}
 
         <View
-          className={`z-10 h-20 flex-row items-center bg-white px-[18px] pt-[16px] ${Platform.OS === "ios" ? "pb-8" : "pb-4"}`}
+          className={`z-10 h-20 flex-row items-center border-gray-5 border-t bg-white px-[18px] pt-[16px] ${Platform.OS === "ios" ? "pb-8" : "pb-4"}`}
         >
           <MentionInput
             ref={inputRef}

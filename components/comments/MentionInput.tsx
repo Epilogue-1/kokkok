@@ -17,7 +17,7 @@ const MentionInput = forwardRef<TextInput, MentionInputProps>(
       <View className="flex-1 flex-row items-center gap-[9px]">
         <View
           pointerEvents="box-only"
-          className="h-[50px] w-full flex-1 flex-row items-center gap-2 rounded-[10px] border border-gray-20 px-[13px] "
+          className="h-[50px] w-full flex-1 flex-row items-center gap-2 rounded-[10px] border border-gray-25 px-[13px] "
         >
           <TextInput
             ref={ref}
