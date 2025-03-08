@@ -169,11 +169,10 @@ export default function PostDetail() {
                       {item.author?.username}
                     </Text>
 
-                    <Icons.HeartIcon
+                    <Icons.HeartFilledIcon
                       width={24}
                       height={24}
                       color={colors.secondary.red}
-                      fill={colors.secondary.red}
                     />
                   </TouchableOpacity>
                 )}

@@ -1,3 +1,4 @@
+import ArrowUpIcon from "@/assets/icons/arrow-up.svg";
 import BackIcon from "@/assets/icons/back.svg";
 import BellWithDotIcon from "@/assets/icons/bell-with-dot.svg";
 import BellIcon from "@/assets/icons/bell.svg";
@@ -16,6 +17,7 @@ import FriendIcon from "@/assets/icons/friend.svg";
 import GithubIcon from "@/assets/icons/github.svg";
 import GoogleIcon from "@/assets/icons/google.svg";
 import HeartIcon from "@/assets/icons/heart.svg";
+import HeartFilledIcon from "@/assets/icons/heart_fill.svg";
 import HomeIcon from "@/assets/icons/home.svg";
 import KakaoIcon from "@/assets/icons/kakao.svg";
 import KebabMenuIcon from "@/assets/icons/kebab.svg";
@@ -29,6 +31,7 @@ import TrashCanIcon from "@/assets/icons/trash_can.svg";
 import XIcon from "@/assets/icons/x.svg";
 
 export default {
+  ArrowUpIcon,
   BellIcon,
   BellWithDotIcon,
   CalendarIcon,
@@ -46,6 +49,7 @@ export default {
   GithubIcon,
   KakaoIcon,
   HeartIcon,
+  HeartFilledIcon,
   HomeIcon,
   MeatballIcon,
   PlusIcon,

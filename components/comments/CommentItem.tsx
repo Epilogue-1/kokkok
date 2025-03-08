@@ -251,12 +251,15 @@ export default function CommentItem({
             }}
             className="p-[8px]"
           >
-            <Icons.HeartIcon
-              width={24}
-              height={24}
-              color={isLiked ? colors.secondary.red : colors.black}
-              fill={isLiked ? colors.secondary.red : "transparent"}
-            />
+            {isLiked ? (
+              <Icons.HeartFilledIcon
+                width={24}
+                height={24}
+                color={colors.secondary.red}
+              />
+            ) : (
+              <Icons.HeartIcon width={24} height={24} color={colors.gray[90]} />
+            )}
           </TouchableOpacity>
 
           {/* kebab button */}
@@ -402,7 +405,7 @@ export default function CommentItem({
       )}
 
       {/* divider */}
-      {!isReply && <View className="h-[1px] w-full bg-gray-10" />}
+      {!isReply && <View className="mb-[20px] h-[1px] w-full bg-gray-10" />}
     </Pressable>
   );
 }

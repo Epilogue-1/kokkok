@@ -167,12 +167,15 @@ export default function PostItem({
               if (!toggleLike.isPending) toggleLike.mutate();
             }}
           >
-            <icons.HeartIcon
-              width={24}
-              height={24}
-              color={isLiked ? colors.secondary.red : colors.gray[90]}
-              fill={isLiked ? colors.secondary.red : "transparent"}
-            />
+            {isLiked ? (
+              <icons.HeartFilledIcon
+                width={24}
+                height={24}
+                color={colors.secondary.red}
+              />
+            ) : (
+              <icons.HeartIcon width={24} height={24} color={colors.gray[90]} />
+            )}
           </TouchableOpacity>
 
           {/* comments */}

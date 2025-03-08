@@ -1,5 +1,5 @@
 import colors from "@/constants/colors";
-import Icons from "@/constants/icons";
+import icons from "@constants/icons";
 import { forwardRef } from "react";
 import { Pressable, TextInput, View } from "react-native";
 
@@ -46,7 +46,7 @@ const MentionInput = forwardRef<TextInput, MentionInputProps>(
             }
           }}
         >
-          <Icons.ArrowUpIcon width={24} height={24} color={colors.white} />
+          <icons.ArrowUpIcon width={24} height={24} color={colors.white} />
         </Pressable>
       </View>
     );
