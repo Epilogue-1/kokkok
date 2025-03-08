@@ -219,7 +219,7 @@ export default function PostItem({
               onPress={() => onCommentsPress(postId)}
               className="flex-row"
             >
-              <icons.threadIcon
+              <icons.ThreadIcon
                 width={24}
                 height={24}
                 color={colors.gray[70]}

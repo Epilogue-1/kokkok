@@ -26,7 +26,7 @@ import PlusIcon from "@/assets/icons/plus.svg";
 import ProfileIcon from "@/assets/icons/profile.svg";
 import SearchIcon from "@/assets/icons/search.svg";
 import SettingIcon from "@/assets/icons/setting.svg";
-import threadIcon from "@/assets/icons/thread.svg";
+import ThreadIcon from "@/assets/icons/thread.svg";
 import TrashCanIcon from "@/assets/icons/trash_can.svg";
 import XIcon from "@/assets/icons/x.svg";
 
@@ -61,5 +61,5 @@ export default {
   TrashCanIcon,
   KebabMenuIcon,
   CameraIcon,
-  threadIcon,
+  ThreadIcon,
 };
