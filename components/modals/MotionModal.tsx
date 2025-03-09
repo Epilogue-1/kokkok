@@ -195,7 +195,7 @@ export default function MotionModal({
                   className="w-full items-center py-4"
                   {...panResponder.panHandlers}
                 >
-                  <View className="h-1 w-10 rounded-[2px] bg-gray-25" />
+                  <View className="h-1 w-10 rounded-[2px] bg-[#d9d9d9]" />
                 </View>
                 {children}
               </SafeAreaView>
