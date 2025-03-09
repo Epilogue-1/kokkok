@@ -198,6 +198,7 @@ export type Database = {
           id: number;
           images: string[];
           likes: number;
+          ratio: number;
           userId: string;
         };
         Insert: {
@@ -206,6 +207,7 @@ export type Database = {
           id?: number;
           images: string[];
           likes?: number;
+          ratio: number;
           userId?: string;
         };
         Update: {
@@ -214,6 +216,7 @@ export type Database = {
           id?: number;
           images?: string[];
           likes?: number;
+          ratio?: number;
           userId?: string;
         };
         Relationships: [
@@ -456,6 +459,7 @@ export type Database = {
         Returns: {
           id: number;
           images: string[];
+          ratio: number;
           contents: string;
           createdAt: string;
           userData: {
@@ -487,6 +491,7 @@ export type Database = {
         Returns: {
           id: number;
           images: string[];
+          ratio: number;
           contents: string;
           createdAt: string;
           userData: {
@@ -536,6 +541,14 @@ export type Database = {
           likes: number;
           isLiked: boolean;
           likedAvatars: string[];
+        }[];
+      };
+      get_status: {
+        Args: {
+          p_id: string;
+        };
+        Returns: {
+          status: Database["public"]["Enums"]["workoutstatus"];
         }[];
       };
       increment_comment_likes: {

@@ -16,7 +16,7 @@ interface Post {
 }
 
 interface PostGridProps {
-  refetch: () => void;
+  refetch?: () => void;
   posts: Post[] | null;
   isError?: boolean;
 }
@@ -26,6 +26,7 @@ export default function PostGrid({ refetch, posts, isError }: PostGridProps) {
   const flatListRef = useRef<FlatList>(null);
 
   const handleScrollToTop = useCallback(() => {
+    if (!refetch) return;
     flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
     refetch();
   }, [refetch]);

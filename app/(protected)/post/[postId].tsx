@@ -90,6 +90,7 @@ export default function PostDetail() {
             avatar: post?.userData?.avatarUrl || "",
           }}
           images={post?.images || []}
+          ratio={post?.ratio || 1}
           contents={post?.contents || ""}
           liked={post?.isLikedByUser || false}
           likedAuthorAvatars={post?.likedAvatars || []}
