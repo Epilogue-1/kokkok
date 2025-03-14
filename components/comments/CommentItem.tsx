@@ -325,7 +325,7 @@ export default function CommentItem({
                 key={`avatar-${index}-${id}`}
                 source={avatar ? { uri: avatar } : images.AvaTarDefault}
                 resizeMode="cover"
-                className={`size-[26px] rounded-full border-2 border-[#f5f4f5] ${index !== 0 ? "-ml-[9px]" : ""}`}
+                className={`size-[26px] rounded-full border-2 border-[#FCFBFD] ${index !== 0 ? "-ml-[9px]" : ""}`}
                 style={{
                   zIndex: 5 - index,
                 }}
