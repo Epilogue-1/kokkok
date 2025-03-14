@@ -60,7 +60,7 @@ export function SearchLayout<T>({
         ListHeaderComponent={
           <SearchBar
             value={keyword}
-            customClassName="mt-6 mb-2"
+            customClassName="mt-6 mb-3"
             handleChangeText={(newKeyword: string) => {
               setKeyword(newKeyword);
               onChangeKeyword(newKeyword);
