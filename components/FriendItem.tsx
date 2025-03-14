@@ -130,13 +130,13 @@ export function NonFriendItem({ user }: NonFriendItemProps) {
       <FriendProfile {...user} />
 
       <TouchableOpacity
-        className="bg-primary w-[89px] h-[36px] rounded-[10px] items-center justify-center"
+        className="bg-primary w-[86px] h-[36px] rounded-[10px] items-center justify-center"
         disabled={isCreatePending}
         accessibilityLabel="친구 요청"
         accessibilityHint="이 버튼을 누르면 친구 요청을 보냅니다"
         onPress={() => handleCreateRequest({ toUserId: user.id })}
       >
-        <Text className="body-5 text-white">친구 요청</Text>
+        <Text className="caption-2 text-white">친구 요청</Text>
       </TouchableOpacity>
     </View>
   );
