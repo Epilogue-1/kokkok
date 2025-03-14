@@ -13,7 +13,7 @@
         @apply text-[19px] font-pbold leading-[150%]
     }
     .title-2 {
-        @apply text-[18px] font-pbold leading-[150%]
+        @apply text-[18px] font-psemibold leading-[150%]
     }
     .title-3 {
         @apply text-[17px] font-pmedium leading-[150%]
@@ -22,7 +22,7 @@
         @apply text-[16px] font-pmedium leading-[150%]
     }
     .title-5 {
-        @apply text-[15px] font-pmedium leading-[150%]
+        @apply text-[14px] font-psemibold leading-[150%]
     }
     .body-1 {
         @apply text-[16px] font-pregular leading-[150%]
