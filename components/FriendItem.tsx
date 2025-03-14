@@ -158,7 +158,7 @@ export function FriendRequest({
     <View className="py-4 border-b-[1px] border-gray-20 flex-row justify-between items-center">
       <FriendProfile {...fromUser} />
 
-      <View className="flex-row gap-[11px]">
+      <View className="flex-row gap-[12px]">
         <TouchableOpacity
           className="bg-primary px-[12px] py-[11px] rounded-[10px]"
           onPress={() => handleAccept({ requestId, fromUserId: fromUser.id })}
