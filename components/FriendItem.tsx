@@ -36,25 +36,29 @@ const FriendProfile = ({
   username,
   avatarUrl,
   description,
-}: UserProfile) => (
-  <Link href={`/user/${id}`}>
-    <View className="flex-row gap-2">
-      <Image
-        source={avatarUrl ? { uri: avatarUrl } : images.AvaTarDefault}
-        style={{ width: 48, height: 48, borderRadius: 9999 }}
-      />
+}: UserProfile) => {
+  return (
+    <Link href={`/user/${id}`}>
+      <View className="flex-row gap-3">
+        <Image
+          source={avatarUrl ? { uri: avatarUrl } : images.AvaTarDefault}
+          style={{ width: 48, height: 48, borderRadius: 9999 }}
+        />
 
-      <View className="gap-[4px] w-[150px]">
-        <Text className="title-4 text-gray-90" numberOfLines={1}>
-          {username}
-        </Text>
-        <Text className="caption-3 text-gray-45" numberOfLines={1}>
-          {description}
-        </Text>
+        <View className={`w-[150px] ${description ? "gap-[4px]" : "mt-3"}`}>
+          <Text className="title-5 text-gray-80" numberOfLines={1}>
+            {username}
+          </Text>
+          {description && (
+            <Text className="caption-2 text-gray-60" numberOfLines={1}>
+              {description}
+            </Text>
+          )}
+        </View>
       </View>
-    </View>
-  </Link>
-);
+    </Link>
+  );
+};
 
 /* Components */
 
@@ -83,7 +87,7 @@ export function FriendItem({ friend }: FriendItemProps) {
   }, [lastPokeCreatedAt, timerStart]);
 
   return (
-    <View className="py-4 px-2 border-b-[1px] border-gray-25 flex-row justify-between items-center">
+    <View className="py-4 px-2 border-b-[1px] border-gray-20 flex-row justify-between items-center">
       <FriendProfile {...friend} />
 
       <TouchableOpacity
@@ -98,16 +102,16 @@ export function FriendItem({ friend }: FriendItemProps) {
       >
         {friend.status === "done" ? (
           <View className="flex-row items-center justify-center">
-            <Text className="body-5 text-white mr-[5px]">운동 완료</Text>
+            <Text className="caption-2 text-white mr-[5px]">운동 완료</Text>
             <icons.FaceDoneIcon width={19} height={19} />
           </View>
         ) : friend.status === "rest" ? (
           <View className="flex-row items-center justify-center">
-            <Text className="body-5 text-white mr-[8px]">쉬는 중</Text>
+            <Text className="caption-2 text-white mr-[8px]">쉬는 중</Text>
             <icons.FaceRestIcon width={19} height={19} />
           </View>
         ) : (
-          <Text className="body-5 text-white">
+          <Text className="caption-2 text-white">
             {!timeLeft ? "👈 콕 찌르기" : formatTime(timeLeft)}
           </Text>
         )}
@@ -122,7 +126,7 @@ export function NonFriendItem({ user }: NonFriendItemProps) {
     useCreateRequest();
 
   return (
-    <View className="py-4 px-2 border-b-[1px] border-gray-25 flex-row justify-between items-center">
+    <View className="py-4 px-2 border-b-[1px] border-gray-20 flex-row justify-between items-center">
       <FriendProfile {...user} />
 
       <TouchableOpacity
@@ -151,7 +155,7 @@ export function FriendRequest({
     useRefuseRequest();
 
   return (
-    <View className="py-4 border-b-[1px] border-gray-25 flex-row justify-between items-center">
+    <View className="py-4 border-b-[1px] border-gray-20 flex-row justify-between items-center">
       <FriendProfile {...fromUser} />
 
       <View className="flex-row gap-[11px]">
