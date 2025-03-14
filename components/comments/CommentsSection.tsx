@@ -218,21 +218,20 @@ export default function CommentsSection({
       initialHeight={deviceHeight * 0.8}
     >
       <View className="flex-1">
-        <View className="relative w-full pb-2.5">
+        <View className="relative w-full ">
           <LinearGradient
-            colors={["#f8f8f8", "rgba(255, 255, 255, 0)"]}
+            colors={["#fcfcfc", "rgba(255, 255, 255, 0)"]}
             start={[0, 0]}
             end={[0, 1]}
             style={{
               position: "absolute",
-              top: 36,
+              top: 0,
               left: 0,
               right: 0,
               height: 10,
               zIndex: 1,
             }}
           />
-          <Text className="heading-2 text-center">댓글</Text>
         </View>
 
         <FlatList
@@ -240,7 +239,7 @@ export default function CommentsSection({
           maintainVisibleContentPosition={{
             minIndexForVisible: 0,
           }}
-          ListHeaderComponent={<View className="h-4" />}
+          ListHeaderComponent={<View className="h-[10px]" />}
           data={data?.pages.flatMap((page) => page.data) || []}
           keyExtractor={(item) => item.id.toString()}
           onEndReachedThreshold={0.5}
