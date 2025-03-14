@@ -30,7 +30,7 @@ export default function SearchBar({
         // onSubmitEditing={() => {}} todo
         returnKeyType="search"
         placeholder="닉네임을 입력해주세요"
-        className="pt-[3px] body-1 w-full placeholder:text-gray-60 text-gray-100 p-0"
+        className="pt-[2px] body-2 w-full placeholder:text-gray-60 text-gray-100 p-0"
         accessibilityRole="search"
         accessibilityLabel="친구 검색"
         accessibilityHint="친구를 검색하려면 이름을 입력하세요"
