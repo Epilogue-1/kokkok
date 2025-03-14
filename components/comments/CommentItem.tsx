@@ -287,7 +287,7 @@ export default function CommentItem({
           onLongPress={() => {
             if (author?.id === userId) handleOpenModal();
           }}
-          className="title-5 flex-1 text-gray-90"
+          className="body-3 flex-1 text-gray-100"
         >
           {isReply && replyTo?.username && (
             <Text className="title-5 text-primary">@{replyTo.username} </Text>
