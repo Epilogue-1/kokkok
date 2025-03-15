@@ -4,6 +4,7 @@ import images from "@/constants/images";
 import useFetchData from "@/hooks/useFetchData";
 import useManageFriend from "@/hooks/useManageFriend";
 import { getRelationship } from "@/utils/supabase";
+import { router } from "expo-router";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 
 interface ProfileSectionProps {
@@ -89,7 +90,7 @@ export function FriendRequest({ userId }: { userId: string | string[] }) {
   // 관계 정보가 로딩 중이면 로딩 상태 표시
   if (isRelationPending) {
     return (
-      <View className="h-[36px] w-[89px] items-center justify-center rounded-[10px] bg-gray-40">
+      <View className="h-[36px] w-[113px] items-center justify-center rounded-[10px] bg-gray-40">
         <Text className="body-5 text-white">로딩 중...</Text>
       </View>
     );
@@ -124,6 +125,19 @@ export function FriendRequest({ userId }: { userId: string | string[] }) {
         >
           <Icons.FriendSendingIcon width={16} height={16} />
           <Text className="body-5 text-gray-90">친구 요청 중</Text>
+        </TouchableOpacity>
+      );
+
+    // 타인이 친구 요청을 보낸 경우: 요청 중 버튼 (취소 가능)
+    case "asked":
+      return (
+        <TouchableOpacity
+          className="h-[36px] w-[124px] flex-row items-center justify-center gap-1 rounded-[8px] border border-gray-80"
+          accessibilityLabel="친구 요청 받음음"
+          onPress={() => router.navigate("/friend/request")}
+        >
+          <Icons.FriendSendingIcon width={16} height={16} />
+          <Text className="body-5 text-gray-90">친구 요청 받음</Text>
         </TouchableOpacity>
       );
 
