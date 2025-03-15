@@ -72,7 +72,7 @@ export default function ProfileSection({
 }
 
 export function FriendRequest({ userId }: { userId: string | string[] }) {
-  const { useCreateRequest, useUnfriend } = useManageFriend();
+  const { useCreateRequest, useUnfriend, useCancelRequest } = useManageFriend();
   const { data: relation, isPending: isRelationPending } = useFetchData(
     ["relation", userId],
     () => getRelationship(userId as string),
@@ -83,6 +83,8 @@ export function FriendRequest({ userId }: { userId: string | string[] }) {
     useCreateRequest();
   const { mutate: handleUnfriend, isPending: isUnfriendPending } =
     useUnfriend();
+  const { mutate: handleCancelRequest, isPending: isCancelPending } =
+    useCancelRequest();
 
   // 관계 정보가 로딩 중이면 로딩 상태 표시
   if (isRelationPending) {
@@ -110,16 +112,19 @@ export function FriendRequest({ userId }: { userId: string | string[] }) {
         </TouchableOpacity>
       );
 
-    // 내가 친구 요청을 보낸 경우: 요청 중 버튼
+    // 내가 친구 요청을 보낸 경우: 요청 중 버튼 (취소 가능)
     case "asking":
       return (
-        <View
+        <TouchableOpacity
           className="h-[36px] w-[113px] flex-row items-center justify-center gap-1 rounded-[8px] border border-gray-80"
-          accessibilityLabel="요청 중"
+          disabled={isCancelPending}
+          accessibilityLabel="친구 요청 취소"
+          accessibilityHint="이 버튼을 누르면 보낸 친구 요청을 취소합니다"
+          onPress={() => handleCancelRequest({ toUserId: userId as string })}
         >
           <Icons.FriendSendingIcon width={16} height={16} />
           <Text className="body-5 text-gray-90">친구 요청 중</Text>
-        </View>
+        </TouchableOpacity>
       );
 
     // 이미 친구인 경우: 친구 끊기 버튼
