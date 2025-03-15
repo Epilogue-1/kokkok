@@ -1,5 +1,6 @@
 import { Text, View } from "react-native";
 
+import { CalendarSkeleton } from "@/components/Skeleton";
 import icons from "@/constants/icons";
 import type { getHistories } from "@/utils/supabase";
 
@@ -17,12 +18,14 @@ interface WorkoutCalendarProps {
   startingDate: Date;
   currentDate: Date;
   workoutStatuses: History[];
+  isLoading?: boolean;
 }
 
 export default function WorkoutCalendar({
   startingDate,
   currentDate,
   workoutStatuses,
+  isLoading = false,
 }: WorkoutCalendarProps) {
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth() + 1;
@@ -79,6 +82,10 @@ export default function WorkoutCalendar({
   const weeks = Array.from({ length: days.length / 7 }, (_, i) =>
     days.slice(i * 7, i * 7 + 7),
   );
+
+  if (isLoading) {
+    return <CalendarSkeleton />;
+  }
 
   return (
     <View className="w-full">
