@@ -47,7 +47,7 @@ export default function ProfileSection({
               />
             </TouchableOpacity>
           </View>
-          <View className="mt-[13px] w-full flex-row items-center gap-6">
+          <View className="mt-[13px] w-full flex-row items-center gap-6 px-[12px]">
             <Text
               className="title-3 flex-1"
               numberOfLines={1}
@@ -60,7 +60,7 @@ export default function ProfileSection({
 
         <View className="mt-[12px]">
           {description ? (
-            <Text className="body-5 rounded-[10px] bg-gray-5 p-4 text-gray-80">
+            <Text className="body-5 rounded-[10px] bg-gray-10 p-4 text-gray-80">
               {description}
             </Text>
           ) : (
