@@ -91,7 +91,7 @@ export default function Carousel({
                 className="absolute flex size-full items-center justify-center"
                 style={[heartStyle]}
               >
-                <Icons.HeartIcon
+                <Icons.HeartFilledIcon
                   width={96}
                   height={96}
                   color={colors.white}
