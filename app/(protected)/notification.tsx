@@ -56,7 +56,7 @@ export default function Notification() {
         renderItem={({ item: notification }) => (
           <NotificationItem {...notification} />
         )}
-        className="w-full grow px-8"
+        className="w-full grow px-7"
         contentContainerStyle={notifications.length ? {} : { flex: 1 }}
         ListHeaderComponent={<View className="h-2" />}
         ListFooterComponent={<View className="h-[34px]" />}
