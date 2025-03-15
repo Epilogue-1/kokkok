@@ -109,7 +109,7 @@ export function FriendRequest({ userId }: { userId: string | string[] }) {
           onPress={() => handleCreateRequest({ toUserId: userId as string })}
         >
           <Icons.FriendAddIcon width={16} height={16} />
-          <Text className="body-4 text-gray-90">친구 요청</Text>
+          <Text className="body-4 text-gray-100">친구 요청</Text>
         </TouchableOpacity>
       );
 
@@ -124,7 +124,7 @@ export function FriendRequest({ userId }: { userId: string | string[] }) {
           onPress={() => handleCancelRequest({ toUserId: userId as string })}
         >
           <Icons.FriendSendingIcon width={16} height={16} />
-          <Text className="body-4 text-gray-90">친구 요청 중</Text>
+          <Text className="body-4 text-gray-100">친구 요청 중</Text>
         </TouchableOpacity>
       );
 
@@ -137,7 +137,7 @@ export function FriendRequest({ userId }: { userId: string | string[] }) {
           onPress={() => router.navigate("/friend/request")}
         >
           <Icons.FriendSendingIcon width={16} height={16} />
-          <Text className="body-4 text-gray-90">친구 요청 받음</Text>
+          <Text className="body-4 text-gray-100">친구 요청 받음</Text>
         </TouchableOpacity>
       );
 
@@ -152,7 +152,7 @@ export function FriendRequest({ userId }: { userId: string | string[] }) {
           onPress={() => handleUnfriend({ toUserId: userId as string })}
         >
           <Icons.FriendDeleteIcon width={16} height={16} />
-          <Text className="body-4 text-gray-90">친구 삭제</Text>
+          <Text className="body-4 text-gray-100">친구 삭제</Text>
         </TouchableOpacity>
       );
 
