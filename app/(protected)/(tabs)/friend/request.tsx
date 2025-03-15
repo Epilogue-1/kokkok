@@ -97,7 +97,7 @@ export default function Request() {
     <SafeAreaView edges={[]} className="flex-1 bg-white">
       <FlatList
         ref={flatListRef}
-        className="w-full grow px-8"
+        className="w-full grow px-6"
         data={hasRequests ? requestData.pages.flatMap((page) => page.data) : []}
         keyExtractor={(request) => String(request.requestId)}
         renderItem={({ item: request }) => (
