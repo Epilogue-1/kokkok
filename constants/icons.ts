@@ -1,7 +1,8 @@
-import BackIcon from "@/assets/icons/back.svg";
-import BellIcon from "@/assets/icons/bell.svg";
+import AddIcon from "@/assets/icons/add.svg";
 import BellWithDotIcon from "@/assets/icons/bell-with-dot.svg";
+import BellIcon from "@/assets/icons/bell.svg";
 import CalendarIcon from "@/assets/icons/calendar.svg";
+import CameraAddIcon from "@/assets/icons/camera-add.svg";
 import CameraIcon from "@/assets/icons/camera.svg";
 import ChevronLeftIcon from "@/assets/icons/chevron-left.svg";
 import ChevronRightIcon from "@/assets/icons/chevron-right.svg";
@@ -28,9 +29,12 @@ import TrashCanIcon from "@/assets/icons/trash_can.svg";
 import XIcon from "@/assets/icons/x.svg";
 
 export default {
+  AddIcon,
   BellIcon,
   BellWithDotIcon,
   CalendarIcon,
+  CameraAddIcon,
+  CameraIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
   CommentIcon,
@@ -38,22 +42,20 @@ export default {
   EyeOffIcon,
   FaceDefaultIcon,
   FaceDoneIcon,
-  FaceRestIcon,
   FaceNotDoneIcon,
+  FaceRestIcon,
   FriendIcon,
-  GoogleIcon,
   GithubIcon,
-  KakaoIcon,
+  GoogleIcon,
   HeartIcon,
   HomeIcon,
+  KakaoIcon,
+  KebabMenuIcon,
   MeatballIcon,
   PlusIcon,
   ProfileIcon,
-  BackIcon,
-  XIcon,
   SearchIcon,
   SettingIcon,
   TrashCanIcon,
-  KebabMenuIcon,
-  CameraIcon,
+  XIcon,
 };
