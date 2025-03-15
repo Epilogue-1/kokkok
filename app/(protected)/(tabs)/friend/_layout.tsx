@@ -19,6 +19,7 @@ const SCREEN_OPTIONS = {
   tabBarIndicatorStyle: {
     backgroundColor: colors.primary,
   },
+  tabBarPressColor: "transparent",
 } as const;
 
 const TabBarLabel = (title: string, focused: boolean) => (
