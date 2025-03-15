@@ -133,7 +133,7 @@ export function FriendRequest({ userId }: { userId: string | string[] }) {
       return (
         <TouchableOpacity
           className="h-[36px] w-[124px] flex-row items-center justify-center gap-1 rounded-[8px] border border-gray-80"
-          accessibilityLabel="친구 요청 받음음"
+          accessibilityLabel="친구 요청 받음"
           onPress={() => router.navigate("/friend/request")}
         >
           <Icons.FriendSendingIcon width={16} height={16} />
