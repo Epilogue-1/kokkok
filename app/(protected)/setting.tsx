@@ -58,7 +58,7 @@ export default function Setting() {
 
   return (
     <SafeAreaView edges={[]} className="flex-1 bg-white">
-      <View className="gap-2 bg-gray-5 pb-2">
+      <View className="gap-2 bg-gray-10 pb-2">
         {/* 알림 설정 */}
         {isTokenPending ? (
           <View className="h-[324px] items-center justify-center">
@@ -70,14 +70,14 @@ export default function Setting() {
 
         {/* 계정 설정 */}
         <View className="bg-white px-6 py-[22px]">
-          <Text className="heading-2 text-gray-80">계정 설정</Text>
+          <Text className="title-1 text-gray-80">계정 설정</Text>
           <View className="mt-5 gap-5 px-2">
             {!currentUser?.isOAuth && (
               <TouchableOpacity
                 className="flex-row items-center justify-between"
                 onPress={() => router.push("/change-password")}
               >
-                <Text className="font-pmedium text-gray-80 text-xl">
+                <Text className="font-pregular text-gray-90 text-[18px]">
                   비밀번호 변경
                 </Text>
                 <Icons.ChevronRightIcon color={colors.gray[70]} />
@@ -87,7 +87,7 @@ export default function Setting() {
               className="flex-row items-center justify-between"
               onPress={() => openModal({ type: "SIGN_OUT" })}
             >
-              <Text className="font-pmedium text-gray-80 text-xl">
+              <Text className="font-pregular text-gray-90 text-[18px]">
                 로그아웃
               </Text>
               <Icons.ChevronRightIcon color={colors.gray[70]} />
@@ -96,7 +96,7 @@ export default function Setting() {
               className="flex-row items-center justify-between"
               onPress={() => openModal({ type: "ACCOUNT_DELETE" })}
             >
-              <Text className="font-pmedium text-gray-80 text-xl">
+              <Text className="font-pregular text-gray-90 text-[18px]">
                 계정 탈퇴
               </Text>
               <Icons.ChevronRightIcon color={colors.gray[70]} />
@@ -113,7 +113,7 @@ export default function Setting() {
               )
             }
           >
-            <Text className="heading-2 text-gray-80">문의하기</Text>
+            <Text className="title-1 text-gray-80">문의하기</Text>
           </TouchableOpacity>
         </View>
 
@@ -124,7 +124,7 @@ export default function Setting() {
               Linking.openURL("https://github.com/Epilogue-1/kokkok")
             }
           >
-            <Text className="heading-2 text-gray-80">
+            <Text className="title-1 text-gray-80">
               우리 앱 깃허브 놀러가기
             </Text>
           </TouchableOpacity>
@@ -253,14 +253,14 @@ function NotificationSetting({ setting }: { setting?: PushSetting | null }) {
   return (
     <View className="gap-5 bg-white px-6 py-[22px]">
       <View className="flex-row items-center justify-between ">
-        <Text className="heading-2 text-gray-80">알림 설정</Text>
+        <Text className="title-1 text-gray-80">알림 설정</Text>
         <CustomSwitch value={allSwitch} onPress={handleAllSwitchPress} />
       </View>
       {/* 개별 스위치 리스트 */}
       <View className="gap-5 pl-2">
         {Object.keys(SWITCH_CONFIG).map((type) => (
           <View key={type} className="flex-row items-center justify-between">
-            <Text className="font-pmedium text-gray-80 text-xl">
+            <Text className="font-pregular text-gray-80 text-[18px]">
               {SWITCH_CONFIG[type as SwitchType].title}
             </Text>
             <CustomSwitch
