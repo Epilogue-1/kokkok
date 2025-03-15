@@ -97,10 +97,7 @@ export function HeaderWithNotification({ name }: HeaderProps) {
           <Text className="heading-2">{HEADER_TITLE[name]}</Text>
         )}
 
-        <View className="flex-row gap-4">
-          {/* 마이페이지, 친구페이지의 버튼 추가 */}
-          <AdditionalButton />
-
+        <View className="flex-row gap-6">
           {/* 새 알람 여부에 따른 아이콘 렌더링 */}
           <TouchableOpacity onPress={() => router.push("/notification")}>
             {hasNewNotification ? (
@@ -109,6 +106,9 @@ export function HeaderWithNotification({ name }: HeaderProps) {
               <icons.BellIcon width={24} height={24} color={colors.gray[100]} />
             )}
           </TouchableOpacity>
+
+          {/* 마이페이지, 친구페이지의 버튼 추가 */}
+          <AdditionalButton />
         </View>
       </View>
     </SafeAreaView>
