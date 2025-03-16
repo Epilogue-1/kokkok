@@ -67,7 +67,11 @@ const Profile = () => {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       className="h-full flex-1 bg-white"
     >
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1 }}
+        // 키보드 올라올 때 버튼 클릭 가능
+        keyboardShouldPersistTaps="handled"
+      >
         <View className="relative flex-1">
           <View className="mt-12 flex items-center justify-center px-6">
             <TouchableOpacity
