@@ -189,13 +189,13 @@ export default function MotionModal({
             >
               <SafeAreaView
                 edges={["top"]}
-                className="h-full flex-1 rounded-t-[20px] border border-gray-20 bg-white"
+                className="h-full flex-1 rounded-t-[20px] border border-[#fcfcfc] bg-gray-5"
               >
                 <View
-                  className="w-full items-center py-4"
+                  className="w-full items-center pt-[8px] pb-[22px]"
                   {...panResponder.panHandlers}
                 >
-                  <View className="h-1 w-10 rounded-[2px] bg-gray-25" />
+                  <View className="h-1 w-10 rounded-[2px] bg-[#d9d9d9]" />
                 </View>
                 {children}
               </SafeAreaView>

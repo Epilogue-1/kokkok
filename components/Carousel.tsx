@@ -104,7 +104,7 @@ export default function Carousel({
                   heartStyle,
                 ]}
               >
-                <Icons.HeartIcon
+                <Icons.HeartFilledIcon
                   width={96}
                   height={96}
                   color={colors.white}

@@ -1,5 +1,7 @@
+import colors from "@/constants/colors";
+import icons from "@constants/icons";
 import { forwardRef } from "react";
-import { TextInput, View } from "react-native";
+import { Pressable, TextInput, View } from "react-native";
 
 interface MentionInputProps {
   value: string;
@@ -12,10 +14,10 @@ interface MentionInputProps {
 const MentionInput = forwardRef<TextInput, MentionInputProps>(
   ({ value, onChangeText, placeholder, onSubmit, isPending }, ref) => {
     return (
-      <View className="flex-1 flex-row items-center">
+      <View className="flex-1 flex-row items-center gap-[9px]">
         <View
           pointerEvents="box-only"
-          className="h-[50px] w-full flex-1 flex-row items-center gap-2 rounded-[10px] border border-gray-20 px-[13px] "
+          className="h-[50px] w-full flex-1 flex-row items-center gap-2 rounded-[10px] border border-gray-25 px-[13px] "
         >
           <TextInput
             ref={ref}
@@ -35,6 +37,17 @@ const MentionInput = forwardRef<TextInput, MentionInputProps>(
             multiline={false}
           />
         </View>
+
+        <Pressable
+          className="size-[36px] items-center justify-center rounded-[15px] bg-primary"
+          onPress={() => {
+            if (value.trim() && !isPending && onSubmit) {
+              onSubmit();
+            }
+          }}
+        >
+          <icons.ArrowUpIcon width={24} height={24} color={colors.white} />
+        </Pressable>
       </View>
     );
   },
