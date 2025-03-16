@@ -253,13 +253,12 @@ export interface ImageItem {
   ratio: number;
 }
 
-export type ImagePickerAsset = 
-  {
-    uri: string;
-    width: number;
-    height: number;
-    mimeType: string;
-  };
+export type ImagePickerAsset = {
+  uri: string;
+  width: number;
+  height: number;
+  mimeType: string;
+};
 
 export const IMAGE_LIMIT = 5;
 
@@ -397,15 +396,15 @@ export function SelectPostUploadImageModal({
         {
           text: "카메라",
           onPress: async () => {
-            await takePhoto();
             closeModal();
+            await takePhoto();
           },
         },
         {
           text: "갤러리",
           onPress: async () => {
-            await pickImage();
             closeModal();
+            await pickImage();
           },
         },
       ]}

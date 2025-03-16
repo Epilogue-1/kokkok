@@ -112,9 +112,8 @@ export default function PostDetail() {
           onAuthorPress={onOpenLikedAuthor}
           onDeletePress={() => {
             openModal({
-              type: "DELETE_POST",
+              type: "SELECT_POST_EDIT_DELETE",
               postId: Number(postId),
-              isDetail: true,
             });
           }}
         />

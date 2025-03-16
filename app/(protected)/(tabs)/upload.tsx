@@ -1,9 +1,6 @@
 import BlurredImageCard from "@/components/BlurredImageCard";
 import { showToast } from "@/components/ToastConfig";
-import type {
-  ImageItem,
-  ImagePickerAsset,
-} from "@/components/modals/ListModals";
+import type { ImageItem } from "@/components/modals/ListModals";
 import colors from "@/constants/colors";
 import Icons from "@/constants/icons";
 import useFetchData from "@/hooks/useFetchData";
@@ -92,11 +89,14 @@ export default function Upload() {
     mutationFn: () => {
       if (!postId) throw new Error("게시물 ID가 없습니다.");
 
-      const sortedImages = imageItems.sort((a, b) => a.index - b.index);
-      const [prevImages, newImages] = sortedImages.reduce<
-        [ImageItem[], ImagePickerAsset[]]
-      >(
-        ([prev, next], item) => {
+      const sortedImages = [...imageItems]
+        .sort((a, b) => a.index - b.index)
+        .map((item, index) => ({
+          ...item,
+          index,
+        }));
+      const [prevImages] = sortedImages.reduce<[ImageItem[]]>(
+        ([prev], item) => {
           if (item.type === "prev") {
             prev.push({
               uri: item.uri,
@@ -104,20 +104,19 @@ export default function Upload() {
               type: "prev",
               ratio: item.ratio,
             });
-          } else if (item.imagePickerAsset) {
-            next.push({
-              ...item.imagePickerAsset,
-            });
           }
-          return [prev, next];
+          return [prev];
         },
-        [[], []],
+        [[]],
       );
 
-      const formattedNewImages = newImages.map((image, index) => ({
-        imagePickerAsset: image,
-        index,
-      }));
+      const formattedNewImages = sortedImages
+        .filter((item) => item.type === "new" && item.imagePickerAsset)
+        .map((item) => ({
+          imagePickerAsset: item.imagePickerAsset!,
+          index: item.index,
+        }));
+
       return updatePost({
         postId,
         contents,
@@ -288,10 +287,14 @@ export default function Upload() {
                     imageItems,
                     setImageItems,
                     flatListRef,
-                    isLoading: uploadPostMutation.isPending,
+                    isLoading:
+                      uploadPostMutation.isPending ||
+                      editPostMutation.isPending,
                   })
                 }
-                disabled={uploadPostMutation.isPending}
+                disabled={
+                  uploadPostMutation.isPending || editPostMutation.isPending
+                }
               >
                 <Icons.CameraAddIcon
                   width={24}
