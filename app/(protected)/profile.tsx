@@ -90,7 +90,7 @@ const Profile = () => {
 
           <View className="mt-10 flex w-full">
             <TextInput
-              className="title-3 h-[58px] w-full rounded-[10px] border border-gray-20 px-4 text-gray-90 focus:border-primary"
+              className="title-3 h-[58px] w-full rounded-[10px] border border-gray-25 px-4 text-gray-90 focus:border-primary"
               placeholder="닉네임을 입력해주세요."
               placeholderTextColor={colors.gray[60]}
               accessibilityLabel="닉네임 입력"
@@ -107,7 +107,7 @@ const Profile = () => {
               <Icons.XIcon color={colors.gray[80]} />
             </TouchableOpacity>
             <TextInput
-              className="body-5 mt-[24px] h-[132px] w-full rounded-[10px] border border-gray-20 p-4 text-gray-90 focus:border-primary"
+              className="body-5 mt-[24px] h-[132px] w-full rounded-[10px] border border-gray-25 p-4 text-gray-100 focus:border-primary"
               placeholder="소개글을 입력해주세요."
               placeholderTextColor={colors.gray[60]}
               accessibilityLabel="소개글 입력"
