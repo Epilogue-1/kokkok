@@ -148,8 +148,8 @@ const SignIn = () => {
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
-        <ScrollView keyboardShouldPersistTaps="handled">
-          <View className="mt-[92px] flex items-center justify-center px-6">
+        <ScrollView keyboardShouldPersistTaps="handled" className="h-full">
+          <View className="mt-[92px] items-center justify-center px-6">
             <Image
               source={images.AuthLogo}
               className="h-[37px] w-[163px]"
