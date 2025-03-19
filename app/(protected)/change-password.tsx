@@ -80,7 +80,7 @@ const ChangePassword = () => {
         <View className="mt-[32px] flex-1 items-center px-6">
           <View className="flex w-full gap-[20px]">
             <TextInput
-              className="placeholder:body-1 h-[58px] w-full rounded-[10px] border border-gray-20 px-4 text-gray-90 focus:border-primary"
+              className="placeholder:body-1 h-[58px] w-full rounded-[10px] border border-gray-25 px-4 text-gray-90 focus:border-primary"
               autoCapitalize="none"
               placeholder="현재 비밀번호를 입력해주세요"
               placeholderTextColor={colors.gray[60]}
@@ -93,7 +93,7 @@ const ChangePassword = () => {
               secureTextEntry
             />
             <TextInput
-              className="placeholder:body-1 h-[58px] w-full rounded-[10px] border border-gray-20 px-4 text-gray-90 focus:border-primary"
+              className="placeholder:body-1 h-[58px] w-full rounded-[10px] border border-gray-25 px-4 text-gray-90 focus:border-primary"
               autoCapitalize="none"
               placeholder="새 비밀번호를 입력해주세요"
               placeholderTextColor={colors.gray[60]}
@@ -106,7 +106,7 @@ const ChangePassword = () => {
               secureTextEntry
             />
             <TextInput
-              className="placeholder:body-1 h-[58px] w-full rounded-[10px] border border-gray-20 px-4 text-gray-90 focus:border-primary"
+              className="placeholder:body-1 h-[58px] w-full rounded-[10px] border border-gray-25 px-4 text-gray-90 focus:border-primary"
               autoCapitalize="none"
               placeholder="비밀번호를 한번 더 입력해주세요"
               placeholderTextColor={colors.gray[60]}
