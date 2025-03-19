@@ -89,32 +89,34 @@ const ModalItem = forwardRef<ModalItemRef, ModalItemProps>(
     }));
 
     return (
-      <View
-        className={`size-full flex-1 ${
-          index === 0 ? "bg-black/50" : ""
-        } ${modal.position === "center" ? "justify-center" : "justify-end"}`}
-        // 최상단 모달만 터치 시 닫힘 (exit 애니메이션 실행)
-        onTouchStart={isTop ? handleClose : undefined}
-      >
-        <Animated.View
-          onTouchStart={(e: GestureResponderEvent) => e.stopPropagation()}
-          style={{
-            opacity: fadeAnim,
-            transform:
-              modal.position === "bottom"
-                ? [
-                    {
-                      translateY: slideAnim.interpolate({
-                        inputRange: [0, 1],
-                        outputRange: [500, 0],
-                      }),
-                    },
-                  ]
-                : [],
-          }}
+      <View className="absolute inset-0">
+        <View
+          className={`size-full flex-1 ${
+            index === 0 ? "bg-black/50" : ""
+          } ${modal.position === "center" ? "justify-center" : "justify-end"}`}
+          // 최상단 모달만 터치 시 닫힘 (exit 애니메이션 실행)
+          onTouchStart={isTop ? handleClose : undefined}
         >
-          {modal.content}
-        </Animated.View>
+          <Animated.View
+            onTouchStart={(e: GestureResponderEvent) => e.stopPropagation()}
+            style={{
+              opacity: fadeAnim,
+              transform:
+                modal.position === "bottom"
+                  ? [
+                      {
+                        translateY: slideAnim.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: [500, 0],
+                        }),
+                      },
+                    ]
+                  : [],
+            }}
+          >
+            {modal.content}
+          </Animated.View>
+        </View>
       </View>
     );
   },
