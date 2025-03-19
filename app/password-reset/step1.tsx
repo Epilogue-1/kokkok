@@ -1,3 +1,4 @@
+import { ResetPasswordVerifyModal } from "@/components/modals/SingleButtonModal/ResetPasswordVerifyModal";
 import { passwordResetFormAtom } from "@/contexts/auth";
 import { useModal } from "@/hooks/useModal";
 import { resetPassword } from "@/utils/supabase";
@@ -45,7 +46,7 @@ const Step1 = () => {
       await resetPassword(resetEmail.email);
 
       // 이메일 인증 모달 표시
-      openModal({ type: "PASSWORD_RESET_EMAIL_CHECK" });
+      openModal(<ResetPasswordVerifyModal />);
     } catch (error: unknown) {
       Alert.alert(
         "비밀번호 재설정 실패",

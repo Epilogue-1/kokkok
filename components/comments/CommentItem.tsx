@@ -18,6 +18,7 @@ import * as SecureStore from "expo-secure-store";
 import { useEffect, useState } from "react";
 import { Image, Pressable, Text, TouchableOpacity, View } from "react-native";
 import { FlatList } from "react-native";
+import { CommentDeleteModal } from "../modals/DeleteModal/CommentDeleteModal";
 
 const ReplySkeleton = () => (
   <View className="mb-4 animate-pulse">
@@ -132,10 +133,7 @@ export default function CommentItem({
   );
 
   const handleOpenModal = () => {
-    openModal(
-      { type: "SELECT_COMMENT_DELETE", commentId: id, postId },
-      "bottom",
-    );
+    openModal(<CommentDeleteModal commentId={id} postId={postId} />, "bottom");
   };
 
   // 좋아요 토글
