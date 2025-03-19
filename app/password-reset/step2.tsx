@@ -1,3 +1,4 @@
+import colors from "@/constants/colors";
 import { OTP_TIME } from "@/constants/time";
 import { passwordResetFormAtom } from "@/contexts/auth";
 import {
@@ -55,8 +56,11 @@ const Step2 = () => {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       className="h-full flex-1 bg-white"
     >
-      <ScrollView>
-        <View className="mt-[58px] flex items-center justify-center px-6">
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1 }}
+        keyboardShouldPersistTaps="handled"
+      >
+        <View className="mt-[80px] flex-1 items-center px-6">
           <Image
             source={images.Step2}
             className="h-[90px] w-full"
@@ -65,8 +69,9 @@ const Step2 = () => {
 
           <View className="relative mt-10 flex w-full gap-10">
             <TextInput
-              className="placeholder:body-1 h-[58px] w-full rounded-[10px] border border-gray-20 px-4 placeholder:text-gray-40 focus:border-primary"
+              className="placeholder:body-1 h-[58px] w-full rounded-[10px] border border-gray-25 px-4 text-gray-90 focus:border-primary"
               placeholder="인증코드를 입력해주세요"
+              placeholderTextColor={colors.gray[60]}
               accessibilityLabel="인증코드 입력"
               accessibilityHint="인증코드를 입력해주세요"
               value={token}
@@ -78,7 +83,7 @@ const Step2 = () => {
           </View>
 
           <TouchableOpacity
-            className="mt-10 h-[62px] w-full items-center justify-center rounded-[10px] bg-primary"
+            className="absolute bottom-[32px] h-[62px] w-full items-center justify-center rounded-[10px] bg-primary"
             onPress={handleVerifyToken}
           >
             <Text className="heading-2 text-white">인증번호 입력</Text>
