@@ -66,11 +66,18 @@ const ModalItem = forwardRef<ModalItemRef, ModalItemProps>(
       setIsClosing(true);
 
       if (modal.position === "bottom") {
-        Animated.timing(slideAnim, {
-          toValue: 0,
-          useNativeDriver: true,
-          duration: 400,
-        }).start(() => onClose());
+        Animated.parallel([
+          Animated.timing(slideAnim, {
+            toValue: 0,
+            useNativeDriver: true,
+            duration: 300,
+          }),
+          Animated.timing(fadeAnim, {
+            toValue: 0,
+            useNativeDriver: true,
+            duration: 300,
+          }),
+        ]).start(() => onClose());
       } else if (modal.position === "center") {
         Animated.timing(fadeAnim, {
           toValue: 0,
