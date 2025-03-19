@@ -33,7 +33,7 @@ export function Header({ name }: HeaderProps) {
   return (
     <SafeAreaView edges={["top"]} className="border-gray-20 border-b bg-white">
       <View className="h-14 items-center justify-center">
-        <Text className="heading-2">{HEADER_TITLE[name]}</Text>
+        <Text className="title-1">{HEADER_TITLE[name]}</Text>
       </View>
     </SafeAreaView>
   );
@@ -50,7 +50,7 @@ export function HeaderWithBack({ name }: HeaderProps) {
         >
           <icons.ChevronLeftIcon width={24} height={24} color="#222222" />
         </TouchableOpacity>
-        <Text className="heading-2">{HEADER_TITLE[name]}</Text>
+        <Text className="title-1">{HEADER_TITLE[name]}</Text>
       </View>
     </SafeAreaView>
   );
@@ -94,7 +94,7 @@ export function HeaderWithNotification({ name }: HeaderProps) {
             accessibilityLabel="KokKok 로고"
           />
         ) : (
-          <Text className="heading-2">{HEADER_TITLE[name]}</Text>
+          <Text className="title-1">{HEADER_TITLE[name]}</Text>
         )}
 
         <View className="flex-row gap-4">
