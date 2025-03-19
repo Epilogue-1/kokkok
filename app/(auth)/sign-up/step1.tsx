@@ -1,3 +1,4 @@
+import colors from "@/constants/colors";
 import { useModal } from "@/hooks/useModal";
 import { sendUpOTP } from "@/utils/supabase";
 import { validateSignUpFormWithSupabase } from "@/utils/validation";
@@ -65,18 +66,23 @@ const Step1 = () => {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         className="h-full flex-1 bg-white"
       >
-        <ScrollView>
-          <View className="mt-[58px] flex items-center justify-center px-6">
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1 }}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View className="mt-[84px] flex-1 items-center px-6">
             <Image
               source={images.AuthLogo}
-              className="h-[90px] w-[328px]"
+              className="h-[34px] w-[221px]"
               resizeMode="contain"
             />
 
-            <View className="mt-10 flex w-full gap-8">
+            {/* mb-[120px]는 keyboard 올라가는 현상을 위한 class */}
+            <View className="mt-[84px] mb-[120px] flex w-full gap-[24px]">
               <TextInput
-                className="placeholder:body-1 h-[58px] w-full rounded-[10px] border border-gray-20 px-4 placeholder:text-gray-40 focus:border-primary"
+                className="placeholder:body-1 h-[58px] w-full rounded-[10px] border border-gray-25 px-4 text-gray-90 focus:border-primary"
                 placeholder="이메일을 입력해주세요"
+                placeholderTextColor={colors.gray[60]}
                 keyboardType="email-address"
                 autoCapitalize="none"
                 accessibilityLabel="이메일 입력"
@@ -88,8 +94,9 @@ const Step1 = () => {
               />
 
               <TextInput
-                className="placeholder:body-1 h-[58px] w-full rounded-[10px] border border-gray-20 px-4 placeholder:text-gray-40 focus:border-primary"
+                className="placeholder:body-1 h-[58px] w-full rounded-[10px] border border-gray-25 px-4 text-gray-90 focus:border-primary"
                 placeholder="닉네임을 입력해주세요"
+                placeholderTextColor={colors.gray[60]}
                 autoCapitalize="none"
                 accessibilityLabel="닉네임 입력"
                 accessibilityHint="닉네임을 입력해주세요."
@@ -100,8 +107,9 @@ const Step1 = () => {
               />
 
               <TextInput
-                className="placeholder:body-1 h-[58px] w-full rounded-[10px] border border-gray-20 px-4 placeholder:text-gray-40 focus:border-primary"
+                className="placeholder:body-1 h-[58px] w-full rounded-[10px] border border-gray-25 px-4 text-gray-90 focus:border-primary"
                 placeholder="비밀번호를 입력해주세요"
+                placeholderTextColor={colors.gray[60]}
                 autoCapitalize="none"
                 secureTextEntry
                 accessibilityLabel="비밀번호 입력"
@@ -113,8 +121,9 @@ const Step1 = () => {
               />
 
               <TextInput
-                className="placeholder:body-1 h-[58px] w-full rounded-[10px] border border-gray-20 px-4 placeholder:text-gray-40 focus:border-primary"
+                className="placeholder:body-1 h-[58px] w-full rounded-[10px] border border-gray-25 px-4 text-gray-90 focus:border-primary"
                 placeholder="비밀번호를 한번 더 입력해주세요"
+                placeholderTextColor={colors.gray[60]}
                 autoCapitalize="none"
                 secureTextEntry
                 accessibilityLabel="비밀번호 재입력"
@@ -125,7 +134,7 @@ const Step1 = () => {
             </View>
 
             <TouchableOpacity
-              className={`mt-10 h-[62px] w-full items-center justify-center rounded-[10px] ${
+              className={`absolute bottom-[32px] h-[62px] w-full items-center justify-center rounded-[10px] ${
                 isLoading ? "bg-gray-20" : "bg-primary"
               }`}
               onPress={handleContinue}
