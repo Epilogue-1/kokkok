@@ -12,6 +12,42 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      blockUser: {
+        Row: {
+          blockedId: string;
+          blockerId: string;
+          createdAt: string;
+          id: number;
+        };
+        Insert: {
+          blockedId: string;
+          blockerId: string;
+          createdAt?: string;
+          id?: number;
+        };
+        Update: {
+          blockedId?: string;
+          blockerId?: string;
+          createdAt?: string;
+          id?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "blockUser_blockedId_fkey";
+            columns: ["blockedId"];
+            isOneToOne: false;
+            referencedRelation: "user";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "blockUser_blockerId_fkey";
+            columns: ["blockerId"];
+            isOneToOne: false;
+            referencedRelation: "user";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       comment: {
         Row: {
           contents: string;
@@ -198,6 +234,7 @@ export type Database = {
           id: number;
           images: string[];
           likes: number;
+          ratio: number | null;
           userId: string;
         };
         Insert: {
@@ -206,6 +243,7 @@ export type Database = {
           id?: number;
           images: string[];
           likes?: number;
+          ratio?: number | null;
           userId?: string;
         };
         Update: {
@@ -214,6 +252,7 @@ export type Database = {
           id?: number;
           images?: string[];
           likes?: number;
+          ratio?: number | null;
           userId?: string;
         };
         Relationships: [
@@ -288,6 +327,68 @@ export type Database = {
           {
             foreignKeyName: "pushToken_userId_fkey";
             columns: ["userId"];
+            isOneToOne: true;
+            referencedRelation: "user";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      report: {
+        Row: {
+          commentId: number | null;
+          createdAt: string;
+          id: string;
+          postId: number | null;
+          reportContent: string | null;
+          reportedId: string;
+          reporterId: string;
+          reportType: Database["public"]["Enums"]["reportType"];
+        };
+        Insert: {
+          commentId?: number | null;
+          createdAt?: string;
+          id?: string;
+          postId?: number | null;
+          reportContent?: string | null;
+          reportedId: string;
+          reporterId: string;
+          reportType: Database["public"]["Enums"]["reportType"];
+        };
+        Update: {
+          commentId?: number | null;
+          createdAt?: string;
+          id?: string;
+          postId?: number | null;
+          reportContent?: string | null;
+          reportedId?: string;
+          reporterId?: string;
+          reportType?: Database["public"]["Enums"]["reportType"];
+        };
+        Relationships: [
+          {
+            foreignKeyName: "reprot_commentId_fkey";
+            columns: ["commentId"];
+            isOneToOne: false;
+            referencedRelation: "comment";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "reprot_postId_fkey";
+            columns: ["postId"];
+            isOneToOne: false;
+            referencedRelation: "post";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "reprot_reportedId_fkey";
+            columns: ["reportedId"];
+            isOneToOne: false;
+            referencedRelation: "user";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "reprot_reporterId_fkey";
+            columns: ["reporterId"];
             isOneToOne: false;
             referencedRelation: "user";
             referencedColumns: ["id"];
@@ -487,6 +588,7 @@ export type Database = {
         Returns: {
           id: number;
           images: string[];
+          ratio: number;
           contents: string;
           createdAt: string;
           userData: {
@@ -538,6 +640,14 @@ export type Database = {
           likedAvatars: string[];
         }[];
       };
+      get_status: {
+        Args: {
+          p_id: string;
+        };
+        Returns: {
+          status: Database["public"]["Enums"]["workoutstatus"];
+        }[];
+      };
       increment_comment_likes: {
         Args: {
           p_comment_id: number;
@@ -559,6 +669,13 @@ export type Database = {
         | "commentLike"
         | "mention"
         | "friend";
+      reportType:
+        | "Inappropriate"
+        | "Conflict"
+        | "Violence"
+        | "Ads"
+        | "Spam"
+        | "Other";
       workoutstatus: "done" | "rest";
     };
     CompositeTypes: {

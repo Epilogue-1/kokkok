@@ -1059,7 +1059,7 @@ export async function getFriendRequests({
 }
 
 // 친구요청 있는지 조회
-export async function checkFriendRequest(requestId: string): Promise<boolean> {
+export async function checkFriendRequest(requestId: number): Promise<boolean> {
   const { data, error } = await supabase
     .from("friendRequest")
     .select("id")
@@ -1575,6 +1575,102 @@ export async function deletePushSetting() {
   if (error) {
     console.error("푸시 알림 정보 삭제 실패:", error);
   }
+}
+
+// ============================================
+//
+//                    report
+//
+// ============================================
+
+// 사용자 신고
+export async function reportUser({
+  postId,
+  commentId,
+  reportedId,
+  reportType,
+  reportContent,
+}: {
+  postId?: number;
+  commentId?: number;
+  reportedId: string;
+  reportType: Database["public"]["Enums"]["reportType"];
+  reportContent: string;
+}) {
+  const myId = await getUserIdFromStorage();
+
+  const { error } = await supabase.from("report").insert({
+    postId,
+    commentId,
+    reporterId: myId, // 신고자
+    reportedId, // 신고 대상
+    reportType, // 신고 타입 "Inappropriate" | "Conflict" | "Violence" | "Ads" | "Spam" | "Other"
+    reportContent, // 신고 내용
+  });
+
+  if (error) {
+    console.error("신고 정보 저장 실패:", error);
+  }
+}
+
+// ============================================
+//
+//                 user block
+//
+// ============================================
+
+// 사용자 차단
+export async function blockUser(blockedId: string) {
+  const myId = await getUserIdFromStorage();
+
+  const { error } = await supabase.from("blockUser").insert({
+    blockerId: myId, // 차단자
+    blockedId, // 차단 대상
+  });
+
+  if (error) {
+    console.error("사용자 차단 실패:", error);
+  }
+}
+
+// 사용자 차단 해제
+export async function unblockUser(blockedId: string) {
+  const myId = await getUserIdFromStorage();
+
+  const { error } = await supabase
+    .from("blockUser")
+    .delete()
+    .eq("blockerId", myId)
+    .eq("blockedId", blockedId);
+
+  if (error) {
+    console.error("사용자 차단 해제 실패:", error);
+  }
+}
+
+// 차단한 사용자 목록 조회
+export async function getBlockedUsers() {
+  const myId = await getUserIdFromStorage();
+
+  const { data, error } = await supabase
+    .from("blockUser")
+    .select(`
+      blockedId,
+      blocked:user!blockUser_blockedId_fkey (
+        id,
+        username,
+        avatarUrl,
+        description
+      )
+    `)
+    .eq("blockerId", myId);
+
+  if (error) {
+    console.error("차단한 사용자 목록 조회 실패:", error);
+  }
+
+  // 차단한 사용자 목록 반환
+  return data?.map((item) => item.blocked) || [];
 }
 
 // ============================================

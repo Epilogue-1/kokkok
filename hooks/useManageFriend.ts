@@ -79,7 +79,7 @@ const useManageFriend = () => {
       mutationFn: async ({ requestId, fromUserId }) => {
         // 친구 요청이 그사이 취소되었는지 확인
         const hasFriendRequest = requestId
-          ? await checkFriendRequest(String(requestId))
+          ? await checkFriendRequest(requestId)
           : await checkFriendRequestWithUserId(fromUserId);
         if (!hasFriendRequest) {
           throw new NoRequestError(
