@@ -1,16 +1,13 @@
 import { useModal } from "@/hooks/useModal";
-import type { ModalPosition } from "@/types/Modal.interface";
 import { ListModal } from ".";
 import { CommentDeleteModal } from "../DeleteModal/CommentDeleteModal";
 
 interface CommentOptionsModalProps {
-  position: ModalPosition;
   postId: number;
   commentId: number;
 }
 
 export const CommentOptionsModal: React.FC<CommentOptionsModalProps> = ({
-  position,
   postId,
   commentId,
 }) => {
@@ -18,7 +15,7 @@ export const CommentOptionsModal: React.FC<CommentOptionsModalProps> = ({
 
   return (
     <ListModal
-      position={position}
+      position={"bottom"}
       buttons={[
         {
           text: "삭제",

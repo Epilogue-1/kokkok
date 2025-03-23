@@ -28,7 +28,7 @@ export default function MotionModal({
   children,
   maxHeight,
   initialHeight,
-  closeThreshold = 0.1,
+  closeThreshold = 0.3,
 }: CustomModalProps) {
   const slideAnim = useRef(new Animated.Value(0));
   const heightAnim = useRef(new Animated.Value(initialHeight));
