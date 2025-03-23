@@ -400,7 +400,7 @@ export const getPosts = async ({
       .from("post")
       .select("*", { count: "exact", head: true });
 
-    const { data, error } = await supabase.rpc("get_posts_with_details", {
+    const { data, error } = await supabase.rpc("get_posts", {
       startindex: page * limit,
       endindex: (page + 1) * limit - 1,
     });
@@ -1599,13 +1599,36 @@ export async function reportUser({
 }) {
   const myId = await getUserIdFromStorage();
 
+  // 이미 신고한 기록이 있는지 확인
+  let query = supabase
+    .from("report")
+    .select()
+    .eq("reporterId", myId)
+    .eq("reportedId", reportedId);
+
+  if (postId) {
+    query = query.eq("postId", postId);
+  } else {
+    query = query.is("postId", null);
+  }
+
+  if (commentId) {
+    query = query.eq("commentId", commentId);
+  } else {
+    query = query.is("commentId", null);
+  }
+
+  const { data: existingReport } = await query.single();
+
+  if (existingReport) return;
+
   const { error } = await supabase.from("report").insert({
     postId,
     commentId,
-    reporterId: myId, // 신고자
-    reportedId, // 신고 대상
-    reportType, // 신고 타입 "Inappropriate" | "Conflict" | "Violence" | "Ads" | "Spam" | "Other"
-    reportContent, // 신고 내용
+    reporterId: myId,
+    reportedId,
+    reportType,
+    reportContent,
   });
 
   if (error) {
@@ -1623,9 +1646,21 @@ export async function reportUser({
 export async function blockUser(blockedId: string) {
   const myId = await getUserIdFromStorage();
 
+  // 이미 차단했는지 확인
+  const { data: existingBlock } = await supabase
+    .from("blockUser")
+    .select()
+    .eq("blockerId", myId)
+    .eq("blockedId", blockedId)
+    .single();
+
+  if (existingBlock) {
+    throw new Error("이미 차단한 사용자입니다.");
+  }
+
   const { error } = await supabase.from("blockUser").insert({
-    blockerId: myId, // 차단자
-    blockedId, // 차단 대상
+    blockerId: myId,
+    blockedId,
   });
 
   if (error) {
