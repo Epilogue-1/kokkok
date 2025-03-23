@@ -1,3 +1,4 @@
+import { CommentOptionsModal } from "@/components/modals/ListModal/CommentOptionsModal";
 import colors from "@/constants/colors";
 import Icons from "@/constants/icons";
 import images from "@/constants/images";
@@ -18,7 +19,6 @@ import * as SecureStore from "expo-secure-store";
 import { useEffect, useState } from "react";
 import { Image, Pressable, Text, TouchableOpacity, View } from "react-native";
 import { FlatList } from "react-native";
-import { CommentDeleteModal } from "../modals/DeleteModal/CommentDeleteModal";
 
 const ReplySkeleton = () => (
   <View className="mb-4 animate-pulse">
@@ -133,7 +133,7 @@ export default function CommentItem({
   );
 
   const handleOpenModal = () => {
-    openModal(<CommentDeleteModal commentId={id} postId={postId} />, "bottom");
+    openModal(<CommentOptionsModal commentId={id} postId={postId} />, "bottom");
   };
 
   // 좋아요 토글
