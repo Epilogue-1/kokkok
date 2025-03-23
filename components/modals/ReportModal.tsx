@@ -3,7 +3,7 @@ import Icons from "@/constants/icons";
 import { useModal } from "@/hooks/useModal";
 import type { Database } from "@/types/supabase";
 import { reportUser } from "@/utils/supabase";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { Text, TextInput, TouchableOpacity, View } from "react-native";
 import { showToast } from "../ToastConfig";
@@ -31,6 +31,7 @@ export function ReportModal({
   const { openModal, closeModal } = useModal();
   const [reportType, setReportType] = useState<ReportType | null>(null);
   const [reportContent, setReportContent] = useState("");
+  const queryClient = useQueryClient();
 
   const reportOptions: ReportTypeOption[] = [
     {
@@ -68,6 +69,16 @@ export function ReportModal({
     mutationFn: reportUser,
     onSuccess: () => {
       showToast("success", "신고가 접수되었습니다.");
+
+      if (postId) {
+        queryClient.invalidateQueries({ queryKey: ["post", postId] });
+        queryClient.invalidateQueries({ queryKey: ["posts"] });
+      }
+      if (commentId) {
+        queryClient.invalidateQueries({ queryKey: ["comments"] });
+        queryClient.invalidateQueries({ queryKey: ["replies"] });
+      }
+
       openModal(<UserBlockModal blockedId={reportedId} />, "center");
     },
     onError: (error) => {

@@ -554,33 +554,9 @@ export type Database = {
         Args: {
           postId: number;
         };
-        Returns: {
-          id: number;
-          images: string[];
-          contents: string;
-          createdAt: string;
-          userData: {
-            id: string;
-            username: string;
-            avatarUrl: string | null;
-          };
-          commentData: {
-            id: number;
-            contents: string;
-            createdAt: string;
-            userId: string;
-            author: {
-              id: string;
-              username: string;
-              avatarUrl: string | null;
-            };
-          };
-          totalComments: number;
-          likedAvatars: string[];
-          isLikedByUser: boolean;
-        };
+        Returns: Json;
       };
-      get_posts_with_details: {
+      get_posts: {
         Args: {
           startindex: number;
           endindex: number;

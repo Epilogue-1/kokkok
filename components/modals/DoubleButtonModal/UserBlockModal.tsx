@@ -1,15 +1,21 @@
 import { showToast } from "@/components/ToastConfig";
 import { useModal } from "@/hooks/useModal";
 import { blockUser } from "@/utils/supabase";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { DoubleButtonModal } from ".";
 
 export function UserBlockModal({ blockedId }: { blockedId: string }) {
   const { closeModal } = useModal();
+  const queryClient = useQueryClient();
 
   const userBlockMutation = useMutation({
     mutationFn: blockUser,
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["post"] });
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+      queryClient.invalidateQueries({ queryKey: ["comments"] });
+      queryClient.invalidateQueries({ queryKey: ["replies"] });
+
       closeModal();
       showToast("success", "사용자를 차단했습니다.");
     },
