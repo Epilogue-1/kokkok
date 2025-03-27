@@ -10,6 +10,7 @@ import {
   Alert,
   Image,
   KeyboardAvoidingView,
+  Linking,
   Platform,
   ScrollView,
   Text,
@@ -17,11 +18,13 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import BouncyCheckbox from "react-native-bouncy-checkbox";
 
 const Step1 = () => {
   const [signUpForm, setSignUpForm] = useAtom(signUpFormAtom);
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isSelected, setIsSelected] = useState(false);
   const { openModal } = useModal();
 
   useEffect(() => {
@@ -40,6 +43,7 @@ const Step1 = () => {
         signUpForm.username,
         signUpForm.password,
         passwordConfirm,
+        isSelected,
       );
 
       if (validationError) {
@@ -131,6 +135,37 @@ const Step1 = () => {
                 value={passwordConfirm}
                 onChangeText={(text) => setPasswordConfirm(text)}
               />
+
+              <View className="w-full flex-row items-center justify-between">
+                <View className="flex-row items-center gap-[12px]">
+                  <BouncyCheckbox
+                    disabled={false}
+                    fillColor={colors.primary}
+                    size={28}
+                    iconStyle={{
+                      borderColor: colors.primary,
+                      borderRadius: 10,
+                    }}
+                    innerIconStyle={{
+                      borderRadius: 10,
+                    }}
+                    onPress={(isChecked) => setIsSelected(!!isChecked)}
+                    className="size-[28px]"
+                  />
+                  <Text className="title-3 text-gray-70">
+                    개인정보처리방침 및 운영정책
+                  </Text>
+                </View>
+                <TouchableOpacity
+                  onPress={() =>
+                    Linking.openURL(
+                      "https://ash-anchovy-874.notion.site/188b8ea65e92808fa75aea1e1a255563",
+                    )
+                  }
+                >
+                  <Text className="body-1 text-purple">문의하기</Text>
+                </TouchableOpacity>
+              </View>
             </View>
 
             <TouchableOpacity
