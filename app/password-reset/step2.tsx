@@ -66,8 +66,8 @@ const Step2 = () => {
             className="h-[90px] w-full"
             resizeMode="contain"
           />
-
-          <View className="relative mt-10 flex w-full gap-10">
+          {/* mb-[120px]는 keyboard 올라가는 현상을 위한 class */}
+          <View className="relative mt-10 mb-[120px] flex w-full gap-10">
             <TextInput
               className="placeholder:body-1 h-[58px] w-full rounded-[10px] border border-gray-25 px-4 text-gray-90 focus:border-primary"
               placeholder="인증코드를 입력해주세요"

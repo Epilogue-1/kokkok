@@ -78,7 +78,8 @@ const ChangePassword = () => {
         keyboardShouldPersistTaps="handled"
       >
         <View className="mt-[32px] flex-1 items-center px-6">
-          <View className="flex w-full gap-[20px]">
+          {/* mb-[120px]는 keyboard 올라가는 현상을 위한 class */}
+          <View className="mb-[120px] flex w-full gap-[20px]">
             <TextInput
               className="placeholder:body-1 h-[58px] w-full rounded-[10px] border border-gray-25 px-4 text-gray-90 focus:border-primary"
               autoCapitalize="none"
