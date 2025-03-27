@@ -69,7 +69,7 @@ const Step2 = () => {
           {/* mb-[120px]는 keyboard 올라가는 현상을 위한 class */}
           <View className="relative mt-10 mb-[120px] flex w-full gap-10">
             <TextInput
-              className="placeholder:body-1 h-[58px] w-full rounded-[10px] border border-gray-25 px-4 text-gray-90 focus:border-primary"
+              className="placeholder:body-1 h-[52px] w-full rounded-[10px] border border-gray-25 px-4 text-gray-90 focus:border-primary"
               placeholder="인증코드를 입력해주세요"
               placeholderTextColor={colors.gray[60]}
               accessibilityLabel="인증코드 입력"
@@ -83,10 +83,10 @@ const Step2 = () => {
           </View>
 
           <TouchableOpacity
-            className="absolute bottom-[32px] h-[62px] w-full items-center justify-center rounded-[10px] bg-primary"
+            className="absolute bottom-[32px] h-[56px] w-full items-center justify-center rounded-[10px] bg-primary"
             onPress={handleVerifyToken}
           >
-            <Text className="heading-2 text-white">인증번호 입력</Text>
+            <Text className="title-2 text-white">인증번호 입력</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

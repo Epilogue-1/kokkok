@@ -77,7 +77,7 @@ const Step1 = () => {
           {/* mb-[120px]는 keyboard 올라가는 현상을 위한 class */}
           <View className="mt-10 mb-[120px] flex w-full gap-10">
             <TextInput
-              className="placeholder:body-1 h-[58px] w-full rounded-[10px] border border-gray-25 px-4 text-gray-90 focus:border-primary"
+              className="placeholder:body-1 h-[52px] w-full rounded-[10px] border border-gray-25 px-4 text-gray-90 focus:border-primary"
               keyboardType="email-address"
               autoCapitalize="none"
               placeholder="이메일을 입력해주세요"
@@ -90,13 +90,13 @@ const Step1 = () => {
           </View>
 
           <TouchableOpacity
-            className={`absolute bottom-[32px] h-[62px] w-full items-center justify-center rounded-[10px] ${
+            className={`absolute bottom-[32px] h-[56px] w-full items-center justify-center rounded-[10px] ${
               isLoading ? "bg-gray-20" : "bg-primary"
             }`}
             onPress={handleSendEmail}
             disabled={isLoading}
           >
-            <Text className="heading-2 text-white">
+            <Text className="title-2 text-white">
               {isLoading ? "인증번호 전송 중..." : "인증번호 발송"}
             </Text>
           </TouchableOpacity>

@@ -206,10 +206,10 @@ const SignIn = () => {
             </Link>
 
             <TouchableOpacity
-              className="mt-[36px] h-[62px] w-full items-center justify-center rounded-[10px] bg-primary"
+              className="mt-[36px] h-[56px] w-full items-center justify-center rounded-[10px] bg-primary"
               onPress={handleSignIn}
             >
-              <Text className="heading-2 text-white">로그인</Text>
+              <Text className="title-2 text-white">로그인</Text>
             </TouchableOpacity>
 
             <View className="mt-14 flex items-center">

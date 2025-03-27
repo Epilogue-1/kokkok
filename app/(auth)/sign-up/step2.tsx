@@ -98,7 +98,7 @@ const Step2 = () => {
           {/* mb-[120px]는 keyboard 올라가는 현상을 위한 class */}
           <View className="relative mt-[84px] mb-[120px] flex w-full gap-10">
             <TextInput
-              className="placeholder:body-1 h-[58px] w-full rounded-[10px] border border-gray-25 px-4 text-gray-90 focus:border-primary"
+              className="placeholder:body-1 h-[52px] w-full rounded-[10px] border border-gray-25 px-4 text-gray-90 focus:border-primary"
               placeholder="인증코드를 입력해주세요."
               placeholderTextColor={colors.gray[60]}
               accessibilityLabel="인증코드 입력"
@@ -112,16 +112,16 @@ const Step2 = () => {
           </View>
 
           <TouchableOpacity
-            className={`absolute bottom-[32px] h-[62px] w-full items-center justify-center rounded-[10px] ${
+            className={`absolute bottom-[32px] h-[56px] w-full items-center justify-center rounded-[10px] ${
               isLoading ? "bg-gray-20" : "bg-primary"
             }`}
             onPress={handleSignUp}
             disabled={isLoading}
           >
             {isLoading ? (
-              <Text className="heading-2 text-white">인증코드 확인중...</Text>
+              <Text className="title-2 text-white">인증코드 확인중...</Text>
             ) : (
-              <Text className="heading-2 text-white">완료</Text>
+              <Text className="title-2 text-white">완료</Text>
             )}
           </TouchableOpacity>
         </View>

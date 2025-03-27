@@ -81,7 +81,7 @@ const ChangePassword = () => {
           {/* mb-[120px]는 keyboard 올라가는 현상을 위한 class */}
           <View className="mb-[120px] flex w-full gap-[20px]">
             <TextInput
-              className="placeholder:body-1 h-[58px] w-full rounded-[10px] border border-gray-25 px-4 text-gray-90 focus:border-primary"
+              className="placeholder:body-1 h-[52px] w-full rounded-[10px] border border-gray-25 px-4 text-gray-90 focus:border-primary"
               autoCapitalize="none"
               placeholder="현재 비밀번호를 입력해주세요"
               placeholderTextColor={colors.gray[60]}
@@ -94,7 +94,7 @@ const ChangePassword = () => {
               secureTextEntry
             />
             <TextInput
-              className="placeholder:body-1 h-[58px] w-full rounded-[10px] border border-gray-25 px-4 text-gray-90 focus:border-primary"
+              className="placeholder:body-1 h-[52px] w-full rounded-[10px] border border-gray-25 px-4 text-gray-90 focus:border-primary"
               autoCapitalize="none"
               placeholder="새 비밀번호를 입력해주세요"
               placeholderTextColor={colors.gray[60]}
@@ -107,7 +107,7 @@ const ChangePassword = () => {
               secureTextEntry
             />
             <TextInput
-              className="placeholder:body-1 h-[58px] w-full rounded-[10px] border border-gray-25 px-4 text-gray-90 focus:border-primary"
+              className="placeholder:body-1 h-[52px] w-full rounded-[10px] border border-gray-25 px-4 text-gray-90 focus:border-primary"
               autoCapitalize="none"
               placeholder="비밀번호를 한번 더 입력해주세요"
               placeholderTextColor={colors.gray[60]}
@@ -122,13 +122,13 @@ const ChangePassword = () => {
           </View>
 
           <TouchableOpacity
-            className={`absolute bottom-[32px] h-[62px] w-full items-center justify-center rounded-[10px] ${
+            className={`absolute bottom-[32px] h-[56px] w-full items-center justify-center rounded-[10px] ${
               isLoading ? "bg-gray-20" : "bg-primary"
             }`}
             onPress={handleResetPassword}
             disabled={isLoading}
           >
-            <Text className="heading-2 text-white">
+            <Text className="title-2 text-white">
               {isLoading ? "변경 중..." : "완료"}
             </Text>
           </TouchableOpacity>

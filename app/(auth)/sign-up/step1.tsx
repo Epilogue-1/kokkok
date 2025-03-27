@@ -84,7 +84,7 @@ const Step1 = () => {
             {/* mb-[120px]는 keyboard 올라가는 현상을 위한 class */}
             <View className="mt-[84px] mb-[120px] flex w-full gap-[24px]">
               <TextInput
-                className="placeholder:body-1 h-[58px] w-full rounded-[10px] border border-gray-25 px-4 text-gray-90 focus:border-primary"
+                className="placeholder:body-1 h-[52px] w-full rounded-[10px] border border-gray-25 px-4 text-gray-90 focus:border-primary"
                 placeholder="이메일을 입력해주세요"
                 placeholderTextColor={colors.gray[60]}
                 keyboardType="email-address"
@@ -98,7 +98,7 @@ const Step1 = () => {
               />
 
               <TextInput
-                className="placeholder:body-1 h-[58px] w-full rounded-[10px] border border-gray-25 px-4 text-gray-90 focus:border-primary"
+                className="placeholder:body-1 h-[52px] w-full rounded-[10px] border border-gray-25 px-4 text-gray-90 focus:border-primary"
                 placeholder="닉네임을 입력해주세요"
                 placeholderTextColor={colors.gray[60]}
                 autoCapitalize="none"
@@ -111,7 +111,7 @@ const Step1 = () => {
               />
 
               <TextInput
-                className="placeholder:body-1 h-[58px] w-full rounded-[10px] border border-gray-25 px-4 text-gray-90 focus:border-primary"
+                className="placeholder:body-1 h-[52px] w-full rounded-[10px] border border-gray-25 px-4 text-gray-90 focus:border-primary"
                 placeholder="비밀번호를 입력해주세요"
                 placeholderTextColor={colors.gray[60]}
                 autoCapitalize="none"
@@ -125,7 +125,7 @@ const Step1 = () => {
               />
 
               <TextInput
-                className="placeholder:body-1 h-[58px] w-full rounded-[10px] border border-gray-25 px-4 text-gray-90 focus:border-primary"
+                className="placeholder:body-1 h-[52px] w-full rounded-[10px] border border-gray-25 px-4 text-gray-90 focus:border-primary"
                 placeholder="비밀번호를 한번 더 입력해주세요"
                 placeholderTextColor={colors.gray[60]}
                 autoCapitalize="none"
@@ -163,24 +163,22 @@ const Step1 = () => {
                     )
                   }
                 >
-                  <Text className="body-1 text-purple">문의하기</Text>
+                  <Text className="body-1 text-purple">상세보기</Text>
                 </TouchableOpacity>
               </View>
             </View>
 
             <TouchableOpacity
-              className={`absolute bottom-[32px] h-[62px] w-full items-center justify-center rounded-[10px] ${
+              className={`absolute bottom-[32px] h-[56px] w-full items-center justify-center rounded-[10px] ${
                 isLoading ? "bg-gray-20" : "bg-primary"
               }`}
               onPress={handleContinue}
               disabled={isLoading}
             >
               {isLoading ? (
-                <Text className="heading-2 text-white">
-                  인증 메일 전송 중...
-                </Text>
+                <Text className="title-2 text-white">인증 메일 전송 중...</Text>
               ) : (
-                <Text className="heading-2 text-white">다음</Text>
+                <Text className="title-2 text-white">다음</Text>
               )}
             </TouchableOpacity>
           </View>
