@@ -1,5 +1,6 @@
 import PostItem from "@/components/PostItem";
 import CommentsSection from "@/components/comments/CommentsSection";
+import { PostOptionsModal } from "@/components/modals/ListModal/PostOptionsModal";
 import MotionModal from "@/components/modals/MotionModal";
 import colors from "@/constants/colors";
 import Icons from "@/constants/icons";
@@ -145,13 +146,7 @@ export default function Home() {
             onAuthorPress={onOpenLikedAuthor}
             onDeletePress={() => {
               setSelectedPostId(Number(post.id));
-              openModal(
-                {
-                  type: "SELECT_POST_EDIT_DELETE",
-                  postId: Number(post.id),
-                },
-                "bottom",
-              );
+              openModal(<PostOptionsModal postId={post.id} />, "bottom");
             }}
           />
         )}

@@ -1,5 +1,9 @@
 import { showToast } from "@/components/ToastConfig";
-import type { ImageItem } from "@/components/modals/ListModals";
+import {
+  type ImageItem,
+  ImageUploadOptionsModal,
+} from "@/components/modals/ListModal/ImageUploadOptionsModal";
+import { PostUploadErrorModal } from "@/components/modals/SingleButtonModal/PostUploadErrorModal";
 import colors from "@/constants/colors";
 import Icons from "@/constants/icons";
 import useFetchData from "@/hooks/useFetchData";
@@ -45,7 +49,7 @@ export default function Upload() {
   const flatListRef = useRef<FlatList<ImageItem> | null>(null);
 
   const postUploadFailModal = () => {
-    openModal({ type: "POST_UPLOAD_FAIL" });
+    openModal(<PostUploadErrorModal />);
   };
 
   // 게시글 데이터를 불러오는 훅
@@ -262,13 +266,14 @@ export default function Upload() {
               <TouchableOpacity
                 className="size-[152px] items-center justify-center rounded-[15px] bg-gray-25"
                 onPress={() =>
-                  openModal({
-                    type: "SELECT_POST_UPLOAD_IMAGE",
-                    imageItems,
-                    setImageItems,
-                    flatListRef,
-                    isLoading: uploadPostMutation.isPending,
-                  })
+                  openModal(
+                    <ImageUploadOptionsModal
+                      flatListRef={flatListRef}
+                      imageItems={imageItems}
+                      setImageItems={setImageItems}
+                      isLoading={uploadPostMutation.isPending}
+                    />,
+                  )
                 }
                 disabled={uploadPostMutation.isPending}
               >

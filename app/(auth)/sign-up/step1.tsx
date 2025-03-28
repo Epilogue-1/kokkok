@@ -1,3 +1,4 @@
+import { VerifyEmailModal } from "@/components/modals/SingleButtonModal/VerifyEmailModal";
 import { useModal } from "@/hooks/useModal";
 import { sendUpOTP } from "@/utils/supabase";
 import { validateSignUpFormWithSupabase } from "@/utils/validation";
@@ -48,7 +49,7 @@ const Step1 = () => {
 
       await sendUpOTP(signUpForm.email);
 
-      openModal({ type: "EMAIL_CHECK" });
+      openModal(<VerifyEmailModal />);
     } catch (error) {
       Alert.alert(
         "알림",

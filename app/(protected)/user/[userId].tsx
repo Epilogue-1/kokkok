@@ -1,6 +1,7 @@
 import { HeaderWithUsername } from "@/components/Header";
 import PostGrid from "@/components/PostGrid";
 import ProfileSection from "@/components/ProfileSection";
+import { FriendRequestOptionsModal } from "@/components/modals/ListModal/FriendRequestOptionsModal";
 import useFetchData from "@/hooks/useFetchData";
 import { useModal } from "@/hooks/useModal";
 import type { RelationType } from "@/types/Friend.interface";
@@ -29,7 +30,11 @@ const User = () => {
     "유저를 불러올 수 없습니다.",
   );
 
-  const { data: posts, isError: isPostsError } = useFetchData(
+  const {
+    data: posts,
+    isError: isPostsError,
+    refetch,
+  } = useFetchData(
     ["posts", userId],
     () => getUserPosts(userId as string),
     "게시물을 불러올 수 없습니다.",
@@ -71,16 +76,16 @@ const User = () => {
             description={user?.description || undefined}
             onSettingsPress={() =>
               openModal(
-                {
-                  type: "SELECT_FRIEND_REQUEST",
-                  userId: userId as string,
-                  relation: relation as RelationType,
-                },
+                <FriendRequestOptionsModal
+                  relation={relation as RelationType}
+                  userId={userId as string}
+                />,
                 "bottom",
               )
             }
           />
           <PostGrid
+            refetch={refetch}
             posts={
               posts
                 ? posts.map((post) => ({ ...post, id: post.id.toString() }))
