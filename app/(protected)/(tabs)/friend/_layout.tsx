@@ -13,16 +13,19 @@ const SCREEN_OPTIONS = {
     alignItems: "center",
     justifyContent: "center",
     shadowColor: "transparent",
-    borderBottomColor: colors.gray[20],
+    borderBottomColor: colors.gray[10],
     borderBottomWidth: 1,
   },
   tabBarIndicatorStyle: {
     backgroundColor: colors.primary,
   },
+  tabBarPressColor: "transparent",
 } as const;
 
 const TabBarLabel = (title: string, focused: boolean) => (
-  <Text className={`title-2 text-gray-90 ${focused ? "" : "font-pmedium"}`}>
+  <Text
+    className={`title-2 ${focused ? " text-gray-90" : " text-gray-80 font-pmedium"}`}
+  >
     {title}
   </Text>
 );

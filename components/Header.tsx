@@ -31,9 +31,9 @@ interface HeaderProps {
 
 export function Header({ name }: HeaderProps) {
   return (
-    <SafeAreaView edges={["top"]} className="border-gray-10 border-b bg-white">
+    <SafeAreaView edges={["top"]} className="border-gray-20 border-b bg-white">
       <View className="h-14 items-center justify-center">
-        <Text className="heading-2">{HEADER_TITLE[name]}</Text>
+        <Text className="title-1">{HEADER_TITLE[name]}</Text>
       </View>
     </SafeAreaView>
   );
@@ -41,16 +41,16 @@ export function Header({ name }: HeaderProps) {
 
 export function HeaderWithBack({ name }: HeaderProps) {
   return (
-    <SafeAreaView edges={["top"]} className="border-gray-10 border-b bg-white">
+    <SafeAreaView edges={["top"]} className="border-gray-20 border-b bg-white">
       <View className="h-14 items-center justify-center px-4">
         <TouchableOpacity
           onPress={() => router.back()}
           accessibilityLabel="뒤로가기"
           className="absolute left-4"
         >
-          <icons.ChevronLeftIcon width={24} height={24} color="#727272" />
+          <icons.ChevronLeftIcon width={24} height={24} color="#222222" />
         </TouchableOpacity>
-        <Text className="heading-2">{HEADER_TITLE[name]}</Text>
+        <Text className="title-1">{HEADER_TITLE[name]}</Text>
       </View>
     </SafeAreaView>
   );
@@ -84,7 +84,7 @@ export function HeaderWithNotification({ name }: HeaderProps) {
   }
 
   return (
-    <SafeAreaView edges={["top"]} className="border-gray-10 border-b bg-white">
+    <SafeAreaView edges={["top"]} className="border-gray-20 border-b bg-white">
       <View className="h-14 flex-row items-center justify-between px-4">
         {/* 홈의 경우 로고 이미지 사용 */}
         {name === "HOME" ? (
@@ -94,13 +94,10 @@ export function HeaderWithNotification({ name }: HeaderProps) {
             accessibilityLabel="KokKok 로고"
           />
         ) : (
-          <Text className="heading-2">{HEADER_TITLE[name]}</Text>
+          <Text className="title-1">{HEADER_TITLE[name]}</Text>
         )}
 
-        <View className="flex-row gap-4">
-          {/* 마이페이지, 친구페이지의 버튼 추가 */}
-          <AdditionalButton />
-
+        <View className="flex-row gap-6">
           {/* 새 알람 여부에 따른 아이콘 렌더링 */}
           <TouchableOpacity onPress={() => router.push("/notification")}>
             {hasNewNotification ? (
@@ -109,6 +106,9 @@ export function HeaderWithNotification({ name }: HeaderProps) {
               <icons.BellIcon width={24} height={24} color={colors.gray[100]} />
             )}
           </TouchableOpacity>
+
+          {/* 마이페이지, 친구페이지의 버튼 추가 */}
+          <AdditionalButton />
         </View>
       </View>
     </SafeAreaView>
@@ -124,7 +124,7 @@ export function HeaderWithUsername({
   return (
     <SafeAreaView
       edges={isMyPage ? ["top"] : []}
-      className="border-gray-10 border-b bg-white"
+      className="border-gray-20 border-b bg-white"
     >
       <View className="h-14 flex-row items-center gap-6 px-4">
         <TouchableOpacity
@@ -132,7 +132,7 @@ export function HeaderWithUsername({
           accessibilityLabel="뒤로가기"
           className=""
         >
-          <icons.ChevronLeftIcon width={24} height={24} color="#727272" />
+          <icons.ChevronLeftIcon width={24} height={24} color="#222222" />
         </TouchableOpacity>
         <View className="w-[285px] flex-row items-center">
           <Text

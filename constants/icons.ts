@@ -16,6 +16,9 @@ import FaceDoneIcon from "@/assets/icons/face_done.svg";
 import FaceNotDoneIcon from "@/assets/icons/face_not_done.svg";
 import FaceRestIcon from "@/assets/icons/face_rest.svg";
 import FriendIcon from "@/assets/icons/friend.svg";
+import FriendAddIcon from "@/assets/icons/friend_add.svg";
+import FriendDeleteIcon from "@/assets/icons/friend_delete.svg";
+import FriendSendingIcon from "@/assets/icons/friend_sending.svg";
 import GithubIcon from "@/assets/icons/github.svg";
 import GoogleIcon from "@/assets/icons/google.svg";
 import HeartIcon from "@/assets/icons/heart.svg";
@@ -51,6 +54,9 @@ export default {
   FaceNotDoneIcon,
   FaceRestIcon,
   FriendIcon,
+  FriendAddIcon,
+  FriendDeleteIcon,
+  FriendSendingIcon,
   GithubIcon,
   GoogleIcon,
   HeartIcon,
