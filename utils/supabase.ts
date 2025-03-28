@@ -1059,7 +1059,7 @@ export async function getFriendRequests({
 }
 
 // 친구요청 있는지 조회
-export async function checkFriendRequest(requestId: string): Promise<boolean> {
+export async function checkFriendRequest(requestId: number): Promise<boolean> {
   const { data, error } = await supabase
     .from("friendRequest")
     .select("id")
@@ -1409,6 +1409,54 @@ export async function getLatestStabForFriend(
 // 알림 생성
 export async function createNotification(notification: Notification) {
   const user = await getCurrentUser();
+
+  // 좋아요/댓글좋아요 타입인 경우에만 1시간 제한 체크
+  // 최근 1시간 이내 동일한 유저에게 보낸 알림이 있는지 확인
+  const oneHourAgo = new Date();
+  oneHourAgo.setHours(oneHourAgo.getHours() - 1);
+
+  // 쿼리 조건 설정
+  const query = supabase
+    .from("notification")
+    .select("createdAt, data")
+    .eq("from", user.id)
+    .eq("to", notification.to)
+    .eq("type", notification.type)
+    .gte("createdAt", oneHourAgo.toISOString());
+
+  // like 타입이면 postId로 필터링, commentLike 타입이면 commentInfo.id로 필터링
+  if (notification.type === "like" && notification.data?.postId) {
+    const { data: recentLikes, error } = await query
+      .contains("data", { postId: notification.data.postId })
+      .limit(1);
+
+    if (error) {
+      if (error.code !== "PGRST116") {
+        throw error;
+      }
+    } else if (recentLikes && recentLikes.length > 0) {
+      // 같은 게시물에 이미 좋아요 알림을 보냈다면 추가 알림 중단
+      return;
+    }
+  } else if (
+    notification.type === "commentLike" &&
+    notification.data?.commentInfo?.id
+  ) {
+    const { data: recentCommentLikes, error } = await query
+      .contains("data", {
+        commentInfo: { id: notification.data.commentInfo.id },
+      })
+      .limit(1);
+
+    if (error) {
+      if (error.code !== "PGRST116") {
+        throw error;
+      }
+    } else if (recentCommentLikes && recentCommentLikes.length > 0) {
+      // 같은 댓글에 이미 좋아요 알림을 보냈다면 추가 알림 중단
+      return;
+    }
+  }
 
   const { error } = await supabase
     .from("notification")
