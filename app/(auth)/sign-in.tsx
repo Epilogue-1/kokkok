@@ -1,6 +1,8 @@
 import {
   Alert,
   Image,
+  KeyboardAvoidingView,
+  SafeAreaView,
   ScrollView,
   Text,
   TextInput,
@@ -8,6 +10,7 @@ import {
   View,
 } from "react-native";
 
+import colors from "@/constants/colors";
 import { signIn, supabase } from "@/utils/supabase";
 import { validateSignInForm } from "@/utils/validation";
 import icons from "@constants/icons";
@@ -19,6 +22,7 @@ import * as Linking from "expo-linking";
 import { Link, useRouter } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
 import { useState } from "react";
+import { Platform } from "react-native";
 
 WebBrowser.maybeCompleteAuthSession(); // required for web only
 const redirectTo = makeRedirectUri({});
@@ -140,91 +144,103 @@ const SignIn = () => {
   };
 
   return (
-    <View className="h-full bg-white">
-      <ScrollView>
-        <View className="mt-10 flex items-center justify-center px-6">
-          <Image
-            source={images.AuthLogo}
-            className="h-[90px] w-[328px]"
-            resizeMode="contain"
-          />
-
-          <View className="mt-10 flex w-full gap-8">
-            <TextInput
-              className="placeholder:body-1 h-[58px] w-full rounded-[10px] border border-gray-20 px-4 placeholder:text-gray-40 focus:border-primary"
-              placeholder="이메일을 입력해주세요."
-              keyboardType="email-address"
-              autoCapitalize="none"
-              accessibilityLabel="이메일 입력"
-              accessibilityHint="이메일을 입력해주세요."
-              value={userInput.email}
-              onChangeText={(text) =>
-                setUserInput((prev) => ({ ...prev, email: text }))
-              }
+    <SafeAreaView className="h-full bg-white">
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
+        <ScrollView keyboardShouldPersistTaps="handled" className="h-full">
+          <View className="mt-[92px] items-center justify-center px-6">
+            <Image
+              source={images.AuthLogo}
+              className="h-[37px] w-[163px]"
+              resizeMode="contain"
             />
-            <View className="w-full">
+
+            <View className="mt-[85px] flex w-full gap-[24px]">
               <TextInput
-                className="placeholder:body-1 h-[58px] w-full rounded-[10px] border border-gray-20 px-4 placeholder:text-gray-40 focus:border-primary"
-                placeholder="비밀번호를 입력해주세요."
+                className="placeholder:body-1 h-[52px] w-full rounded-[10px] border border-gray-25 px-4 text-gray-90 focus:border-primary"
+                placeholder="이메일을 입력해주세요"
+                placeholderTextColor={colors.gray[60]}
+                keyboardType="email-address"
                 autoCapitalize="none"
-                secureTextEntry={!showPassword}
-                accessibilityLabel="비밀번호 입력"
-                accessibilityHint="비밀번호를 입력해주세요."
-                value={userInput.password}
+                accessibilityLabel="이메일 입력"
+                accessibilityHint="이메일을 입력해주세요."
+                value={userInput.email}
                 onChangeText={(text) =>
-                  setUserInput((prev) => ({ ...prev, password: text }))
+                  setUserInput((prev) => ({ ...prev, email: text }))
                 }
               />
-              <TouchableOpacity
-                className="-translate-y-1/2 absolute top-1/2 right-4"
-                onPress={() => setShowPassword((prev) => !prev)}
-                accessibilityLabel={
-                  showPassword ? "비밀번호 숨기기" : "비밀번호 표시"
-                }
-                accessibilityRole="button"
-              >
-                {showPassword ? (
-                  <icons.EyeOffIcon width={24} height={24} color="#828282" />
-                ) : (
-                  <icons.EyeIcon width={24} height={24} color="#828282" />
-                )}
-              </TouchableOpacity>
+              <View className="w-full">
+                <TextInput
+                  className="placeholder:body-1 h-[52px] w-full rounded-[10px] border border-gray-25 px-4 text-gray-90 focus:border-primary"
+                  placeholder="비밀번호를 입력해주세요"
+                  placeholderTextColor={colors.gray[60]}
+                  autoCapitalize="none"
+                  secureTextEntry={!showPassword}
+                  accessibilityLabel="비밀번호 입력"
+                  accessibilityHint="비밀번호를 입력해주세요."
+                  value={userInput.password}
+                  onChangeText={(text) =>
+                    setUserInput((prev) => ({ ...prev, password: text }))
+                  }
+                />
+                <TouchableOpacity
+                  className="-translate-y-1/2 absolute top-1/2 right-4"
+                  onPress={() => setShowPassword((prev) => !prev)}
+                  accessibilityLabel={
+                    showPassword ? "비밀번호 숨기기" : "비밀번호 표시"
+                  }
+                  accessibilityRole="button"
+                >
+                  {showPassword ? (
+                    <icons.EyeOffIcon width={24} height={24} color="#828282" />
+                  ) : (
+                    <icons.EyeIcon width={24} height={24} color="#828282" />
+                  )}
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
 
-          <TouchableOpacity
-            className="mt-10 h-[62px] w-full items-center justify-center rounded-[10px] bg-primary"
-            onPress={handleSignIn}
-          >
-            <Text className="heading-2 text-white">로그인</Text>
-          </TouchableOpacity>
-
-          <View className="mt-10 flex flex-row justify-center gap-3">
-            <Link href="/password-reset/step1">
-              <Text className="body-1 text-gray-50">비밀번호 재설정</Text>
+            <Link className="mt-[10px] ml-auto" href="/password-reset/step1">
+              <Text className="body-1 text-purple">비밀번호를 잊으셨나요?</Text>
             </Link>
-            <Text className="body-1 text-gray-50">|</Text>
-            <Link href="/sign-up/step1">
-              <Text className="body-1 text-gray-50">회원가입</Text>
-            </Link>
-          </View>
 
-          <View className="mt-14 flex items-center">
-            <View>
-              <Text className="title-3 text-gray-65">간편 로그인</Text>
+            <TouchableOpacity
+              className="mt-[36px] h-[56px] w-full items-center justify-center rounded-[10px] bg-primary"
+              onPress={handleSignIn}
+            >
+              <Text className="title-2 text-white">로그인</Text>
+            </TouchableOpacity>
+
+            <View className="mt-14 flex items-center">
+              <View>
+                <Text className="title-3 text-gray-80">간편 로그인</Text>
+              </View>
+              <View className="mt-[16px] flex-row items-center gap-[40px]">
+                <TouchableOpacity onPress={() => performOAuth("google")}>
+                  <icons.GoogleIcon width={56} height={56} />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => performOAuth("github")}>
+                  <icons.GithubIcon width={56} height={56} />
+                </TouchableOpacity>
+              </View>
             </View>
-            <View className="mt-4 flex-row items-center gap-4">
-              <TouchableOpacity onPress={() => performOAuth("google")}>
-                <icons.GoogleIcon width={56} height={56} />
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => performOAuth("github")}>
-                <icons.GithubIcon width={56} height={56} />
-              </TouchableOpacity>
+
+            <View className="mt-[56px]">
+              <Text className="body-1 text-gray-60">
+                계정이 없다면?{" "}
+                <Link
+                  href="/sign-up/step1"
+                  className="title-4 mr-[4px] text-purple"
+                >
+                  이메일로 회원가입
+                </Link>
+              </Text>
             </View>
           </View>
-        </View>
-      </ScrollView>
-    </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
 

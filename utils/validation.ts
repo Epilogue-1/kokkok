@@ -2,7 +2,13 @@ import { supabase } from "./supabase";
 
 export interface SignUpValidationError {
   message: string;
-  field: "email" | "username" | "password" | "passwordConfirm" | "otpcode";
+  field:
+    | "email"
+    | "username"
+    | "password"
+    | "passwordConfirm"
+    | "otpcode"
+    | "privacyPolicy";
 }
 
 export const validateEmail = (email: string): SignUpValidationError | null => {
@@ -119,6 +125,7 @@ export const validateSignUpFormWithSupabase = async (
   username: string,
   password: string,
   passwordConfirm: string,
+  isPrivacyPolicyAgreed: boolean, // 파라미터 추가
 ): Promise<SignUpValidationError | null> => {
   // 기본 유효성 검사
   const basicValidationError = validateSignUpForm(
@@ -128,6 +135,13 @@ export const validateSignUpFormWithSupabase = async (
     passwordConfirm,
   );
   if (basicValidationError) return basicValidationError;
+  // 개인정보 처리방침 동의 여부 검사
+  if (!isPrivacyPolicyAgreed) {
+    return {
+      message: "개인정보 처리방침 및 운영정책에 동의해주세요.",
+      field: "privacyPolicy",
+    };
+  }
 
   // Supabase 이메일 검증
   const supabaseValidationError = await validateEmailWithSupabase(email);

@@ -19,6 +19,7 @@ module.exports = {
         },
         black: colors.black,
         gray: colors.gray,
+        purple: colors.purple,
       },
       fontFamily: {
         pblack: ["Pretendard-Black"],
