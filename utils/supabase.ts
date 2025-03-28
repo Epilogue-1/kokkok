@@ -1706,6 +1706,15 @@ export async function blockUser(blockedId: string) {
     throw new Error("이미 차단한 사용자입니다.");
   }
 
+  // 친구 관계인지 확인
+  const relationship = await getRelationship(blockedId);
+  
+  // 친구 관계라면 친구 삭제
+  if (relationship === RELATION_TYPE.FRIEND) {
+    await unfriend(blockedId);
+  }
+
+  // 사용자 차단
   const { error } = await supabase.from("blockUser").insert({
     blockerId: myId,
     blockedId,
@@ -1713,6 +1722,7 @@ export async function blockUser(blockedId: string) {
 
   if (error) {
     console.error("사용자 차단 실패:", error);
+    throw new Error("사용자 차단에 실패했습니다.");
   }
 }
 
