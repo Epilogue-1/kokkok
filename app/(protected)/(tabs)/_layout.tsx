@@ -87,8 +87,6 @@ export default function TabsLayout() {
           tabBarHideOnKeyboard: true,
           tabBarStyle: {
             backgroundColor: colors.white,
-            borderTopWidth: 1,
-            borderTopColor: colors.gray[20],
             height: 80,
             flexDirection: "row",
             ...(Platform.OS === "android" && {
