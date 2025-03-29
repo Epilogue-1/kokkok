@@ -1,5 +1,8 @@
-import type { NotificationData } from "./Notification.interface";
-import type { StatusType } from "./User.interface";
+import type {
+  NotificationData,
+  NotificationType,
+} from "./Notification.interface";
+import type { StatusType, UserProfile } from "./User.interface";
 
 export type Json =
   | string
@@ -550,11 +553,58 @@ export type Database = {
           totalCount: number;
         }[];
       };
+      get_notifications: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          id: number;
+          from_user: UserProfile;
+          type: NotificationType;
+          data: NotificationData;
+          createdAt: string;
+        }[];
+      };
+      get_post_likes: {
+        Args: {
+          postid: number;
+        };
+        Returns: {
+          author: {
+            id: string;
+            username: string;
+            avatarUrl: string | null;
+          };
+          createdAt: string;
+        }[];
+      };
       get_post_with_details: {
         Args: {
           postId: number;
         };
-        Returns: Json;
+        Returns: {
+          id: number;
+          images: string[];
+          contents: string;
+          createdAt: string;
+          userData: {
+            id: string;
+            username: string;
+            avatarUrl: string | null;
+          };
+          commentData: {
+            id: number;
+            contents: string;
+            createdAt: string;
+            userId: string;
+            author: {
+              id: string;
+              username: string;
+              avatarUrl: string | null;
+            };
+          };
+          totalComments: number;
+          likedAvatars: string[];
+          isLikedByUser: boolean;
+        };
       };
       get_posts: {
         Args: {
@@ -588,7 +638,7 @@ export type Database = {
           isLikedByUser: boolean;
         }[];
       };
-      get_replies_with_likes: {
+      get_replies: {
         Args: {
           parentid: number;
           startindex: number;

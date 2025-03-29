@@ -13,6 +13,7 @@ interface ReportModalProps {
   postId?: number;
   commentId?: number;
   reportedId: string;
+  isUserPage?: boolean;
 }
 
 type ReportType = Database["public"]["Enums"]["reportType"];
@@ -27,6 +28,7 @@ export function ReportModal({
   postId,
   commentId,
   reportedId,
+  isUserPage = false,
 }: ReportModalProps) {
   const { openModal, closeModal } = useModal();
   const [reportType, setReportType] = useState<ReportType | null>(null);
@@ -79,7 +81,10 @@ export function ReportModal({
         queryClient.invalidateQueries({ queryKey: ["replies"] });
       }
 
-      openModal(<UserBlockModal blockedId={reportedId} />, "center");
+      openModal(
+        <UserBlockModal blockedId={reportedId} isUserPage={isUserPage} />,
+        "center",
+      );
     },
     onError: (error) => {
       // console.error("신고 중 오류 발생:", error);

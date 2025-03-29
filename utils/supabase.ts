@@ -24,7 +24,10 @@ import {
   type PushMessage,
   type PushSetting,
 } from "@/types/Notification.interface";
-import type { Notification } from "@/types/Notification.interface";
+import type {
+  Notification,
+  NotificationData,
+} from "@/types/Notification.interface";
 import type { Comment, Post, Reply } from "@/types/Post.interface";
 import type { User, UserProfile } from "@/types/User.interface";
 import type { Database } from "@/types/supabase";
@@ -466,11 +469,9 @@ export async function getPost(postId: number) {
 // 게시글 좋아요 조회
 export async function getPostLikes(postId: number) {
   try {
-    const { data, error } = await supabase
-      .from("postLike")
-      .select("author:user (id, username, avatarUrl)")
-      .eq("postId", postId)
-      .order("createdAt", { ascending: true });
+    const { data, error } = await supabase.rpc("get_post_likes", {
+      postid: postId,
+    });
 
     if (error) throw error;
     if (!data) throw new Error("게시글 좋아요를 불러올 수 없습니다.");
@@ -750,7 +751,7 @@ export function getReplies(parentId: number) {
         };
       }
 
-      const { data, error } = await supabase.rpc("get_replies_with_likes", {
+      const { data, error } = await supabase.rpc("get_replies", {
         parentid: parentId,
         startindex: start,
         endindex: end,
@@ -1092,6 +1093,13 @@ export async function checkFriendRequestWithUserId(
 // 친구요청 생성
 export async function createFriendRequest(to: string) {
   const userId = await getUserIdFromStorage();
+
+  // 차단한 사용자인지 확인
+  const isBlocked = await checkBlockedUser(to);
+  if (isBlocked) {
+    throw new Error("차단한 사용자에게는 친구 요청을 보낼 수 없습니다.");
+  }
+
   const { error } = await supabase
     .from("friendRequest")
     .insert({ from: userId, to, isAccepted: null });
@@ -1339,30 +1347,15 @@ export async function addWorkoutHistory({ date }: { date: string }) {
 
 // 알림 30개 불러오기
 export async function getNotifications(): Promise<NotificationResponse[]> {
-  const userId = await getUserIdFromStorage();
-
-  const { data, error } = await supabase
-    .from("notification")
-    .select(
-      `
-          id,
-          from: user!notification_from_fkey (id, username, avatarUrl, description),
-          type,
-          data,
-          createdAt
-        `,
-    )
-    .eq("to", userId)
-    .neq("type", "friend")
-    .order("createdAt", { ascending: false })
-    .limit(30);
+  const { data, error } = await supabase.rpc("get_notifications");
 
   if (error) throw error;
   if (!data) throw new Error("알림을 불러올 수 없습니다.");
 
   return data.map((notification) => ({
     ...notification,
-    from: notification.from as UserProfile,
+    from: notification.from_user as UserProfile,
+    data: notification.data as NotificationData,
   }));
 }
 
@@ -1708,9 +1701,13 @@ export async function blockUser(blockedId: string) {
 
   // 친구 관계인지 확인
   const relationship = await getRelationship(blockedId);
-  
-  // 친구 관계라면 친구 삭제
-  if (relationship === RELATION_TYPE.FRIEND) {
+
+  // 친구 관계 혹은 친구 요청 상태인 경우 친구 관계 해제
+  if (
+    relationship === RELATION_TYPE.FRIEND ||
+    relationship === RELATION_TYPE.ASKING ||
+    relationship === RELATION_TYPE.ASKED
+  ) {
     await unfriend(blockedId);
   }
 
@@ -1726,44 +1723,21 @@ export async function blockUser(blockedId: string) {
   }
 }
 
-// 사용자 차단 해제
-export async function unblockUser(blockedId: string) {
-  const myId = await getUserIdFromStorage();
-
-  const { error } = await supabase
-    .from("blockUser")
-    .delete()
-    .eq("blockerId", myId)
-    .eq("blockedId", blockedId);
-
-  if (error) {
-    console.error("사용자 차단 해제 실패:", error);
-  }
-}
-
-// 차단한 사용자 목록 조회
-export async function getBlockedUsers() {
+// 차단한 사용자 조회
+export async function checkBlockedUser(blockedId: string) {
   const myId = await getUserIdFromStorage();
 
   const { data, error } = await supabase
     .from("blockUser")
-    .select(`
-      blockedId,
-      blocked:user!blockUser_blockedId_fkey (
-        id,
-        username,
-        avatarUrl,
-        description
-      )
-    `)
-    .eq("blockerId", myId);
+    .select("id")
+    .eq("blockerId", myId)
+    .eq("blockedId", blockedId);
 
   if (error) {
-    console.error("차단한 사용자 목록 조회 실패:", error);
+    console.error("차단한 사용자 조회 실패:", error);
   }
 
-  // 차단한 사용자 목록 반환
-  return data?.map((item) => item.blocked) || [];
+  return !!data && data.length > 0;
 }
 
 // ============================================

@@ -1,7 +1,6 @@
 import { HeaderWithUsername } from "@/components/Header";
 import PostItem from "@/components/PostItem";
 import CommentsSection from "@/components/comments/CommentsSection";
-import { PostDeleteModal } from "@/components/modals/DeleteModal/PostDeleteModal";
 import { MissingPostModal } from "@/components/modals/DoubleButtonModal/MissingPostModal";
 import MotionModal from "@/components/modals/MotionModal";
 import colors from "@/constants/colors";
@@ -111,11 +110,6 @@ export default function PostDetail() {
           postId={Number(postId)}
           onCommentsPress={() => setIsCommentsVisible(true)}
           onAuthorPress={onOpenLikedAuthor}
-          onDeletePress={() => {
-            openModal(
-              <PostDeleteModal postId={Number(postId)} isDetail={true} />,
-            );
-          }}
         />
       )}
 

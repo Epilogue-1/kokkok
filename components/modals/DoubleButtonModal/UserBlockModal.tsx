@@ -2,19 +2,30 @@ import { showToast } from "@/components/ToastConfig";
 import { useModal } from "@/hooks/useModal";
 import { blockUser } from "@/utils/supabase";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "expo-router";
 import { DoubleButtonModal } from ".";
 
-export function UserBlockModal({ blockedId }: { blockedId: string }) {
+export function UserBlockModal({
+  blockedId,
+  isUserPage = false,
+}: { blockedId: string; isUserPage?: boolean }) {
   const { closeModal } = useModal();
   const queryClient = useQueryClient();
+  const router = useRouter();
 
   const userBlockMutation = useMutation({
     mutationFn: blockUser,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["post"] });
-      queryClient.invalidateQueries({ queryKey: ["posts"] });
-      queryClient.invalidateQueries({ queryKey: ["comments"] });
-      queryClient.invalidateQueries({ queryKey: ["replies"] });
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["post"] }),
+        queryClient.invalidateQueries({ queryKey: ["posts"] }),
+        queryClient.invalidateQueries({ queryKey: ["comments"] }),
+        queryClient.invalidateQueries({ queryKey: ["replies"] }),
+      ]);
+
+      if (isUserPage) {
+        router.replace("/home");
+      }
 
       closeModal();
       showToast("success", "사용자를 차단했습니다.");

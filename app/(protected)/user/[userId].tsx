@@ -1,12 +1,10 @@
 import { HeaderWithUsername } from "@/components/Header";
 import PostGrid from "@/components/PostGrid";
 import ProfileSection from "@/components/ProfileSection";
-import { FriendRequestOptionsModal } from "@/components/modals/ListModal/FriendRequestOptionsModal";
+import { UserOptionsModal } from "@/components/modals/ListModal/UserOptionsModal";
 import useFetchData from "@/hooks/useFetchData";
 import { useModal } from "@/hooks/useModal";
-import type { RelationType } from "@/types/Friend.interface";
 import {
-  getRelationship,
   getUser,
   getUserPosts,
   subscribeFriendRequest,
@@ -40,12 +38,6 @@ const User = () => {
     "게시물을 불러올 수 없습니다.",
   );
 
-  const { data: relation, isPending: isRelationPending } = useFetchData(
-    ["relation", userId],
-    () => getRelationship(userId as string),
-    "친구 정보를 불러올 수 없습니다.",
-  );
-
   // 친구 요청이 추가되면 쿼리 다시 패치하도록 정보 구독
   useEffect(() => {
     let requestChannel: RealtimeChannel;
@@ -76,10 +68,7 @@ const User = () => {
             description={user?.description || undefined}
             onSettingsPress={() =>
               openModal(
-                <FriendRequestOptionsModal
-                  relation={relation as RelationType}
-                  userId={userId as string}
-                />,
+                <UserOptionsModal reportedId={userId as string} />,
                 "bottom",
               )
             }
