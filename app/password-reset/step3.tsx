@@ -1,3 +1,4 @@
+import { ResetPasswordSuccessModal } from "@/components/modals/SingleButtonModal/ResetPasswordSuccessModal";
 import images from "@/constants/images";
 import { passwordResetFormAtom } from "@/contexts/auth";
 import { useModal } from "@/hooks/useModal";
@@ -45,7 +46,7 @@ const Step3 = () => {
       setResetEmail({ email: "" });
 
       // 비밀번호 변경 완료 모달 표시
-      openModal({ type: "PASSWORD_RESET_COMPLETE" });
+      openModal(<ResetPasswordSuccessModal />);
     } catch (error) {
       const errorMessage =
         error instanceof Error

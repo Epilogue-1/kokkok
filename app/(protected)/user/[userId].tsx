@@ -1,11 +1,10 @@
 import { HeaderWithUsername } from "@/components/Header";
 import PostGrid from "@/components/PostGrid";
 import ProfileSection from "@/components/ProfileSection";
+import { UserOptionsModal } from "@/components/modals/ListModal/UserOptionsModal";
 import useFetchData from "@/hooks/useFetchData";
 import { useModal } from "@/hooks/useModal";
-import type { RelationType } from "@/types/Friend.interface";
 import {
-  getRelationship,
   getUser,
   getUserPosts,
   subscribeFriendRequest,
@@ -29,16 +28,14 @@ const User = () => {
     "유저를 불러올 수 없습니다.",
   );
 
-  const { data: posts, isError: isPostsError } = useFetchData(
+  const {
+    data: posts,
+    isError: isPostsError,
+    refetch,
+  } = useFetchData(
     ["posts", userId],
     () => getUserPosts(userId as string),
     "게시물을 불러올 수 없습니다.",
-  );
-
-  const { data: relation, isPending: isRelationPending } = useFetchData(
-    ["relation", userId],
-    () => getRelationship(userId as string),
-    "친구 정보를 불러올 수 없습니다.",
   );
 
   // 친구 요청이 추가되면 쿼리 다시 패치하도록 정보 구독
@@ -71,16 +68,13 @@ const User = () => {
             description={user?.description || undefined}
             onSettingsPress={() =>
               openModal(
-                {
-                  type: "SELECT_FRIEND_REQUEST",
-                  userId: userId as string,
-                  relation: relation as RelationType,
-                },
+                <UserOptionsModal reportedId={userId as string} />,
                 "bottom",
               )
             }
           />
           <PostGrid
+            refetch={refetch}
             posts={
               posts
                 ? posts.map((post) => ({ ...post, id: post.id.toString() }))

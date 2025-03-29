@@ -1,25 +1,11 @@
-import type { ModalState } from "@/types/Modal.interface";
 import { atom } from "jotai";
 
-export const modalStateAtom = atom<ModalState>({
-  isOpen: false,
-  position: "center",
-  modal: null,
-  previousPosition: null,
-});
+export type ModalPosition = "bottom" | "center";
 
-export const setModalStateAtom = atom(
-  (get) => get(modalStateAtom),
-  (get, set, update: Partial<ModalState>) => {
-    const current = get(modalStateAtom);
+export interface InternalModal {
+  id: string;
+  content: React.ReactNode;
+  position: ModalPosition;
+}
 
-    const previousPosition =
-      !current.isOpen && update.isOpen ? null : current.position;
-
-    set(modalStateAtom, {
-      ...current,
-      ...update,
-      previousPosition,
-    });
-  },
-);
+export const modalStackAtom = atom<InternalModal[]>([]);

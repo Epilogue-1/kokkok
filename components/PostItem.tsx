@@ -1,6 +1,7 @@
 import colors from "@/constants/colors";
 import icons from "@/constants/icons";
 import { default as imgs } from "@/constants/images";
+import { useModal } from "@/hooks/useModal";
 import { useTruncateText } from "@/hooks/useTruncateText";
 import { diffDate } from "@/utils/formatDate";
 import { createNotification, toggleLikePost } from "@/utils/supabase";
@@ -10,6 +11,7 @@ import * as SecureStore from "expo-secure-store";
 import { useEffect, useState } from "react";
 import { Image, Pressable, Text, TouchableOpacity, View } from "react-native";
 import Carousel from "./Carousel";
+import { PostOptionsModal } from "./modals/ListModal/PostOptionsModal";
 interface PostItemProps {
   author: {
     id: string;
@@ -32,7 +34,6 @@ interface PostItemProps {
   postId: number;
   onCommentsPress: (num: number) => void;
   onAuthorPress: (id: number) => void;
-  onDeletePress: () => void;
 }
 
 export default function PostItem({
@@ -47,7 +48,6 @@ export default function PostItem({
   postId,
   onCommentsPress,
   onAuthorPress,
-  onDeletePress,
 }: PostItemProps) {
   const diff = diffDate(new Date(createdAt));
   const [userId, setUserId] = useState<string | null>(null);
@@ -56,6 +56,7 @@ export default function PostItem({
   const [showHeart, setShowHeart] = useState(false);
   const queryClient = useQueryClient();
   const router = useRouter();
+  const { openModal } = useModal();
 
   const { calculateMaxChars, truncateText } = useTruncateText();
 
@@ -134,18 +135,21 @@ export default function PostItem({
         </TouchableOpacity>
 
         {/* meatball */}
-        {userId === author.id && (
-          <TouchableOpacity
-            onPress={() => onDeletePress()}
-            className="items-center justify-center py-[4px] pl-[8px]"
-          >
-            <icons.MeatballIcon
-              width={24}
-              height={24}
-              color={colors.gray[70]}
-            />
-          </TouchableOpacity>
-        )}
+        <TouchableOpacity
+          onPress={() => {
+            openModal(
+              <PostOptionsModal
+                isOwner={userId === author.id}
+                reportedId={author.id}
+                postId={postId}
+              />,
+              "bottom",
+            );
+          }}
+          className="items-center justify-center py-[4px] pl-[8px]"
+        >
+          <icons.MeatballIcon width={24} height={24} color={colors.gray[70]} />
+        </TouchableOpacity>
       </View>
 
       {/* carousel */}
