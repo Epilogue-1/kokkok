@@ -89,7 +89,7 @@ const Profile = () => {
                     ? { uri: profileInput.avatarUrl }
                     : images.AvatarInput
                 }
-                className="size-[236px] rounded-full"
+                className="size-[220px] rounded-full"
                 resizeMode="cover"
               />
               <View className="absolute top-[176px] left-[174px] size-[48px] items-center justify-center rounded-full border-2 border-white bg-gray-25">
