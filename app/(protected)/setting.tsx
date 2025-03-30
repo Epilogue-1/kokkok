@@ -1,6 +1,8 @@
 import CustomSwitch from "@/components/CustomSwitch";
 import LoadingScreen from "@/components/LoadingScreen";
 import { showToast } from "@/components/ToastConfig";
+import { DeleteAccountModal } from "@/components/modals/DoubleButtonModal/DeleteAccountModal";
+import { LogoutModal } from "@/components/modals/DoubleButtonModal/LogoutModal";
 import colors from "@/constants/colors";
 import Icons from "@/constants/icons";
 import useFetchData from "@/hooks/useFetchData";
@@ -83,14 +85,14 @@ export default function Setting() {
             )}
             <TouchableOpacity
               className="flex-row items-center justify-between"
-              onPress={() => openModal({ type: "SIGN_OUT" })}
+              onPress={() => openModal(<LogoutModal />)}
             >
               <Text className=" text-gray-90 body-1">로그아웃</Text>
               <Icons.ChevronRightIcon color={colors.gray[70]} />
             </TouchableOpacity>
             <TouchableOpacity
               className="flex-row items-center justify-between"
-              onPress={() => openModal({ type: "ACCOUNT_DELETE" })}
+              onPress={() => openModal(<DeleteAccountModal />)}
             >
               <Text className=" text-gray-90 body-1">계정 탈퇴</Text>
               <Icons.ChevronRightIcon color={colors.gray[70]} />

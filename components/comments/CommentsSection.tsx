@@ -30,6 +30,7 @@ import {
   View,
 } from "react-native";
 import { showToast } from "../ToastConfig";
+import { CommentDeleteModal } from "../modals/DeleteModal/CommentDeleteModal";
 import MotionModal from "../modals/MotionModal";
 import CommentItem from "./CommentItem";
 import MentionInput from "./MentionInput";
@@ -273,7 +274,9 @@ export default function CommentsSection({
               onLikedAuthorPress={onLikedAuthorPress}
               onDeletedPress={(commentId) => {
                 setSelectedCommentId(commentId);
-                openModal({ type: "DELETE_COMMENT", postId, commentId });
+                openModal(
+                  <CommentDeleteModal commentId={commentId} postId={postId} />,
+                );
               }}
             />
           )}
