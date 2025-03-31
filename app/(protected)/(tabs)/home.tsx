@@ -123,6 +123,7 @@ export default function Home() {
               avatar: post.userData?.avatarUrl ?? "",
             }}
             images={post.images}
+            ratio={post.ratio}
             liked={post.isLikedByUser}
             likedAuthorAvatars={post.likedAvatars ?? []}
             contents={post.contents}

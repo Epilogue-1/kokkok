@@ -16,6 +16,7 @@ interface CommentData {
 export interface Post {
   id: number;
   images: string[];
+  ratio: number;
   contents: string | null;
   createdAt: string;
   userData: UserData;

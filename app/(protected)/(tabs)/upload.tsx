@@ -1,3 +1,4 @@
+import BlurredImageCard from "@/components/BlurredImageCard";
 import { showToast } from "@/components/ToastConfig";
 import type { ImageItem } from "@/components/modals/ListModals";
 import colors from "@/constants/colors";
@@ -12,7 +13,6 @@ import {
   updatePost,
 } from "@/utils/supabase";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import type * as ImagePicker from "expo-image-picker";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useRef, useState } from "react";
 import {
@@ -63,7 +63,9 @@ export default function Upload() {
         .filter((item) => item.type === "new")
         .map((item) => item.imagePickerAsset!)
         .filter(Boolean);
-      return createPost({ contents, images: newImages });
+      const ratio = Math.max(...imageItems.map((item) => item.ratio));
+
+      return createPost({ contents, images: newImages, ratio });
     },
     onSuccess: () => {
       showToast("success", "글이 작성되었어요!");
@@ -87,32 +89,41 @@ export default function Upload() {
     mutationFn: () => {
       if (!postId) throw new Error("게시물 ID가 없습니다.");
 
-      const sortedImages = imageItems.sort((a, b) => a.index - b.index);
-      const [prevImages, newImages] = sortedImages.reduce<
-        [
-          ImageItem[],
-          { imagePickerAsset: ImagePicker.ImagePickerAsset; index: number }[],
-        ]
-      >(
-        ([prev, next], item) => {
+      const sortedImages = [...imageItems]
+        .sort((a, b) => a.index - b.index)
+        .map((item, index) => ({
+          ...item,
+          index,
+        }));
+      const [prevImages] = sortedImages.reduce<[ImageItem[]]>(
+        ([prev], item) => {
           if (item.type === "prev") {
             prev.push({
               uri: item.uri,
               index: item.index,
               type: "prev",
-            });
-          } else if (item.imagePickerAsset) {
-            next.push({
-              imagePickerAsset: item.imagePickerAsset,
-              index: item.index,
+              ratio: item.ratio,
             });
           }
-          return [prev, next];
+          return [prev];
         },
-        [[], []],
+        [[]],
       );
 
-      return updatePost({ postId, contents, images: newImages, prevImages });
+      const formattedNewImages = sortedImages
+        .filter((item) => item.type === "new" && item.imagePickerAsset)
+        .map((item) => ({
+          imagePickerAsset: item.imagePickerAsset!,
+          index: item.index,
+        }));
+
+      return updatePost({
+        postId,
+        contents,
+        images: formattedNewImages,
+        prevImages,
+        ratio: Math.max(...imageItems.map((item) => item.ratio)),
+      });
     },
     onSuccess: () => {
       showToast("success", "글이 수정되었어요!");
@@ -189,8 +200,13 @@ export default function Upload() {
           return;
         }
 
-        const prevImageItems: ImageItem[] = (data.data.images ?? []).map(
-          (uri, index) => ({ type: "prev", uri, index }),
+        const prevImageItems: ImageItem[] = (data.data?.images ?? []).map(
+          (uri, index) => ({
+            type: "prev",
+            uri,
+            index,
+            ratio: data.data?.ratio ?? 1,
+          }),
         ); // 기존 이미지 목록 설정
 
         setImageItems(prevImageItems);
@@ -227,7 +243,7 @@ export default function Upload() {
                 onLongPress={drag}
                 delayLongPress={200}
                 activeOpacity={0.7}
-                className="relative"
+                className="relative size-[152px]"
                 disabled={uploadPostMutation.isPending}
               >
                 <Image
@@ -245,10 +261,14 @@ export default function Upload() {
                 >
                   <Icons.XIcon width={16} height={16} color={colors.white} />
                 </TouchableOpacity>
+
+                <View className="relative flex-1 overflow-hidden rounded-[10px]">
+                  <BlurredImageCard uri={item.uri} />
+                </View>
               </TouchableOpacity>
             </ScaleDecorator>
           )}
-          className="flex-shrink-0 flex-grow-0 pt-6"
+          className="flex-shrink-0 flex-grow-0 pt-6 pb-7"
           contentContainerStyle={{ gap: 16 }}
           containerStyle={{ paddingHorizontal: 16 }}
           autoscrollSpeed={70}
@@ -267,10 +287,14 @@ export default function Upload() {
                     imageItems,
                     setImageItems,
                     flatListRef,
-                    isLoading: uploadPostMutation.isPending,
+                    isLoading:
+                      uploadPostMutation.isPending ||
+                      editPostMutation.isPending,
                   })
                 }
-                disabled={uploadPostMutation.isPending}
+                disabled={
+                  uploadPostMutation.isPending || editPostMutation.isPending
+                }
               >
                 <Icons.CameraAddIcon
                   width={24}
@@ -283,7 +307,7 @@ export default function Upload() {
         />
 
         {/* 글 입력란 */}
-        <View className="w-full items-center justify-center px-6 pt-7">
+        <View className="w-full items-center justify-center px-6">
           <TextInput
             className="body-1 h-[150px] w-full rounded-[15px] border border-gray-20 bg-gray-10 p-4 text-gray-100"
             placeholder="자유롭게 글을 적어주세요. (선택)"

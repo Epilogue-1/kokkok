@@ -4,7 +4,6 @@ import { useCallback, useMemo, useState } from "react";
 import {
   Dimensions,
   FlatList,
-  Image,
   TouchableWithoutFeedback,
   View,
 } from "react-native";
@@ -13,14 +12,17 @@ import Animated, {
   withSpring,
   withTiming,
 } from "react-native-reanimated";
+import BlurredImageCard from "./BlurredImageCard";
 import PageIndicator from "./PageIndicator";
 
 interface CarouselProps {
   images: string[];
   onDoubleTap?: () => void;
-  showHeart?: boolean; // 추가
+  showHeart?: boolean;
+  ratio: number;
 }
 
+// ViewToken 타입 정의
 type ViewToken = {
   item: string;
   key: string;
@@ -32,10 +34,13 @@ export default function Carousel({
   images,
   onDoubleTap,
   showHeart,
+  ratio = 1,
 }: CarouselProps) {
-  const [activeIndex, setActiveIndex] = useState(0);
   const screenWidth = Dimensions.get("window").width;
-  const imageHeight = screenWidth * (1 / 1); // n:n 비율 유지
+  const imageHeight = screenWidth * ratio;
+
+  // FlatList에서 현재 보여지는 아이템의 index를 추적
+  const [activeIndex, setActiveIndex] = useState(0);
 
   const onViewableItemsChanged = useCallback(
     ({ viewableItems }: { viewableItems: ViewToken[] }) => {
@@ -56,12 +61,15 @@ export default function Carousel({
   let lastTap = 0;
   const handleDoubleTap = () => {
     if (!onDoubleTap) return;
-
     const now = Date.now();
-    if (lastTap && now - lastTap < 300) onDoubleTap();
-    else lastTap = now;
+    if (lastTap && now - lastTap < 300) {
+      onDoubleTap();
+    } else {
+      lastTap = now;
+    }
   };
 
+  // 좋아요 하트 표시 애니메이션
   const heartStyle = useAnimatedStyle(() => ({
     opacity: withTiming(showHeart ? 0.8 : 0, { duration: 500 }),
     transform: [{ scale: withSpring(showHeart ? 1 : 0.1) }],
@@ -77,19 +85,24 @@ export default function Carousel({
             key={`carousel-item-${index}-${item}`}
           >
             <View style={{ width: screenWidth, height: imageHeight }}>
-              <Image
-                source={{ uri: item }}
-                className="size-full"
-                resizeMode="cover"
-                onError={(e) =>
-                  console.error("Image loading error:", e.nativeEvent.error)
-                }
-              />
+              <View
+                style={{ flex: 1, position: "relative", overflow: "hidden" }}
+              >
+                <BlurredImageCard uri={item} />
+              </View>
 
-              {/* heart animation */}
+              {/* 하트 애니메이션 */}
               <Animated.View
-                className="absolute flex size-full items-center justify-center"
-                style={[heartStyle]}
+                style={[
+                  {
+                    position: "absolute",
+                    width: "100%",
+                    height: "100%",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  },
+                  heartStyle,
+                ]}
               >
                 <Icons.HeartFilledIcon
                   width={96}
@@ -106,12 +119,11 @@ export default function Carousel({
         showsHorizontalScrollIndicator={false}
         onViewableItemsChanged={onViewableItemsChanged}
         viewabilityConfig={viewabilityConfig}
-        removeClippedSubviews={true}
+        removeClippedSubviews
         initialNumToRender={1}
         maxToRenderPerBatch={2}
         windowSize={3}
       />
-
       <PageIndicator
         className="pt-[10px]"
         total={images.length}

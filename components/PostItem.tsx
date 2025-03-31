@@ -17,6 +17,7 @@ interface PostItemProps {
     avatar: string;
   };
   images: string[];
+  ratio: number;
   contents?: string | null;
   liked: boolean;
   likedAuthorAvatars?: string[];
@@ -38,6 +39,7 @@ interface PostItemProps {
 export default function PostItem({
   author,
   images,
+  ratio,
   contents,
   liked,
   likedAuthorAvatars,
@@ -154,6 +156,7 @@ export default function PostItem({
           images={images}
           onDoubleTap={onDoubleTap}
           showHeart={showHeart}
+          ratio={ratio}
         />
       </View>
 

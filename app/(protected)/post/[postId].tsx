@@ -90,6 +90,7 @@ export default function PostDetail() {
             avatar: post?.userData?.avatarUrl || "",
           }}
           images={post?.images || []}
+          ratio={post?.ratio || 1}
           contents={post?.contents || ""}
           liked={post?.isLikedByUser || false}
           likedAuthorAvatars={post?.likedAvatars || []}
@@ -111,9 +112,8 @@ export default function PostDetail() {
           onAuthorPress={onOpenLikedAuthor}
           onDeletePress={() => {
             openModal({
-              type: "DELETE_POST",
+              type: "SELECT_POST_EDIT_DELETE",
               postId: Number(postId),
-              isDetail: true,
             });
           }}
         />
