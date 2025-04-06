@@ -23,4 +23,5 @@ export default {
     90: "#333333",
     100: "#222222",
   },
+  purple: "#4F22C2",
 } as const;
