@@ -23,7 +23,7 @@ export function NotificationItem({
     <TouchableWithoutFeedback
       onPress={() => data?.postId && router.push(`/post/${data?.postId}`)}
     >
-      <View className="w-full py-4 border-b border-gray-25 flex-row justify-between items-center">
+      <View className="w-full py-4 border-b border-gray-10 flex-row justify-between items-center">
         <View className="flex-row gap-4">
           <Image
             source={
@@ -41,14 +41,14 @@ export function NotificationItem({
                 {message.content}
               </Text>
             ) : (
-              <Text className="body-5 text-gray-45" numberOfLines={1}>
+              <Text className="body-5 text-gray-60" numberOfLines={1}>
                 {message.content}
               </Text>
             )}
           </View>
         </View>
 
-        <Text className="caption-3 font-pmedium text-gray-50">{diff}</Text>
+        <Text className="caption-2 text-gray-60">{diff}</Text>
       </View>
     </TouchableWithoutFeedback>
   );
