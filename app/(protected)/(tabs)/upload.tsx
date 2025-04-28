@@ -1,5 +1,9 @@
 import { showToast } from "@/components/ToastConfig";
-import type { ImageItem } from "@/components/modals/ListModals";
+import {
+  type ImageItem,
+  ImageUploadOptionsModal,
+} from "@/components/modals/ListModal/ImageUploadOptionsModal";
+import { PostUploadErrorModal } from "@/components/modals/SingleButtonModal/PostUploadErrorModal";
 import colors from "@/constants/colors";
 import Icons from "@/constants/icons";
 import useFetchData from "@/hooks/useFetchData";
@@ -18,6 +22,7 @@ import { useCallback, useRef, useState } from "react";
 import {
   Alert,
   Image,
+  Platform,
   Text,
   TextInput,
   TouchableOpacity,
@@ -44,7 +49,7 @@ export default function Upload() {
   const flatListRef = useRef<FlatList<ImageItem> | null>(null);
 
   const postUploadFailModal = () => {
-    openModal({ type: "POST_UPLOAD_FAIL" });
+    openModal(<PostUploadErrorModal />);
   };
 
   // 게시글 데이터를 불러오는 훅
@@ -231,10 +236,10 @@ export default function Upload() {
               >
                 <Image
                   source={{ uri: item.uri }}
-                  className="size-[152px] rounded-[10px]"
+                  className="size-[152px] rounded-[15px]"
                 />
                 <TouchableOpacity
-                  className="-top-3 -right-3 absolute size-8 items-center justify-center rounded-full border-2 border-white bg-gray-25"
+                  className="-top-3 -right-3 absolute size-[25.5px] items-center justify-center rounded-full border-[1.5px] border-white bg-gray-25"
                   onPress={() =>
                     setImageItems((prev) =>
                       prev.filter((_, idx) => idx !== getIndex()),
@@ -259,19 +264,24 @@ export default function Upload() {
           ListFooterComponent={
             imageItems.length < IMAGE_LIMIT ? (
               <TouchableOpacity
-                className="size-[152px] items-center justify-center rounded-[10px] bg-gray-20"
+                className="size-[152px] items-center justify-center rounded-[15px] bg-gray-25"
                 onPress={() =>
-                  openModal({
-                    type: "SELECT_POST_UPLOAD_IMAGE",
-                    imageItems,
-                    setImageItems,
-                    flatListRef,
-                    isLoading: uploadPostMutation.isPending,
-                  })
+                  openModal(
+                    <ImageUploadOptionsModal
+                      flatListRef={flatListRef}
+                      imageItems={imageItems}
+                      setImageItems={setImageItems}
+                      isLoading={uploadPostMutation.isPending}
+                    />,
+                  )
                 }
                 disabled={uploadPostMutation.isPending}
               >
-                <Icons.PlusIcon width={24} height={24} color={colors.white} />
+                <Icons.CameraAddIcon
+                  width={24}
+                  height={24}
+                  color={colors.white}
+                />
               </TouchableOpacity>
             ) : null
           }
@@ -280,7 +290,7 @@ export default function Upload() {
         {/* 글 입력란 */}
         <View className="w-full items-center justify-center px-6 pt-7">
           <TextInput
-            className="body-1 h-[120px] w-full rounded-[10px] border border-gray-20 p-4"
+            className="body-1 h-[150px] w-full rounded-[15px] border border-gray-20 bg-gray-10 p-4 text-gray-100"
             placeholder="자유롭게 글을 적어주세요. (선택)"
             placeholderTextColor={colors.gray[40]}
             multiline
@@ -292,7 +302,9 @@ export default function Upload() {
         </View>
 
         {/* 인증 버튼 */}
-        <View className="px-6">
+        <View
+          className={`flex-1 justify-end px-6 ${Platform.OS === "ios" ? "pb-[48px]" : "pb-[32px]"}`}
+        >
           <TouchableOpacity
             className="mt-8 h-[62px] w-full items-center justify-center rounded-[10px] bg-primary disabled:bg-gray-20"
             onPress={handleUpload}

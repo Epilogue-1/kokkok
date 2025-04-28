@@ -9,6 +9,8 @@ import {
   createFriendRequest,
   createNotification,
   deleteFriendRequest,
+  deleteFriendRequestWithUserId,
+  getCurrentUser,
   unfriend,
 } from "@/utils/supabase";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -28,6 +30,10 @@ interface RefuseProps {
 }
 
 interface UnfriendProps {
+  toUserId: string;
+}
+
+interface CancelRequestProps {
   toUserId: string;
 }
 
@@ -79,7 +85,7 @@ const useManageFriend = () => {
       mutationFn: async ({ requestId, fromUserId }) => {
         // 친구 요청이 그사이 취소되었는지 확인
         const hasFriendRequest = requestId
-          ? await checkFriendRequest(String(requestId))
+          ? await checkFriendRequest(requestId)
           : await checkFriendRequestWithUserId(fromUserId);
         if (!hasFriendRequest) {
           throw new NoRequestError(
@@ -158,6 +164,33 @@ const useManageFriend = () => {
     return { mutate, isPending };
   };
 
+  // 친구 요청 취소
+  const useCancelRequest = () => {
+    const { mutate, isPending } = useMutation<
+      CancelRequestProps,
+      Error,
+      CancelRequestProps
+    >({
+      mutationFn: async ({ toUserId }) => {
+        // 훅에서 유저 정보를 가져오는 걸로 구현
+        const user = await getCurrentUser();
+        await deleteFriendRequestWithUserId(user.id, toUserId);
+        return { toUserId };
+      },
+      onSuccess: ({ toUserId }) => {
+        queryClient.invalidateQueries({ queryKey: ["friendRequests"] });
+        queryClient.invalidateQueries({ queryKey: ["relation", toUserId] });
+        // 친구 요청 취소 토스트 모달로 알림
+        showToast("success", "친구 요청을 취소했어요!");
+      },
+      onError: (error) => {
+        console.error("친구 요청 취소 실패:", error);
+        showToast("fail", "친구 요청 취소에 실패했어요!");
+      },
+    });
+    return { mutate, isPending };
+  };
+
   // 친구 콕 찌르기
   const usePoke = ({ onError }: { onError?: () => void }) => {
     const { mutate } = useMutation<PokeProps, Error, PokeProps>({
@@ -191,6 +224,7 @@ const useManageFriend = () => {
     useAcceptRequest,
     useRefuseRequest,
     useUnfriend,
+    useCancelRequest,
     usePoke,
   };
 };

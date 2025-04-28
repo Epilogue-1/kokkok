@@ -1,3 +1,5 @@
+import { ResetPasswordSuccessModal } from "@/components/modals/SingleButtonModal/ResetPasswordSuccessModal";
+import colors from "@/constants/colors";
 import images from "@/constants/images";
 import { passwordResetFormAtom } from "@/contexts/auth";
 import { useModal } from "@/hooks/useModal";
@@ -45,7 +47,7 @@ const Step3 = () => {
       setResetEmail({ email: "" });
 
       // 비밀번호 변경 완료 모달 표시
-      openModal({ type: "PASSWORD_RESET_COMPLETE" });
+      openModal(<ResetPasswordSuccessModal />);
     } catch (error) {
       const errorMessage =
         error instanceof Error
@@ -66,18 +68,23 @@ const Step3 = () => {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       className="h-full flex-1 bg-white"
     >
-      <ScrollView>
-        <View className="mt-[58px] flex items-center justify-center px-6">
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1 }}
+        keyboardShouldPersistTaps="handled"
+      >
+        <View className="mt-[80px] flex-1 items-center px-6">
           <Image
             source={images.Step3}
             className="h-[90px] w-full"
             resizeMode="contain"
           />
-          <View className="mt-10 flex w-full gap-10">
+          {/* mb-[120px]는 keyboard 올라가는 현상을 위한 class */}
+          <View className="mt-10 mb-[120px] flex w-full gap-10">
             <TextInput
-              className="placeholder:body-1 h-[58px] w-full rounded-[10px] border border-gray-20 px-4 placeholder:text-gray-40 focus:border-primary"
+              className="placeholder:body-1 h-[52px] w-full rounded-[10px] border border-gray-25 px-4 text-gray-90 focus:border-primary"
               autoCapitalize="none"
               placeholder="새 비밀번호를 입력해주세요"
+              placeholderTextColor={colors.gray[60]}
               accessibilityLabel="새 비밀번호 입력"
               accessibilityHint="새 비밀번호를 입력해주세요"
               value={resetPassword.newPassword}
@@ -87,9 +94,10 @@ const Step3 = () => {
               secureTextEntry
             />
             <TextInput
-              className="placeholder:body-1 h-[58px] w-full rounded-[10px] border border-gray-20 px-4 placeholder:text-gray-40 focus:border-primary"
+              className="placeholder:body-1 h-[52px] w-full rounded-[10px] border border-gray-25 px-4 text-gray-90 focus:border-primary"
               autoCapitalize="none"
               placeholder="비밀번호를 한번 더 입력해주세요"
+              placeholderTextColor={colors.gray[60]}
               accessibilityLabel="비밀번호 재입력"
               accessibilityHint="비밀번호를 한번 더 입력해주세요"
               value={resetPassword.confirmPassword}
@@ -101,13 +109,13 @@ const Step3 = () => {
           </View>
 
           <TouchableOpacity
-            className={`mt-10 h-[62px] w-full items-center justify-center rounded-[10px] ${
+            className={`absolute bottom-[32px] h-[56px] w-full items-center justify-center rounded-[10px] ${
               isLoading ? "bg-gray-20" : "bg-primary"
             }`}
             onPress={handleResetPassword}
             disabled={isLoading}
           >
-            <Text className="heading-2 text-white">
+            <Text className="title-2 text-white">
               {isLoading ? "변경 중..." : "완료"}
             </Text>
           </TouchableOpacity>

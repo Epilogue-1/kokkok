@@ -1,3 +1,5 @@
+import { ProfileImageOptionsModal } from "@/components/modals/ListModal/ProfileImageOptionsModal";
+import colors from "@/constants/colors";
 import Icons from "@/constants/icons";
 import useFetchData from "@/hooks/useFetchData";
 import { useModal } from "@/hooks/useModal";
@@ -62,19 +64,24 @@ const Profile = () => {
   };
 
   return (
-    <>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        className="h-full flex-1 bg-white"
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      className="h-full flex-1 bg-white"
+    >
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1 }}
+        // 키보드 올라올 때 버튼 클릭 가능
+        keyboardShouldPersistTaps="handled"
       >
-        <ScrollView>
+        <View className="relative flex-1">
           <View className="mt-12 flex items-center justify-center px-6">
             <TouchableOpacity
               onPress={() => {
-                openModal({
-                  type: "SELECT_PROFILE_IMAGE_EDIT",
-                  setProfileInput: setProfileInput,
-                });
+                openModal(
+                  <ProfileImageOptionsModal
+                    setProfileInput={setProfileInput}
+                  />,
+                );
               }}
               className="relative"
             >
@@ -84,18 +91,20 @@ const Profile = () => {
                     ? { uri: profileInput.avatarUrl }
                     : images.AvatarInput
                 }
-                className="size-[236px] rounded-full"
+                className="size-[220px] rounded-full"
                 resizeMode="cover"
               />
-              <Icons.CameraIcon
-                style={{ position: "absolute", bottom: 12, right: 14 }}
-              />
+              <View className="absolute top-[176px] left-[174px] size-[48px] items-center justify-center rounded-full border-2 border-white bg-gray-25">
+                <Icons.CameraIcon width={24} height={24} />
+              </View>
             </TouchableOpacity>
 
-            <View className="mt-10 flex w-full gap-10">
+            {/* mb-[110px]는 keyboard 올라가는 현상을 위한 class */}
+            <View className="mt-10 mb-[110px] flex w-full">
               <TextInput
-                className="placeholder:body-1 h-[58px] w-full rounded-[10px] border border-gray-20 px-4 focus:border-primary"
+                className="title-3 h-[58px] w-full rounded-[10px] border border-gray-25 px-4 text-gray-90 focus:border-primary"
                 placeholder="닉네임을 입력해주세요."
+                placeholderTextColor={colors.gray[60]}
                 accessibilityLabel="닉네임 입력"
                 accessibilityHint="닉네임을 입력해주세요."
                 value={profileInput.username}
@@ -103,31 +112,50 @@ const Profile = () => {
                   setProfileInput({ ...profileInput, username: text })
                 }
               />
+              <TouchableOpacity
+                className="absolute top-[17px] right-[16px]"
+                onPress={() =>
+                  setProfileInput({ ...profileInput, username: "" })
+                }
+              >
+                <Icons.XIcon color={colors.gray[80]} />
+              </TouchableOpacity>
               <TextInput
-                className="placeholder:body-1 h-[108px] w-full rounded-[10px] border border-gray-20 p-4 focus:border-primary"
+                className="body-5 mt-[24px] h-[132px] w-full rounded-[10px] border border-gray-25 p-4 text-gray-100 focus:border-primary"
                 placeholder="소개글을 입력해주세요."
+                placeholderTextColor={colors.gray[60]}
                 accessibilityLabel="소개글 입력"
-                accessibilityHint="소개글을 입력해주세요."
+                accessibilityHint="소개글을 입력해주세요"
                 multiline={true} // 여러 줄 입력 가능
-                numberOfLines={4} // 기본 표시 줄 수
+                numberOfLines={3} // 기본 표시 줄 수
                 value={profileInput.description}
                 onChangeText={(text) =>
                   setProfileInput({ ...profileInput, description: text })
                 }
                 textAlignVertical="top"
               />
+              <Text className="caption-2 p-[8px] text-gray-80">
+                ({profileInput.description.length}/100)
+              </Text>
             </View>
-
+          </View>
+          <View className="absolute right-0 bottom-[32px] left-0 px-6">
             <TouchableOpacity
-              className="mt-12 h-[62px] w-full items-center justify-center rounded-[10px] bg-primary"
+              className={`h-[62px] w-full items-center justify-center rounded-[10px] ${
+                profileInput.description.length > 100
+                  ? "bg-gray-40"
+                  : "bg-primary"
+              }`}
               onPress={handleEditProfile}
+              disabled={profileInput.description.length > 100}
+              activeOpacity={0.8}
             >
               <Text className="heading-2 text-white">완료</Text>
             </TouchableOpacity>
           </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 

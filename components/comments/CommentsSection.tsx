@@ -12,7 +12,6 @@ import {
   deleteComment,
   getCommentLikes,
   getComments,
-  getCurrentUser,
 } from "@/utils/supabase";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { LinearGradient } from "expo-linear-gradient";
@@ -32,6 +31,7 @@ import {
   View,
 } from "react-native";
 import { showToast } from "../ToastConfig";
+import { CommentDeleteModal } from "../modals/DeleteModal/CommentDeleteModal";
 import MotionModal from "../modals/MotionModal";
 import CommentItem from "./CommentItem";
 import MentionInput from "./MentionInput";
@@ -79,13 +79,6 @@ export default function CommentsSection({
     },
     "좋아요 한 사용자 정보를 불러오는데 실패했습니다.",
     isLikedModalVisible,
-  );
-
-  // 유저 정보 가져오기
-  const { data: currentUser } = useFetchData(
-    ["currentUser"],
-    getCurrentUser,
-    "사용자 정보를 불러오는데 실패했습니다.",
   );
 
   // 댓글 가져오기
@@ -149,6 +142,8 @@ export default function CommentsSection({
       queryClient.invalidateQueries({ queryKey: ["comments", postId] });
       queryClient.invalidateQueries({ queryKey: ["posts"] });
       queryClient.invalidateQueries({ queryKey: ["replies"] });
+
+      inputRef.current?.blur();
     },
     onError: () => {
       showToast("fail", "댓글 작성에 실패했어요!");
@@ -225,21 +220,20 @@ export default function CommentsSection({
       initialHeight={deviceHeight * 0.8}
     >
       <View className="flex-1">
-        <View className="relative w-full pb-2.5">
+        <View className="relative w-full ">
           <LinearGradient
-            colors={["rgba(255, 255, 255, 1)", "rgba(255, 255, 255, 0)"]}
+            colors={["#fcfcfc", "rgba(255, 255, 255, 0)"]}
             start={[0, 0]}
             end={[0, 1]}
             style={{
               position: "absolute",
-              top: 36,
+              top: 0,
               left: 0,
               right: 0,
               height: 10,
               zIndex: 1,
             }}
           />
-          <Text className="heading-2 text-center">댓글</Text>
         </View>
 
         <FlatList
@@ -247,7 +241,7 @@ export default function CommentsSection({
           maintainVisibleContentPosition={{
             minIndexForVisible: 0,
           }}
-          ListHeaderComponent={<View className="h-4" />}
+          ListHeaderComponent={<View className="h-[10px]" />}
           data={data?.pages.flatMap((page) => page.data) || []}
           keyExtractor={(item) => item.id.toString()}
           onEndReachedThreshold={0.5}
@@ -281,7 +275,9 @@ export default function CommentsSection({
               onLikedAuthorPress={onLikedAuthorPress}
               onDeletedPress={(commentId) => {
                 setSelectedCommentId(commentId);
-                openModal({ type: "DELETE_COMMENT", postId, commentId });
+                openModal(
+                  <CommentDeleteModal commentId={commentId} postId={postId} />,
+                );
               }}
             />
           )}
@@ -349,11 +345,10 @@ export default function CommentsSection({
                     {item.author?.username}
                   </Text>
 
-                  <Icons.HeartIcon
+                  <Icons.HeartFilledIcon
                     width={24}
                     height={24}
                     color={colors.secondary.red}
-                    fill={colors.secondary.red}
                   />
                 </TouchableOpacity>
               )}
@@ -393,18 +388,8 @@ export default function CommentsSection({
         )}
 
         <View
-          className={`z-10 h-20 flex-row items-center gap-4 bg-white px-[18px] pt-4 ${Platform.OS === "ios" ? "pb-8" : "pb-4"}`}
+          className={`z-10 h-20 flex-row items-center border-gray-5 border-t bg-white px-[18px] pt-[16px] ${Platform.OS === "ios" ? "pb-8" : "pb-4"}`}
         >
-          <Image
-            source={
-              currentUser?.avatarUrl
-                ? { uri: currentUser.avatarUrl }
-                : images.AvaTarDefault
-            }
-            resizeMode="cover"
-            className="size-12 rounded-full"
-          />
-
           <MentionInput
             ref={inputRef}
             value={comment}

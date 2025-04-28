@@ -11,6 +11,7 @@ import {
 import CalendarNavigator from "@/components/CalendarNavigator";
 import { Skeleton } from "@/components/Skeleton";
 import WorkoutCalendar from "@/components/WorkoutCalendar";
+import RestDayModal from "@/components/modals/RestDayModal";
 import icons from "@/constants/icons";
 import useCalendar from "@/hooks/useCalendar";
 import useFetchData from "@/hooks/useFetchData";
@@ -86,7 +87,7 @@ export default function History() {
 
         <SetRestDayButton
           onPress={() => {
-            openModal({ type: "REST_DAY" }, "bottom");
+            openModal(<RestDayModal />, "bottom");
           }}
         />
       </View>

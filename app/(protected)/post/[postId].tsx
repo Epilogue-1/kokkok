@@ -1,6 +1,8 @@
 import { HeaderWithUsername } from "@/components/Header";
 import PostItem from "@/components/PostItem";
 import CommentsSection from "@/components/comments/CommentsSection";
+import { PostDeleteModal } from "@/components/modals/DeleteModal/PostDeleteModal";
+import { MissingPostModal } from "@/components/modals/DoubleButtonModal/MissingPostModal";
 import MotionModal from "@/components/modals/MotionModal";
 import colors from "@/constants/colors";
 import Icons from "@/constants/icons";
@@ -50,7 +52,7 @@ export default function PostDetail() {
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useCallback(() => {
       if (isPostLoading || (!postError && post)) return;
-      openModal({ type: "POST_NOT_FOUND" });
+      openModal(<MissingPostModal />);
     }, [isPostLoading, postError, post]),
   );
 
@@ -110,11 +112,9 @@ export default function PostDetail() {
           onCommentsPress={() => setIsCommentsVisible(true)}
           onAuthorPress={onOpenLikedAuthor}
           onDeletePress={() => {
-            openModal({
-              type: "DELETE_POST",
-              postId: Number(postId),
-              isDetail: true,
-            });
+            openModal(
+              <PostDeleteModal postId={Number(postId)} isDetail={true} />,
+            );
           }}
         />
       )}
@@ -169,11 +169,10 @@ export default function PostDetail() {
                       {item.author?.username}
                     </Text>
 
-                    <Icons.HeartIcon
+                    <Icons.HeartFilledIcon
                       width={24}
                       height={24}
                       color={colors.secondary.red}
-                      fill={colors.secondary.red}
                     />
                   </TouchableOpacity>
                 )}

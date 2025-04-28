@@ -1,6 +1,7 @@
 import LoadingScreen from "@/components/LoadingScreen";
 import PostGrid from "@/components/PostGrid";
 import ProfileSection from "@/components/ProfileSection";
+import { ProfileOptionsModal } from "@/components/modals/ListModal/ProfileOptionsModal";
 import useFetchData from "@/hooks/useFetchData";
 import { useModal } from "@/hooks/useModal";
 import { getCurrentUser, getMyPosts } from "@/utils/supabase";
@@ -39,9 +40,7 @@ export default function MyPage() {
             username={currentUser?.username || ""}
             avatarUrl={currentUser?.avatarUrl || undefined}
             description={currentUser?.description || undefined}
-            onSettingsPress={() =>
-              openModal({ type: "SELECT_PROFILE_EDIT" }, "bottom")
-            }
+            onSettingsPress={() => openModal(<ProfileOptionsModal />, "bottom")}
           />
           <PostGrid
             refetch={refetch}
