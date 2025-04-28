@@ -6,6 +6,7 @@ import CalendarIcon from "@/assets/icons/calendar.svg";
 import CalendarFilledIcon from "@/assets/icons/calendar_fill.svg";
 import CameraAddIcon from "@/assets/icons/camera-add.svg";
 import CameraIcon from "@/assets/icons/camera.svg";
+import CheckIcon from "@/assets/icons/check.svg";
 import ChevronLeftIcon from "@/assets/icons/chevron-left.svg";
 import ChevronRightIcon from "@/assets/icons/chevron-right.svg";
 import CommentIcon from "@/assets/icons/comment.svg";
@@ -50,6 +51,7 @@ export default {
   ChevronLeftIcon,
   ChevronRightIcon,
   CommentIcon,
+  CheckIcon,
   EyeIcon,
   EyeOffIcon,
   FaceDefaultIcon,

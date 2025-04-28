@@ -7,7 +7,6 @@ import Icons from "@/constants/icons";
 import { default as imgs } from "@/constants/images";
 import useFetchData from "@/hooks/useFetchData";
 import useInfiniteLoad from "@/hooks/useInfiniteLoad";
-import { useModal } from "@/hooks/useModal";
 import useRefresh from "@/hooks/useRefresh";
 import { getPostLikes, getPosts } from "@/utils/supabase";
 import { useRouter } from "expo-router";
@@ -36,7 +35,6 @@ export default function Home() {
   const [selectedAuthorId, setSelectedAuthorId] = useState<string | null>(null);
   const [isLikedModalVisible, setIsLikedModalVisible] = useState(false);
   const flatListRef = useRef<FlatList>(null);
-  const { openModal } = useModal();
 
   const router = useRouter();
 
@@ -144,10 +142,6 @@ export default function Home() {
               })
             }
             onAuthorPress={onOpenLikedAuthor}
-            onDeletePress={() => {
-              setSelectedPostId(Number(post.id));
-              openModal(<PostOptionsModal postId={post.id} />, "bottom");
-            }}
           />
         )}
         onEndReachedThreshold={0.5}

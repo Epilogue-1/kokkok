@@ -106,7 +106,15 @@ export default function CommentItem({
   );
 
   const handleOpenModal = () => {
-    openModal(<CommentOptionsModal commentId={id} postId={postId} />, "bottom");
+    openModal(
+      <CommentOptionsModal
+        commentId={id}
+        postId={postId}
+        reportedId={author?.id}
+        isOwner={author?.id === userId}
+      />,
+      "bottom",
+    );
   };
 
   // 좋아요 토글
@@ -234,7 +242,7 @@ export default function CommentItem({
           </TouchableOpacity>
 
           {/* kebab button */}
-          {author?.id === userId && (
+          {author?.id && (
             <TouchableOpacity
               onPress={handleOpenModal}
               className="py-[8px] pl-[8px]"
