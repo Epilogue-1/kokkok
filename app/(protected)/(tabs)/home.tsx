@@ -1,5 +1,6 @@
 import PostItem from "@/components/PostItem";
 import CommentsSection from "@/components/comments/CommentsSection";
+import { PostOptionsModal } from "@/components/modals/ListModal/PostOptionsModal";
 import MotionModal from "@/components/modals/MotionModal";
 import colors from "@/constants/colors";
 import Icons from "@/constants/icons";
