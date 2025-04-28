@@ -1,3 +1,4 @@
+import { CommentOptionsModal } from "@/components/modals/ListModal/CommentOptionsModal";
 import colors from "@/constants/colors";
 import Icons from "@/constants/icons";
 import images from "@/constants/images";
@@ -132,10 +133,7 @@ export default function CommentItem({
   );
 
   const handleOpenModal = () => {
-    openModal(
-      { type: "SELECT_COMMENT_DELETE", commentId: id, postId },
-      "bottom",
-    );
+    openModal(<CommentOptionsModal commentId={id} postId={postId} />, "bottom");
   };
 
   // 좋아요 토글

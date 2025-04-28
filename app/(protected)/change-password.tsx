@@ -1,3 +1,4 @@
+import { ResetPasswordSuccessModal } from "@/components/modals/SingleButtonModal/ResetPasswordSuccessModal";
 import colors from "@/constants/colors";
 import useFetchData from "@/hooks/useFetchData";
 import { useModal } from "@/hooks/useModal";
@@ -51,7 +52,7 @@ const ChangePassword = () => {
       await updateNewPassword(resetPassword.newPassword);
 
       // 비밀번호 변경 완료 모달 표시
-      openModal({ type: "PASSWORD_RESET_COMPLETE" });
+      openModal(<ResetPasswordSuccessModal />);
     } catch (error) {
       // 에러메시지 한글로 변환
       const errorMessage =

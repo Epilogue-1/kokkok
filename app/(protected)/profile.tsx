@@ -1,3 +1,4 @@
+import { ProfileImageOptionsModal } from "@/components/modals/ListModal/ProfileImageOptionsModal";
 import colors from "@/constants/colors";
 import Icons from "@/constants/icons";
 import useFetchData from "@/hooks/useFetchData";
@@ -76,10 +77,11 @@ const Profile = () => {
           <View className="mt-12 flex items-center justify-center px-6">
             <TouchableOpacity
               onPress={() => {
-                openModal({
-                  type: "SELECT_PROFILE_IMAGE_EDIT",
-                  setProfileInput: setProfileInput,
-                });
+                openModal(
+                  <ProfileImageOptionsModal
+                    setProfileInput={setProfileInput}
+                  />,
+                );
               }}
               className="relative"
             >
