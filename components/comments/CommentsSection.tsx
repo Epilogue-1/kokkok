@@ -1,3 +1,4 @@
+import { CommentSkeleton } from "@/components/Skeleton";
 import colors from "@/constants/colors";
 import Icons from "@/constants/icons";
 import images from "@/constants/images";
@@ -293,31 +294,7 @@ export default function CommentsSection({
           showsHorizontalScrollIndicator={false}
           ListEmptyComponent={
             isFetching ? (
-              <View>
-                {[...Array(5)].map((_, index) => (
-                  <View
-                    // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-                    key={`skeleton-${index}`}
-                    className="mb-8 animate-pulse gap-[13px]"
-                  >
-                    <View className="h-12 flex-1 flex-row items-center gap-2">
-                      <View className="size-12 rounded-full bg-gray-25" />
-
-                      <View className="h-12 flex-1 justify-center gap-[5px]">
-                        <View className="h-[16px] w-16 rounded-md bg-gray-25" />
-                        <View className="h-[13px] w-10 rounded-md bg-gray-25" />
-                      </View>
-
-                      <View className="size-[28px] rounded-full bg-gray-25" />
-                    </View>
-
-                    <View className="gap-[13px]">
-                      <View className="h-[18px] w-[80%] rounded-md bg-gray-25" />
-                      <View className="h-[14px] w-10 rounded-md bg-gray-25" />
-                    </View>
-                  </View>
-                ))}
-              </View>
+              <CommentSkeleton count={5} />
             ) : (
               <View className="flex-1 items-center justify-center">
                 <Text className="title-3 text-gray-70">

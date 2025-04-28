@@ -9,6 +9,7 @@ import {
 } from "react-native";
 
 import CalendarNavigator from "@/components/CalendarNavigator";
+import { Skeleton } from "@/components/Skeleton";
 import WorkoutCalendar from "@/components/WorkoutCalendar";
 import RestDayModal from "@/components/modals/RestDayModal";
 import icons from "@/constants/icons";
@@ -47,6 +48,8 @@ export default function History() {
     "현재 사용자를 불러올 수 없습니다.",
   );
 
+  const isLoading = isUserLoading || isHistoriesLoading;
+
   const userCreatedDate = currentUser
     ? new Date(currentUser.createdAt)
     : new Date(2025, 0, 1, 0, 0, 0);
@@ -73,10 +76,14 @@ export default function History() {
   return (
     <ScrollView className="flex-1 bg-white px-[24px] pt-[18px]">
       <View className="flex-row items-center">
-        <Text className="heading-1 grow">
-          {month}월 <Text className="text-primary">{workoutDays}</Text>일 운동
-          완료!
-        </Text>
+        {isLoading ? (
+          <Skeleton className="mr-auto" width={180} height={20} />
+        ) : (
+          <Text className="heading-1 grow">
+            {month}월 <Text className="text-primary">{workoutDays}</Text>일 운동
+            완료!
+          </Text>
+        )}
 
         <SetRestDayButton
           onPress={() => {
@@ -101,15 +108,12 @@ export default function History() {
           }
         />
 
-        {isUserLoading || isHistoriesLoading ? (
-          <CalendarSkeleton />
-        ) : (
-          <WorkoutCalendar
-            startingDate={userCreatedDate}
-            currentDate={date}
-            workoutStatuses={histories}
-          />
-        )}
+        <WorkoutCalendar
+          startingDate={userCreatedDate}
+          currentDate={date}
+          workoutStatuses={histories}
+          isLoading={isLoading}
+        />
       </View>
 
       <FaceExplanation />
@@ -148,32 +152,6 @@ function FaceExplanation() {
           </View>
         ))}
       </View>
-    </View>
-  );
-}
-
-function CalendarSkeleton() {
-  return (
-    <View className="mt-[24px] w-full animate-pulse gap-[10px] px-[3px]">
-      <View className="h-[15px] rounded-[5px] bg-gray-20" />
-      {Array.from({ length: 5 }, (_, rowIndex) => (
-        <View
-          className="gap-[12px]"
-          // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-          key={`calendar-skeleton-row-${rowIndex}`}
-        >
-          <View className="h-[10px] rounded-[5px] bg-gray-20" />
-          <View className="flex-row justify-between">
-            {Array.from({ length: 7 }, (_, colIndex) => (
-              <View
-                // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-                key={`calendar-skeleton-cell-${rowIndex}-${colIndex}`}
-                className="h-[30px] w-[30px] rounded-full bg-gray-20"
-              />
-            ))}
-          </View>
-        </View>
-      ))}
     </View>
   );
 }
