@@ -133,7 +133,7 @@ export default function RestDayModal() {
         <icons.XIcon width={24} height={24} color={colors.gray[90]} />
       </TouchableOpacity>
 
-      <Text className="heading-1 mb-[20px]">쉬는 날을 설정하세요</Text>
+      <Text className="heading-1 mb-[20px]">휴일을 설정하세요</Text>
 
       {/* 달력 상단 내비게이터 */}
       <CalendarNavigator
