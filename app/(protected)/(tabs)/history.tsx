@@ -92,7 +92,7 @@ export default function History() {
         />
       </View>
 
-      <View className="mt-[20px] min-h-[300px] items-center rounded-[10px] border border-gray-10 bg-white px-[16px] pt-[16px] pb-[32px]">
+      <View className="mt-[20px] min-h-[300px] items-center rounded-[10px] border border-gray-10 bg-white px-[24px] pt-[16px] pb-[32px]">
         <CalendarNavigator
           date={date}
           onPrevious={handlePreviousMonth}
