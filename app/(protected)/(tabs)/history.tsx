@@ -74,7 +74,7 @@ export default function History() {
   ).length;
 
   return (
-    <ScrollView className="flex-1 bg-white px-[24px] pt-[18px]">
+    <ScrollView className="flex-1 bg-gray-5 px-[24px] pt-[18px]">
       <View className="flex-row items-center">
         {isLoading ? (
           <Skeleton className="mr-auto" width={180} height={20} />
@@ -92,7 +92,7 @@ export default function History() {
         />
       </View>
 
-      <View className="mt-[20px] min-h-[300px] items-center rounded-[10px] border border-gray-25 px-[16px] pt-[16px] pb-[32px]">
+      <View className="mt-[20px] min-h-[300px] items-center rounded-[10px] border border-gray-10 bg-white px-[16px] pt-[16px] pb-[32px]">
         <CalendarNavigator
           date={date}
           onPrevious={handlePreviousMonth}
@@ -124,7 +124,7 @@ export default function History() {
 function SetRestDayButton({ onPress }: TouchableOpacityProps) {
   return (
     <TouchableOpacity
-      className="h-[36px] w-[85px] items-center justify-center rounded-[8px] border border-gray-25"
+      className="h-[36px] w-[85px] items-center justify-center rounded-[8px] border border-gray-10 bg-white"
       onPress={onPress}
     >
       <Text className="body-5 text-gray-90">쉬는 날 설정</Text>
@@ -141,7 +141,7 @@ function FaceExplanation() {
   ];
 
   return (
-    <View className="mt-[8px] mb-[18px] flex-row items-center rounded-[10px] border border-gray-25 px-[27px] py-[16px]">
+    <View className="mt-[8px] mb-[18px] flex-row items-center rounded-[10px] border border-gray-10 bg-white px-[27px] py-[16px]">
       <Text className="title-4">표정의 의미는?</Text>
 
       <View className="ml-auto flex-row gap-[8px]">
