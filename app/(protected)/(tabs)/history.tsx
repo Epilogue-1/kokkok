@@ -127,7 +127,7 @@ function SetRestDayButton({ onPress }: TouchableOpacityProps) {
       className="h-[36px] w-[85px] items-center justify-center rounded-[8px] border border-gray-10 bg-white"
       onPress={onPress}
     >
-      <Text className="body-5 text-gray-90">쉬는 날 설정</Text>
+      <Text className="body-5 text-gray-90">휴일 설정</Text>
     </TouchableOpacity>
   );
 }
