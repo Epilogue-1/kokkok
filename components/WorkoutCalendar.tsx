@@ -8,10 +8,10 @@ type History = Awaited<ReturnType<typeof getHistories>>[number];
 type FaceStatus = "default" | "rest" | "done" | "not-done";
 
 const ICONS = {
-  rest: <icons.FaceRestIcon width={30} height={30} />,
-  done: <icons.FaceDoneIcon width={30} height={30} />,
-  "not-done": <icons.FaceNotDoneIcon width={30} height={30} />,
-  default: <icons.FaceDefaultIcon width={30} height={30} />,
+  rest: <icons.FaceRestIcon width={28} height={28} />,
+  done: <icons.FaceDoneIcon width={30} height={28} />,
+  "not-done": <icons.FaceNotDoneIcon width={28} height={28} />,
+  default: <icons.FaceDefaultIcon width={28} height={28} />,
 };
 
 interface WorkoutCalendarProps {
