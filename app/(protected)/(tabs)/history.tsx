@@ -79,9 +79,9 @@ export default function History() {
         {isLoading ? (
           <Skeleton className="mr-auto" width={180} height={20} />
         ) : (
-          <Text className="heading-1 grow">
-            {month}월 <Text className="text-primary">{workoutDays}</Text>일 운동
-            완료!
+          <Text className="heading-2 grow">
+            {month}월은 <Text className="text-primary">{workoutDays}</Text>일
+            운동 완료!
           </Text>
         )}
 
