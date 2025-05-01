@@ -27,7 +27,7 @@ export default function CalendarNavigator({
     <View className="w-full flex-row items-center justify-between gap-[24px]">
       {/* Previous Button */}
       <TouchableOpacity
-        className="h-[40px] w-[40px] items-center justify-center rounded-[10px] border border-gray-10"
+        className="h-[40px] w-[40px] items-center justify-center rounded-[10px] border border-gray-20"
         onPress={onPrevious}
         disabled={isPreviousDisabled}
       >
@@ -49,7 +49,7 @@ export default function CalendarNavigator({
 
       {/* Next Button */}
       <TouchableOpacity
-        className="h-[40px] w-[40px] items-center justify-center rounded-[10px] border border-gray-10"
+        className="h-[40px] w-[40px] items-center justify-center rounded-[10px] border border-gray-20"
         onPress={onNext}
         disabled={isNextDisabled}
       >

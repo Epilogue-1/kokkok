@@ -92,7 +92,7 @@ export default function History() {
         />
       </View>
 
-      <View className="mt-[20px] min-h-[300px] items-center rounded-[10px] border border-gray-10 bg-white px-[24px] pt-[16px] pb-[32px]">
+      <View className="mt-[20px] min-h-[300px] items-center rounded-[10px] border border-gray-20 bg-white px-[24px] pt-[16px] pb-[32px]">
         <CalendarNavigator
           date={date}
           onPrevious={handlePreviousMonth}
@@ -124,7 +124,7 @@ export default function History() {
 function SetRestDayButton({ onPress }: TouchableOpacityProps) {
   return (
     <TouchableOpacity
-      className="h-[36px] w-[85px] items-center justify-center rounded-[8px] border border-gray-10 bg-white"
+      className="h-[36px] w-[85px] items-center justify-center rounded-[8px] border border-gray-20 bg-white"
       onPress={onPress}
     >
       <Text className="body-5 text-gray-90">휴일 설정</Text>
@@ -141,7 +141,7 @@ function FaceExplanation() {
   ];
 
   return (
-    <View className="mt-[8px] mb-[18px] flex-row items-center rounded-[10px] border border-gray-10 bg-white px-[27px] py-[16px]">
+    <View className="mt-[8px] mb-[18px] flex-row items-center rounded-[10px] border border-gray-20 bg-white px-[27px] py-[16px]">
       <Text className="title-4">표정의 의미는?</Text>
 
       <View className="ml-auto flex-row gap-[8px]">
