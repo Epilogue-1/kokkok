@@ -67,19 +67,19 @@ export default function RestDayCalendar({
 
   return (
     <View className="mt-[20px] h-[320px] w-full items-center">
-      <View className="flex-row gap-[28px]">
+      <View className="w-full flex-row justify-between">
         {["일", "월", "화", "수", "목", "금", "토"].map((day) => (
-          <Text key={day} className="body-4 text-center text-gray-65">
+          <Text key={day} className="body-4 w-[32px] text-center text-gray-65">
             {day}
           </Text>
         ))}
       </View>
 
-      <View className="px-[3px]">
+      <View className="w-full">
         {weeks.map((week, weekIndex) => (
           <View
             key={week ? `${year}-${month}-${weekIndex}` : `empty-${weekIndex}`}
-            className="mt-[16px] flex-row items-center justify-between gap-[8px]"
+            className="mt-[16px] w-full flex-row items-center justify-between"
           >
             {week.map((day, dayIndex) => (
               <TouchableOpacity
