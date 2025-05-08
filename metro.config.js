@@ -10,6 +10,8 @@ config.resolver = {
   ...config.resolver,
   assetExts: config.resolver.assetExts.filter((ext) => ext !== "svg"),
   sourceExts: [...config.resolver.sourceExts, "svg"],
+  // SDK53과 supabse 호환으로 인한 추가
+  unstable_enablePackageExports: false,
 };
 
 module.exports = withNativeWind(config, { input: "./global.css" });
