@@ -210,7 +210,7 @@ export default function PostItem({
                 {isMore ? contents : truncateText(contents)}
                 {contents.length > calculateMaxChars && (
                   <Text className="title-5 -mb-[3px] text-gray-45">
-                    {isMore ? " 접기" : "더보기"}
+                    {isMore ? " 접기" : " 더보기"}
                   </Text>
                 )}
               </Text>
