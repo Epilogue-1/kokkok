@@ -5,7 +5,7 @@ import { ProfileOptionsModal } from "@/components/modals/ListModal/ProfileOption
 import useFetchData from "@/hooks/useFetchData";
 import { useModal } from "@/hooks/useModal";
 import { getCurrentUser, getMyPosts } from "@/utils/supabase";
-import { View } from "react-native";
+import { ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function MyPage() {
@@ -35,7 +35,7 @@ export default function MyPage() {
   return (
     <>
       <SafeAreaView edges={[]} className="flex-1 bg-white">
-        <View className="w-full flex-1">
+        <ScrollView className="w-full flex-1">
           <ProfileSection
             username={currentUser?.username || ""}
             avatarUrl={currentUser?.avatarUrl || undefined}
@@ -52,7 +52,7 @@ export default function MyPage() {
             }
             isError={isPostsError}
           />
-        </View>
+        </ScrollView>
       </SafeAreaView>
     </>
   );
