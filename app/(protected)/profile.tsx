@@ -73,32 +73,30 @@ const Profile = () => {
         // 키보드 올라올 때 버튼 클릭 가능
         keyboardShouldPersistTaps="handled"
       >
+        <View className="h-[205px] w-full bg-primary" />
         <View className="relative flex-1">
+          <TouchableOpacity
+            onPress={() => {
+              openModal(
+                <ProfileImageOptionsModal setProfileInput={setProfileInput} />,
+              );
+            }}
+            className="absolute top-[-22px] left-[20px] z-50"
+          >
+            <Image
+              source={
+                profileInput.avatarUrl
+                  ? { uri: profileInput.avatarUrl }
+                  : images.AvatarInput
+              }
+              className="size-[80px] rounded-full border-[3px] border-white"
+              resizeMode="cover"
+            />
+            <View className="absolute bottom-[6px] left-[58px] size-[32px] items-center justify-center rounded-full border-2 border-white bg-gray-25">
+              <Icons.CameraIcon width={16} height={16} />
+            </View>
+          </TouchableOpacity>
           <View className="mt-12 flex items-center justify-center px-6">
-            <TouchableOpacity
-              onPress={() => {
-                openModal(
-                  <ProfileImageOptionsModal
-                    setProfileInput={setProfileInput}
-                  />,
-                );
-              }}
-              className="relative"
-            >
-              <Image
-                source={
-                  profileInput.avatarUrl
-                    ? { uri: profileInput.avatarUrl }
-                    : images.AvatarInput
-                }
-                className="size-[220px] rounded-full"
-                resizeMode="cover"
-              />
-              <View className="absolute top-[176px] left-[174px] size-[48px] items-center justify-center rounded-full border-2 border-white bg-gray-25">
-                <Icons.CameraIcon width={24} height={24} />
-              </View>
-            </TouchableOpacity>
-
             {/* mb-[110px]는 keyboard 올라가는 현상을 위한 class */}
             <View className="mt-10 mb-[110px] flex w-full">
               <TextInput
