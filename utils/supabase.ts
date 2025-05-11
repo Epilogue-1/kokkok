@@ -290,7 +290,6 @@ export async function updateMyProfile(profile: {
         profile.avatarUrl as ImagePicker.ImagePickerAsset,
       );
     }
-    // profile.avatarUrl이 문자열인 경우는 기존 URL 유지를 의미하므로 newAvatarUrl은 undefined
 
     // Background URL 처리
     if (profile.backgroundUrl === null) {
@@ -310,7 +309,6 @@ export async function updateMyProfile(profile: {
       // 기존 URL 사용
       newBackgroundUrl = profile.backgroundUrl;
     }
-    // profile.backgroundUrl이 undefined이거나 위 조건에 해당하지 않으면 newBackgroundUrl은 undefined 상태 유지
 
     const { avatarUrl, backgroundUrl, ...profileData } = profile;
 
