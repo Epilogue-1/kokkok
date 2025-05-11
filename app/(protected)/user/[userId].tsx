@@ -14,7 +14,7 @@ import type { RealtimeChannel } from "@supabase/supabase-js";
 import { useQueryClient } from "@tanstack/react-query";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect } from "react";
-import { View } from "react-native";
+import { ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const User = () => {
@@ -60,7 +60,7 @@ const User = () => {
     <>
       <HeaderWithUsername name={user?.username || ""} />
       <SafeAreaView edges={[]} className="flex-1 bg-white">
-        <View className="w-full flex-1">
+        <ScrollView className="w-full flex-1">
           <ProfileSection
             userId={userId}
             username={user?.username || ""}
@@ -83,7 +83,7 @@ const User = () => {
             }
             isError={isPostsError}
           />
-        </View>
+        </ScrollView>
       </SafeAreaView>
     </>
   );
