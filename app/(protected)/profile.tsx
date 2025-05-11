@@ -136,7 +136,7 @@ const Profile = () => {
               source={
                 profileInput.avatarUrl
                   ? { uri: profileInput.avatarUrl }
-                  : images.AvatarInput
+                  : images.AvaTarDefault
               }
               className="size-[80px] rounded-full border-[3px] border-white"
               resizeMode="cover"
