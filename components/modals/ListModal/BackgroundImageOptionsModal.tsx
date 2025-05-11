@@ -4,7 +4,9 @@ import { Alert, Linking } from "react-native";
 import { ListModal } from ".";
 
 interface BackgroundImageOptionsModalProps {
-  setBackgroundInput: React.Dispatch<React.SetStateAction<string | null>>;
+  setBackgroundInput: React.Dispatch<
+    React.SetStateAction<ImagePicker.ImagePickerAsset | string | null>
+  >;
 }
 
 export const BackgroundImageOptionsModal: React.FC<
@@ -46,7 +48,7 @@ export const BackgroundImageOptionsModal: React.FC<
     });
 
     if (!result.canceled) {
-      setBackgroundInput(result.assets[0].uri);
+      setBackgroundInput(result.assets[0]);
     }
   };
 

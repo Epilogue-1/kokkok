@@ -65,9 +65,16 @@ const Profile = () => {
 
     await updateMyProfile({
       ...profileInput,
-      avatarUrl: profileInput.avatarUrl
-        ? { uri: profileInput.avatarUrl, width: 500, height: 500 }
-        : undefined,
+      avatarUrl:
+        profileInput.avatarUrl === "" // 빈 문자열을 삭제 의도로 간주
+          ? null // null을 전달하여 updateMyProfile에서 삭제 로직 실행
+          : profileInput.avatarUrl // 빈 문자열이 아니고, 실제 URL이 있는 경우
+            ? ({
+                uri: profileInput.avatarUrl,
+                width: 500,
+                height: 500,
+              } as ImagePickerAsset)
+            : undefined,
       backgroundUrl: backgroundImageUri,
     });
 
