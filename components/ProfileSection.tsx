@@ -43,7 +43,7 @@ export default function ProfileSection({
         <View className="absolute top-0 right-0 left-0 h-[150px] w-full bg-primary" />
       )}
       <View
-        className={`rounded-t-[3px] bg-white px-4 ${contentContainerStyle}`}
+        className={`rounded-t-[3px] bg-white px-5 ${contentContainerStyle}`}
       >
         <View className="w-full justify-between">
           <Image
@@ -66,7 +66,7 @@ export default function ProfileSection({
               />
             </TouchableOpacity>
           </View>
-          <View className="mt-[30px] w-full flex-row items-center gap-6 px-[12px]">
+          <View className="mt-[30px] w-full flex-row items-center gap-6">
             <Text
               className="title-2 flex-1 text-gray-100"
               numberOfLines={1}
@@ -77,13 +77,17 @@ export default function ProfileSection({
           </View>
         </View>
 
-        <View className="mt-[8px]">
+        <View className="mt-[20px]">
           {description ? (
-            <Text className="body-3 rounded-[10px] p-4 text-gray-100">
+            <Text
+              className="body-3 rounded-[10px] text-gray-100"
+              numberOfLines={4}
+              ellipsizeMode="tail"
+            >
               {description}
             </Text>
           ) : (
-            <View className="mt-[20px]" />
+            <View className="mt-[40px]" />
           )}
         </View>
       </View>
