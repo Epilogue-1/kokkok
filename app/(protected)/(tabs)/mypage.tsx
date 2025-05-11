@@ -40,6 +40,7 @@ export default function MyPage() {
             username={currentUser?.username || ""}
             avatarUrl={currentUser?.avatarUrl || undefined}
             description={currentUser?.description || undefined}
+            backgroundUrl={currentUser?.backgroundUrl || undefined}
             onSettingsPress={() => openModal(<ProfileOptionsModal />, "bottom")}
           />
           <PostGrid

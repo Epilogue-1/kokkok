@@ -5,13 +5,20 @@ import useFetchData from "@/hooks/useFetchData";
 import useManageFriend from "@/hooks/useManageFriend";
 import { getRelationship } from "@/utils/supabase";
 import { router } from "expo-router";
-import { Image, Text, TouchableOpacity, View } from "react-native";
+import {
+  Image,
+  ImageBackground,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 interface ProfileSectionProps {
   userId?: string | string[];
   username: string;
   avatarUrl?: string;
   description?: string;
+  backgroundUrl?: string | null;
   onSettingsPress: () => void;
 }
 
@@ -20,12 +27,24 @@ export default function ProfileSection({
   username,
   avatarUrl,
   description,
+  backgroundUrl, // 추가
   onSettingsPress,
 }: ProfileSectionProps) {
+  const contentContainerStyle = backgroundUrl ? "mt-[202px]" : "mt-[148px]";
   return (
     <>
-      <View className="absolute h-[205px] w-full bg-primary" />
-      <View className="mt-[202px] rounded-t-[3px] bg-white px-4">
+      {backgroundUrl ? (
+        <ImageBackground
+          source={{ uri: backgroundUrl }}
+          className="absolute top-0 right-0 left-0 aspect-video w-full"
+          resizeMode="cover"
+        />
+      ) : (
+        <View className="absolute top-0 right-0 left-0 h-[150px] w-full bg-primary" />
+      )}
+      <View
+        className={`rounded-t-[3px] bg-white px-4 ${contentContainerStyle}`}
+      >
         <View className="w-full justify-between">
           <Image
             source={avatarUrl ? { uri: avatarUrl } : images.AvaTarDefault}
