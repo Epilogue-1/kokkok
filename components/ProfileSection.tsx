@@ -24,12 +24,12 @@ export default function ProfileSection({
 }: ProfileSectionProps) {
   return (
     <>
-      <View className="absolute h-[105px] w-full bg-primary" />
-      <View className="mt-[98px] rounded-t-[3px] bg-white px-4">
+      <View className="absolute h-[205px] w-full bg-primary" />
+      <View className="mt-[202px] rounded-t-[3px] bg-white px-4">
         <View className="w-full justify-between">
           <Image
             source={avatarUrl ? { uri: avatarUrl } : images.AvaTarDefault}
-            className="absolute top-[-50px] z-50 size-[100px] rounded-full border-[1.5px] border-white"
+            className="absolute top-[-22px] z-50 size-[80px] rounded-full border-[3px] border-white"
             accessibilityLabel="프로필 이미지"
             accessibilityRole="image"
             resizeMode="cover"
@@ -47,9 +47,9 @@ export default function ProfileSection({
               />
             </TouchableOpacity>
           </View>
-          <View className="mt-[13px] w-full flex-row items-center gap-6 px-[12px]">
+          <View className="mt-[30px] w-full flex-row items-center gap-6 px-[12px]">
             <Text
-              className="title-3 flex-1"
+              className="title-2 flex-1 text-gray-100"
               numberOfLines={1}
               ellipsizeMode="tail"
             >
@@ -58,9 +58,9 @@ export default function ProfileSection({
           </View>
         </View>
 
-        <View className="mt-[12px]">
+        <View className="mt-[8px]">
           {description ? (
-            <Text className="body-5 rounded-[10px] bg-gray-10 p-4 text-gray-80">
+            <Text className="body-3 rounded-[10px] p-4 text-gray-100">
               {description}
             </Text>
           ) : (
