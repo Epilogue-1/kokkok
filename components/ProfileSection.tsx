@@ -80,13 +80,13 @@ export default function ProfileSection({
         <View className="mt-[20px]">
           {description ? (
             <Text
-              className="body-3 rounded-[10px] text-gray-100"
+              className="body-3 mb-[40px] rounded-[10px] text-gray-100"
               numberOfLines={4}
             >
               {description}
             </Text>
           ) : (
-            <View className="mt-[40px]" />
+            <View className="mt-[20px]" />
           )}
         </View>
       </View>

@@ -43,7 +43,7 @@ export default function PostGrid({ refetch, posts, isError }: PostGridProps) {
 
   if (isError) {
     return (
-      <View className="mt-[62px] flex-1 items-center justify-center rounded-lg bg-gray-5">
+      <View className="flex-1 items-center justify-center rounded-lg bg-gray-5">
         <Image
           source={images.ErrorPost}
           className="h-[178px] w-[234px]"
@@ -57,7 +57,7 @@ export default function PostGrid({ refetch, posts, isError }: PostGridProps) {
 
   if (!posts || posts.length === 0) {
     return (
-      <View className="mt-[62px] flex-1 items-center justify-center rounded-lg bg-gray-5">
+      <View className="flex-1 items-center justify-center rounded-lg bg-gray-5">
         <Image
           source={images.NoPost}
           className="h-[178px] w-[234px]"
@@ -70,14 +70,14 @@ export default function PostGrid({ refetch, posts, isError }: PostGridProps) {
   }
 
   return (
-    <View className="mt-[48px] flex-1">
-      <View className="border-[3px] border-white">
+    <View className="mt-[0px] flex-1">
+      <View className="border-[2px] border-white">
         <FlatList
           ref={flatListRef}
           data={posts}
           scrollEnabled={false} // virtualizedLists should never be nested inside오류로 인한한 스크롤 비활성화
           renderItem={({ item, index }) => {
-            const size = (Dimensions.get("window").width - 12) / numColumns;
+            const size = (Dimensions.get("window").width - 8) / numColumns;
             const totalItems = posts.length;
             const borderRadiusValue = 12;
 
@@ -89,8 +89,8 @@ export default function PostGrid({ refetch, posts, isError }: PostGridProps) {
             const itemContainerStyle: ViewStyle = {
               height: size,
               width: size,
-              marginRight: index % numColumns !== numColumns - 1 ? 3 : 0,
-              marginBottom: isLastRow ? 0 : 3,
+              marginRight: index % numColumns !== numColumns - 1 ? 2 : 0,
+              marginBottom: isLastRow ? 0 : 2,
               overflow: "hidden",
             };
 
