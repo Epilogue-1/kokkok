@@ -66,6 +66,7 @@ const User = () => {
             username={user?.username || ""}
             avatarUrl={user?.avatarUrl || undefined}
             description={user?.description || undefined}
+            backgroundUrl={user?.backgroundUrl || undefined}
             onSettingsPress={() =>
               openModal(
                 <UserOptionsModal reportedId={userId as string} />,

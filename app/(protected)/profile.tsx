@@ -1,3 +1,4 @@
+import { BackgroundImageOptionsModal } from "@/components/modals/ListModal/BackgroundImageOptionsModal";
 import { ProfileImageOptionsModal } from "@/components/modals/ListModal/ProfileImageOptionsModal";
 import colors from "@/constants/colors";
 import Icons from "@/constants/icons";
@@ -5,11 +6,13 @@ import useFetchData from "@/hooks/useFetchData";
 import { useModal } from "@/hooks/useModal";
 import { getCurrentUser, updateMyProfile } from "@/utils/supabase";
 import images from "@constants/images";
+import type { ImagePickerAsset } from "expo-image-picker";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
   Alert,
   Image,
+  ImageBackground,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -31,6 +34,10 @@ const Profile = () => {
     username: currentUser?.username || "",
     description: currentUser?.description || "",
   });
+  // 뒷배경 이미지는 모달 구분을 위해 분리
+  const [backgroundImageUri, setBackgroundImageUri] = useState<
+    ImagePickerAsset | string | null
+  >(null);
 
   const { openModal } = useModal();
 
@@ -42,6 +49,9 @@ const Profile = () => {
         username: currentUser.username || "",
         description: currentUser.description || "",
       });
+      if (currentUser.backgroundUrl) {
+        setBackgroundImageUri(currentUser.backgroundUrl);
+      }
     }
   }, [currentUser]);
 
@@ -58,6 +68,7 @@ const Profile = () => {
       avatarUrl: profileInput.avatarUrl
         ? { uri: profileInput.avatarUrl, width: 500, height: 500 }
         : undefined,
+      backgroundUrl: backgroundImageUri,
     });
 
     router.replace("/mypage");
@@ -73,7 +84,38 @@ const Profile = () => {
         // 키보드 올라올 때 버튼 클릭 가능
         keyboardShouldPersistTaps="handled"
       >
-        <View className="h-[205px] w-full bg-primary" />
+        <TouchableOpacity
+          onPress={() => {
+            openModal(
+              <BackgroundImageOptionsModal
+                setBackgroundInput={setBackgroundImageUri}
+              />,
+            );
+          }}
+        >
+          {backgroundImageUri ? (
+            <ImageBackground
+              source={{
+                uri:
+                  typeof backgroundImageUri === "string"
+                    ? backgroundImageUri
+                    : backgroundImageUri.uri,
+              }}
+              className="relative aspect-video w-full"
+              resizeMode="cover"
+            >
+              <View className="absolute right-[12px] bottom-[12px] size-[32px] items-center justify-center rounded-full border-2 border-white bg-gray-25">
+                <Icons.CameraIcon width={16} height={16} />
+              </View>
+            </ImageBackground>
+          ) : (
+            <View className="relative h-[148px] w-full bg-primary">
+              <View className="absolute right-[12px] bottom-[12px] size-[32px] items-center justify-center rounded-full border-2 border-white bg-gray-25">
+                <Icons.CameraIcon width={16} height={16} />
+              </View>
+            </View>
+          )}
+        </TouchableOpacity>
         <View className="relative flex-1">
           <TouchableOpacity
             onPress={() => {
