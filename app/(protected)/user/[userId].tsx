@@ -60,7 +60,10 @@ const User = () => {
     <>
       <HeaderWithUsername name={user?.username || ""} />
       <SafeAreaView edges={[]} className="flex-1 bg-white">
-        <ScrollView className="w-full flex-1">
+        <ScrollView
+          className="w-full flex-1"
+          contentContainerStyle={{ flexGrow: 1 }}
+        >
           <ProfileSection
             userId={userId}
             username={user?.username || ""}
