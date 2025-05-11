@@ -35,7 +35,10 @@ export default function MyPage() {
   return (
     <>
       <SafeAreaView edges={[]} className="flex-1 bg-white">
-        <ScrollView className="w-full flex-1">
+        <ScrollView
+          className="w-full flex-1"
+          contentContainerStyle={{ flexGrow: 1 }}
+        >
           <ProfileSection
             username={currentUser?.username || ""}
             avatarUrl={currentUser?.avatarUrl || undefined}
