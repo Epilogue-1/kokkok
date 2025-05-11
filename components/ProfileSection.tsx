@@ -82,7 +82,6 @@ export default function ProfileSection({
             <Text
               className="body-3 rounded-[10px] text-gray-100"
               numberOfLines={4}
-              ellipsizeMode="tail"
             >
               {description}
             </Text>
