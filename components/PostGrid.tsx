@@ -75,6 +75,7 @@ export default function PostGrid({ refetch, posts, isError }: PostGridProps) {
         <FlatList
           ref={flatListRef}
           data={posts}
+          scrollEnabled={false} // virtualizedLists should never be nested inside오류로 인한한 스크롤 비활성화
           renderItem={({ item, index }) => {
             const size = (Dimensions.get("window").width - 12) / numColumns;
             const totalItems = posts.length;
