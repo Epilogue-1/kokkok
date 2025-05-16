@@ -1,3 +1,4 @@
+import colors from "@/constants/colors";
 import images from "@/constants/images";
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useRef } from "react";
@@ -132,12 +133,19 @@ export default function PostGrid({ refetch, posts, isError }: PostGridProps) {
                   onPress={() => router.push(`/post/${item.id}`)}
                   style={imageWrapperStyle}
                 >
-                  <Image
-                    source={{ uri: item.images[0] }}
-                    resizeMode="cover"
-                    style={{ width: "100%", height: "100%" }}
-                    defaultSource={images.ErrorPost}
-                  />
+                  <View
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      backgroundColor: colors.gray[10],
+                    }}
+                  >
+                    <Image
+                      source={{ uri: item.images[0] }}
+                      resizeMode="cover"
+                      style={{ width: "100%", height: "100%" }}
+                    />
+                  </View>
                 </TouchableOpacity>
               </View>
             );
