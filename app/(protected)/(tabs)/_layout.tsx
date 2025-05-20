@@ -303,6 +303,14 @@ export default function TabsLayout() {
               </View>
             ),
           }}
+          listeners={({ navigation }) => ({
+            tabPress: () => {
+              navigation.setParams({ postId: undefined });
+            },
+            blur: () => {
+              navigation.setParams({ postId: undefined });
+            },
+          })}
         />
         <Tabs.Screen
           name="history"
