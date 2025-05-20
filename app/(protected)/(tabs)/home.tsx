@@ -4,6 +4,7 @@ import MotionModal from "@/components/modals/MotionModal";
 import colors from "@/constants/colors";
 import Icons from "@/constants/icons";
 import { default as imgs } from "@/constants/images";
+import useCheckPrivacy from "@/hooks/useCheckPrivacy";
 import useFetchData from "@/hooks/useFetchData";
 import useInfiniteLoad from "@/hooks/useInfiniteLoad";
 import useRefresh from "@/hooks/useRefresh";
@@ -28,6 +29,7 @@ const LIMIT = 10;
 const { height: deviceHeight } = Dimensions.get("window");
 
 export default function Home() {
+  const { privacy } = useCheckPrivacy();
   const [userId, setUserId] = useState<string | null>(null);
   const [isCommentsVisible, setIsCommentsVisible] = useState(false);
   const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
@@ -70,8 +72,8 @@ export default function Home() {
 
   // post 조회
   const { data, isFetchingNextPage, refetch, loadMore } = useInfiniteLoad({
-    queryFn: getPosts,
-    queryKey: ["posts"],
+    queryFn: (params) => getPosts({ ...params, privacy }),
+    queryKey: ["posts", privacy],
     limit: LIMIT,
   });
 

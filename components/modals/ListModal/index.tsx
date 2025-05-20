@@ -1,5 +1,11 @@
-import type { ListButton, ModalPosition } from "@/types/Modal.interface";
 import { Text, TouchableOpacity, View } from "react-native";
+
+type ModalPosition = "center" | "bottom";
+export interface ListButton {
+  text: string;
+  onPress: () => void | Promise<void>;
+  className?: string;
+}
 
 interface ListModalProps {
   position: ModalPosition;

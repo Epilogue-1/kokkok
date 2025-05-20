@@ -39,7 +39,7 @@ const ModalItem = forwardRef<ModalItemRef, ModalItemProps>(
     ).current;
 
     const [isClosing, setIsClosing] = useState(false);
-    const animationRef = useRef<Animated.CompositeAnimation>();
+    const animationRef = useRef<Animated.CompositeAnimation>(null);
 
     useEffect(() => {
       if (modal.position === "bottom") {
@@ -133,7 +133,7 @@ const ModalItem = forwardRef<ModalItemRef, ModalItemProps>(
   },
 );
 
-export default function ModalContainer(): JSX.Element | null {
+export default function ModalContainer() {
   const [modalStack] = useAtom(modalStackAtom);
   const { closeModal } = useModal();
   const topModalRef = useRef<ModalItemRef>(null);
