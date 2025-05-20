@@ -10,6 +10,7 @@ import CheckIcon from "@/assets/icons/check.svg";
 import ChevronLeftIcon from "@/assets/icons/chevron-left.svg";
 import ChevronRightIcon from "@/assets/icons/chevron-right.svg";
 import CommentIcon from "@/assets/icons/comment.svg";
+import EarthIcon from "@/assets/icons/earth.svg";
 import EyeOffIcon from "@/assets/icons/eye-off.svg";
 import EyeIcon from "@/assets/icons/eye.svg";
 import FaceDefaultIcon from "@/assets/icons/face_default.svg";
@@ -30,6 +31,7 @@ import HomeFilledIcon from "@/assets/icons/home_fill.svg";
 import KakaoIcon from "@/assets/icons/kakao.svg";
 import KebabMenuIcon from "@/assets/icons/kebab.svg";
 import MeatballIcon from "@/assets/icons/meatball.svg";
+import PeopleIcon from "@/assets/icons/people.svg";
 import PlusIcon from "@/assets/icons/plus.svg";
 import ProfileIcon from "@/assets/icons/profile.svg";
 import ProfileFilledIcon from "@/assets/icons/profile_fill.svg";
@@ -40,18 +42,19 @@ import TrashCanIcon from "@/assets/icons/trash_can.svg";
 import XIcon from "@/assets/icons/x.svg";
 
 export default {
-  ArrowUpIcon,
   AddIcon,
+  ArrowUpIcon,
   BellIcon,
   BellWithDotIcon,
   CalendarIcon,
   CalendarFilledIcon,
   CameraAddIcon,
   CameraIcon,
+  CheckIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
   CommentIcon,
-  CheckIcon,
+  EarthIcon,
   EyeIcon,
   EyeOffIcon,
   FaceDefaultIcon,
@@ -72,12 +75,13 @@ export default {
   KakaoIcon,
   KebabMenuIcon,
   MeatballIcon,
+  PeopleIcon,
   PlusIcon,
   ProfileIcon,
   ProfileFilledIcon,
   SearchIcon,
   SettingIcon,
-  TrashCanIcon,
   ThreadIcon,
+  TrashCanIcon,
   XIcon,
 };

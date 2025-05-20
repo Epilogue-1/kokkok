@@ -6,6 +6,10 @@ import {
 import { PostUploadErrorModal } from "@/components/modals/SingleButtonModal/PostUploadErrorModal";
 import colors from "@/constants/colors";
 import Icons from "@/constants/icons";
+import useCheckPrivacy, {
+  saveUploadPrivacy,
+  type PrivacySetting,
+} from "@/hooks/useCheckPrivacy";
 import useFetchData from "@/hooks/useFetchData";
 import { useModal } from "@/hooks/useModal";
 import { formatDate } from "@/utils/formatDate";
@@ -18,7 +22,7 @@ import {
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type * as ImagePicker from "expo-image-picker";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   Alert,
   Image,
@@ -43,10 +47,21 @@ export default function Upload() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { openModal } = useModal();
+  const { uploadPrivacy } = useCheckPrivacy();
+
+  // 낙관적 업데이트를 위한 로컬 상태 추가
+  const [localPrivacy, setLocalPrivacy] =
+    useState<PrivacySetting>(uploadPrivacy);
+
+  // uploadPrivacy가 외부에서 변경되면 로컬 상태도 업데이트
+  useEffect(() => {
+    setLocalPrivacy(uploadPrivacy);
+  }, [uploadPrivacy]);
 
   // 상태 정의
   const [imageItems, setImageItems] = useState<ImageItem[]>([]);
   const [contents, setContents] = useState<string>("");
+  const [originalPrivacy, setOriginalPrivacy] = useState<PrivacySetting>("all");
   const flatListRef = useRef<FlatList<ImageItem> | null>(null);
 
   // 게시글 데이터를 불러오는 훅
@@ -82,7 +97,11 @@ export default function Upload() {
         .filter((item) => item.type === "new")
         .map((item) => item.imagePickerAsset!)
         .filter(Boolean);
-      return createPost({ contents, images: newImages });
+      return createPost({
+        contents,
+        images: newImages,
+        privacy: localPrivacy,
+      });
     },
     onSuccess: () => {
       showToast("success", "글이 작성되었어요!");
@@ -123,7 +142,13 @@ export default function Upload() {
         [[], []],
       );
 
-      return updatePost({ postId, contents, images: newImages, prevImages });
+      return updatePost({
+        postId,
+        contents,
+        images: newImages,
+        prevImages,
+        privacy: localPrivacy,
+      });
     },
     onSuccess: () => {
       showToast("success", "글이 수정되었어요!");
@@ -190,11 +215,18 @@ export default function Upload() {
 
         setImageItems(prevImageItems);
         setContents(data.data.contents ?? "");
+
+        // 원본 게시물의 프라이버시 설정 저장
+        if (data.data.privacy) {
+          setOriginalPrivacy(data.data.privacy as PrivacySetting);
+          // 수정 화면을 열 때는 게시물의 원래 프라이버시 설정으로 초기화
+          setLocalPrivacy(data.data.privacy as PrivacySetting);
+        }
       });
     }, [postId, refetch, resetForm]),
   );
 
-  // 변경 여부 확인
+  // 변경 여부 확인 (프라이버시 변경 감지 추가)
   const hasContentChanged = post?.contents !== contents;
   const hasImagesChanged =
     imageItems.some((item) => item.type === "new") ||
@@ -203,11 +235,14 @@ export default function Upload() {
       .filter((item) => item.type === "prev")
       .some((item, idx) => item.uri !== post?.images?.[idx]);
 
-  // 버튼 비활성화 조건
+  // 프라이버시 설정 변경 감지 로직 추가
+  const hasPrivacyChanged = postId && originalPrivacy !== localPrivacy;
+
+  // 버튼 비활성화 조건 (프라이버시 변경 감지 포함)
   const isButtonDisabled =
     isLoading ||
     (postId
-      ? !hasContentChanged && !hasImagesChanged
+      ? !hasContentChanged && !hasImagesChanged && !hasPrivacyChanged
       : imageItems.length === 0 && contents === "");
 
   // 버튼 텍스트
@@ -217,8 +252,78 @@ export default function Upload() {
     return postId ? "수정" : "인증";
   };
 
+  // 프라이버시 변경 핸들러
+  const handlePrivacyChange = (privacy: PrivacySetting) => {
+    // 이미 같은 설정이면 동작하지 않음
+    if (localPrivacy === privacy) return;
+
+    // 낙관적 업데이트
+    const previousPrivacy = localPrivacy;
+    setLocalPrivacy(privacy);
+
+    // 수정 화면일 경우 AsyncStorage 저장하지 않음
+    if (!postId) {
+      // 게시물 생성 모드일 때만 AsyncStorage에 저장
+      saveUploadPrivacy(privacy).catch((error) => {
+        // 저장 실패 시 원래 상태로 복원하고 오류 알림
+        console.error("프라이버시 설정 저장 실패:", error);
+        setLocalPrivacy(previousPrivacy);
+      });
+    }
+  };
+
   return (
     <View className="flex-1 bg-white">
+      {/* 프라이버시 선택 버튼 - UI는 그대로 유지 */}
+      <View className="mx-[16px] mt-[24px] h-[44px] flex-row items-center justify-center rounded-[10px] border border-gray-20 bg-gray-10 ">
+        <TouchableOpacity
+          onPress={() => handlePrivacyChange("all")}
+          activeOpacity={0.7}
+          className={`mx-[-1px] h-[44px] flex-1 flex-row items-center justify-center gap-[12px] rounded-[10px] ${
+            localPrivacy === "all" ? "border-[1.5px] border-primary" : ""
+          }`}
+          disabled={isLoading}
+        >
+          <Icons.EarthIcon
+            width={20}
+            height={20}
+            color={localPrivacy === "all" ? colors.primary : colors.gray[65]}
+          />
+          <Text
+            className={
+              localPrivacy === "all"
+                ? "title-5 text-primary"
+                : "body-3 text-gray-65"
+            }
+          >
+            전체 공개
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => handlePrivacyChange("friend")}
+          activeOpacity={0.7}
+          className={`mx-[-1px] h-[44px] flex-1 flex-row items-center justify-center gap-[12px] rounded-[10px] ${
+            localPrivacy === "friend" ? "border-[1.5px] border-primary" : ""
+          }`}
+          disabled={isLoading}
+        >
+          <Icons.PeopleIcon
+            width={20}
+            height={20}
+            color={localPrivacy === "friend" ? colors.primary : colors.gray[65]}
+          />
+          <Text
+            className={
+              localPrivacy === "friend"
+                ? "title-5 text-primary"
+                : "body-3 text-gray-65"
+            }
+          >
+            친구 공개
+          </Text>
+        </TouchableOpacity>
+      </View>
+
       {/* 이미지 리스트 (드래그 가능) */}
       <DraggableFlatList
         ref={flatListRef}
@@ -255,9 +360,8 @@ export default function Upload() {
             </TouchableOpacity>
           </ScaleDecorator>
         )}
-        className="flex-shrink-0 flex-grow-0 pt-6"
+        className="flex-shrink-0 flex-grow-0 px-[16px] py-[24px]"
         contentContainerStyle={{ gap: 16 }}
-        containerStyle={{ paddingHorizontal: 16 }}
         autoscrollSpeed={70}
         activationDistance={5}
         dragHitSlop={{ top: 0, bottom: 0, left: 10, right: 10 }}
@@ -291,7 +395,7 @@ export default function Upload() {
       />
 
       {/* 글 입력란 */}
-      <View className="w-full items-center justify-center px-6 pt-7">
+      <View className="w-full items-center justify-center px-[16px]">
         <TextInput
           className="body-1 h-[150px] w-full rounded-[15px] border border-gray-20 bg-gray-10 p-4 text-gray-100"
           placeholder="자유롭게 글을 적어주세요. (선택)"

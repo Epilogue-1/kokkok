@@ -568,7 +568,12 @@ export async function toggleLikePost(postId: number) {
 export async function createPost({
   contents,
   images,
-}: { contents?: string; images: ImagePicker.ImagePickerAsset[] }) {
+  privacy = "all",
+}: {
+  contents?: string;
+  images: ImagePicker.ImagePickerAsset[];
+  privacy?: Database["public"]["Enums"]["privacyType"];
+}) {
   try {
     const userId = await getUserIdFromStorage();
 
@@ -595,6 +600,7 @@ export async function createPost({
           userId: userId,
           images: validImageUrls,
           contents: postContents || "",
+          privacy,
         },
       ])
       .select("*, user: userId (id, username, avatarUrl)")
@@ -619,11 +625,13 @@ export async function updatePost({
   images,
   prevImages,
   contents,
+  privacy = "all",
 }: {
   postId: number;
   images: { imagePickerAsset: ImagePicker.ImagePickerAsset; index: number }[];
   prevImages: { uri: string; index: number }[];
   contents: string;
+  privacy?: Database["public"]["Enums"]["privacyType"];
 }) {
   try {
     const userId = await getUserIdFromStorage();
@@ -659,7 +667,7 @@ export async function updatePost({
     // 게시글 수정
     const { data: updatedPost, error: updateError } = await supabase
       .from("post")
-      .update({ contents, images: allImagesUrl })
+      .update({ contents, images: allImagesUrl, privacy })
       .eq("id", postId)
       .select("*, user: userId (id, username, avatarUrl)")
       .single();
