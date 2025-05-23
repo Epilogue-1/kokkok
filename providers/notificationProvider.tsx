@@ -1,12 +1,20 @@
 import { useAuthSession } from "@/hooks/useAuthSession";
 import useFetchData from "@/hooks/useFetchData";
-import type { PushSetting } from "@/types/Notification.interface";
+import type {
+  NotificationData,
+  PushSetting,
+} from "@/types/Notification.interface";
 import { updatePushToken } from "@/utils/pushTokenManager";
 import { deletePushSetting, getPushSetting } from "@/utils/supabase";
 import { useQueryClient } from "@tanstack/react-query";
 import * as Notifications from "expo-notifications";
 import { router } from "expo-router";
-import { useEffect, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { AppState } from "react-native";
 
 Notifications.setNotificationHandler({
@@ -21,8 +29,12 @@ interface Props {
   children: React.ReactNode;
 }
 
-export default function NotificationProvider({ children }: Props) {
+export default function NotificationProvider({
+  children,
+}: Props) {
   const queryClient = useQueryClient();
+  const navigationTimeoutRef = useRef<NodeJS.Timeout>();
+  const lastNavigationRef = useRef<string>("");
 
   const { isLoggedIn } = useAuthSession(queryClient);
   const [isInit, setIsInit] = useState(true);
@@ -35,6 +47,35 @@ export default function NotificationProvider({ children }: Props) {
     "푸시 알림 설정 정보 로드에 실패했습니다.",
     isLoggedIn,
   );
+
+  // 안전한 네비게이션 함수
+  const safeNavigate = useCallback((route: string, delay = 100) => {
+    // 중복 네비게이션 방지
+    if (lastNavigationRef.current === route) {
+      return;
+    }
+
+    // 기존 타이머 클리어
+    if (navigationTimeoutRef.current) {
+      clearTimeout(navigationTimeoutRef.current);
+    }
+
+    lastNavigationRef.current = route;
+
+    navigationTimeoutRef.current = setTimeout(() => {
+      try {
+        router.navigate(route);
+
+        // 네비게이션 후 플래그 리셋 (3초 후)
+        setTimeout(() => {
+          lastNavigationRef.current = "";
+        }, 3000);
+      } catch (error) {
+        console.error(`네비게이션 실패 (${route}):`, error);
+        lastNavigationRef.current = "";
+      }
+    }, delay);
+  }, []);
 
   // 세션 바뀔 때마다 isInit true로 바꿈
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
@@ -62,27 +103,54 @@ export default function NotificationProvider({ children }: Props) {
   useEffect(() => {
     const subscription = Notifications.addNotificationResponseReceivedListener(
       (response) => {
-        const { data } = response.notification.request.content;
-        if (!Object.keys(data).length) {
-          // 찌르기
-          router.navigate("/home");
-        } else if (data.postId) {
-          // 게시글 댓글, 좋아요, 멘션, 댓글 좋아요 알림
-          router.navigate(`/post/${data.postId}`);
-        } else {
-          if (data.isAccepted) {
-            // 친구 수락
-            router.navigate("/friend");
-          } else {
-            // 친구 요청
-            router.navigate("/friend/request");
+        try {
+          const { data } = response.notification.request.content as {
+            data: NotificationData;
+          };
+
+          // 데이터가 없거나 빈 객체인 경우
+          if (!data || !Object.keys(data).length) {
+            safeNavigate("/home");
+            return;
           }
+
+          // 게시글 관련 알림 (postId가 있는 경우)
+          if (data.postId) {
+            // 댓글 알림인 경우 댓글창을 열도록 파라미터 추가
+            if (data.commentInfo) {
+              safeNavigate(`/post/${data.postId}?openComments=true`);
+            } else {
+              safeNavigate(`/post/${data.postId}`);
+            }
+            return;
+          }
+
+          // 친구 관련 알림
+          if (typeof data.isAccepted === "boolean") {
+            if (data.isAccepted) {
+              safeNavigate("/friend");
+            } else {
+              safeNavigate("/friend/request");
+            }
+            return;
+          }
+
+          safeNavigate("/home");
+        } catch (error) {
+          console.error("알림 처리 중 오류 발생:", error);
+          safeNavigate("/home");
         }
       },
     );
 
-    return () => subscription.remove();
-  }, []);
+    return () => {
+      subscription.remove();
+      // 컴포넌트 언마운트 시 타이머 정리
+      if (navigationTimeoutRef.current) {
+        clearTimeout(navigationTimeoutRef.current);
+      }
+    };
+  }, [safeNavigate]);
 
   // 권한 설정 변경 감지
   useEffect(() => {
