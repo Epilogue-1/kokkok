@@ -1,0 +1,292 @@
+diff --git a/node_modules/react-native-draggable-flatlist/src/components/DraggableFlatList.tsx b/node_modules/react-native-draggable-flatlist/src/components/DraggableFlatList.tsx
+index d7d98c2..b241f4c 100644
+--- a/node_modules/react-native-draggable-flatlist/src/components/DraggableFlatList.tsx
++++ b/node_modules/react-native-draggable-flatlist/src/components/DraggableFlatList.tsx
+@@ -6,7 +6,7 @@ import React, {
+   useRef,
+   useState,
+ } from "react";
+-import { ListRenderItem, FlatListProps, LayoutChangeEvent } from "react-native";
++import { FlatListProps, LayoutChangeEvent, ListRenderItem } from "react-native";
+ import {
+   FlatList,
+   Gesture,
+@@ -19,21 +19,21 @@ import Animated, {
+   useSharedValue,
+   withSpring,
+ } from "react-native-reanimated";
+-import CellRendererComponent from "./CellRendererComponent";
+ import { DEFAULT_PROPS, isWeb } from "../constants";
+-import PlaceholderItem from "./PlaceholderItem";
+-import RowItem from "./RowItem";
+-import { DraggableFlatListProps } from "../types";
+-import PropsProvider from "../context/propsContext";
+ import AnimatedValueProvider, {
+   useAnimatedValues,
+ } from "../context/animatedValueContext";
+-import RefProvider, { useRefs } from "../context/refContext";
+ import DraggableFlatListProvider from "../context/draggableFlatListContext";
++import PropsProvider from "../context/propsContext";
++import RefProvider, { useRefs } from "../context/refContext";
+ import { useAutoScroll } from "../hooks/useAutoScroll";
+ import { useStableCallback } from "../hooks/useStableCallback";
+-import ScrollOffsetListener from "./ScrollOffsetListener";
++import { DraggableFlatListProps } from "../types";
+ import { typedMemo } from "../utils";
++import CellRendererComponent from "./CellRendererComponent";
++import PlaceholderItem from "./PlaceholderItem";
++import RowItem from "./RowItem";
++import ScrollOffsetListener from "./ScrollOffsetListener";
+ 
+ type RNGHFlatListProps<T> = Animated.AnimateProps<
+   FlatListProps<T> & {
+@@ -47,9 +47,9 @@ type OnViewableItemsChangedCallback<T> = Exclude<
+   undefined | null
+ >;
+ 
+-const AnimatedFlatList = (Animated.createAnimatedComponent(
+-  FlatList
+-) as unknown) as <T>(props: RNGHFlatListProps<T>) => React.ReactElement;
++const AnimatedFlatList = Animated.createAnimatedComponent(
++  FlatList,
++) as unknown as <T>(props: RNGHFlatListProps<T>) => React.ReactElement;
+ 
+ function DraggableFlatListInner<T>(props: DraggableFlatListProps<T>) {
+   const {
+@@ -91,12 +91,13 @@ function DraggableFlatListInner<T>(props: DraggableFlatListProps<T>) {
+   const {
+     dragHitSlop = DEFAULT_PROPS.dragHitSlop,
+     scrollEnabled = DEFAULT_PROPS.scrollEnabled,
+-    activationDistance: activationDistanceProp = DEFAULT_PROPS.activationDistance,
++    activationDistance:
++      activationDistanceProp = DEFAULT_PROPS.activationDistance,
+   } = props;
+ 
+   let [activeKey, setActiveKey] = useState<string | null>(null);
+   const [layoutAnimationDisabled, setLayoutAnimationDisabled] = useState(
+-    !propsRef.current.enableLayoutAnimationExperimental
++    !propsRef.current.enableLayoutAnimationExperimental,
+   );
+ 
+   const keyExtractor = useStableCallback((item: T, index: number) => {
+@@ -183,7 +184,7 @@ function DraggableFlatListInner<T>(props: DraggableFlatListProps<T>) {
+       activeKey,
+       extraData: props.extraData,
+     }),
+-    [activeKey, props.extraData]
++    [activeKey, props.extraData],
+   );
+ 
+   const renderItem: ListRenderItem<T> = useCallback(
+@@ -203,7 +204,7 @@ function DraggableFlatListInner<T>(props: DraggableFlatListProps<T>) {
+         />
+       );
+     },
+-    [props.renderItem, props.extraData, drag, keyExtractor]
++    [props.renderItem, props.extraData, drag, keyExtractor],
+   );
+ 
+   const onRelease = useStableCallback((index: number) => {
+@@ -222,7 +223,7 @@ function DraggableFlatListInner<T>(props: DraggableFlatListProps<T>) {
+ 
+       onDragEnd?.({ from, to, data: newData });
+       reset();
+-    }
++    },
+   );
+ 
+   const onPlaceholderIndexChange = useStableCallback((index: number) => {
+@@ -246,7 +247,7 @@ function DraggableFlatListInner<T>(props: DraggableFlatListProps<T>) {
+         }
+       }
+     },
+-    [isTouchActiveNative, onDragEnd, onRelease]
++    [isTouchActiveNative, onDragEnd, onRelease],
+   );
+ 
+   useAnimatedReaction(
+@@ -258,7 +259,7 @@ function DraggableFlatListInner<T>(props: DraggableFlatListProps<T>) {
+         runOnJS(onPlaceholderIndexChange)(cur);
+       }
+     },
+-    [spacerIndexAnim]
++    [spacerIndexAnim],
+   );
+ 
+   const gestureDisabled = useSharedValue(false);
+@@ -295,14 +296,14 @@ function DraggableFlatListInner<T>(props: DraggableFlatListProps<T>) {
+       const springTo = placeholderOffset.value - activeCellOffset.value;
+       touchTranslate.value = withSpring(
+         springTo,
+-        animationConfigRef.current,
++        animationConfigRef.value,
+         () => {
+           runOnJS(onDragEnd)({
+             from: activeIndexAnim.value,
+             to: spacerIndexAnim.value,
+           });
+           disabled.value = false;
+-        }
++        },
+       );
+     })
+     .onTouchesDown(() => {
+@@ -337,7 +338,7 @@ function DraggableFlatListInner<T>(props: DraggableFlatListProps<T>) {
+         runOnJS(onScroll)(scrollOffset.value);
+       },
+     },
+-    [horizontalAnim]
++    [horizontalAnim],
+   );
+ 
+   useAutoScroll();
+@@ -403,7 +404,7 @@ function DraggableFlatListInner<T>(props: DraggableFlatListProps<T>) {
+ 
+ function DraggableFlatList<T>(
+   props: DraggableFlatListProps<T>,
+-  ref?: React.ForwardedRef<FlatList<T>> | null
++  ref?: React.ForwardedRef<FlatList<T>> | null,
+ ) {
+   return (
+     <PropsProvider {...props}>
+@@ -421,5 +422,5 @@ const MemoizedInner = typedMemo(DraggableFlatListInner);
+ // Generic forwarded ref type assertion taken from:
+ // https://fettblog.eu/typescript-react-generic-forward-refs/#option-1%3A-type-assertion
+ export default React.forwardRef(DraggableFlatList) as <T>(
+-  props: DraggableFlatListProps<T> & { ref?: React.ForwardedRef<FlatList<T>> }
++  props: DraggableFlatListProps<T> & { ref?: React.ForwardedRef<FlatList<T>> },
+ ) => ReturnType<typeof DraggableFlatList>;
+diff --git a/node_modules/react-native-draggable-flatlist/src/context/refContext.tsx b/node_modules/react-native-draggable-flatlist/src/context/refContext.tsx
+index ea21575..193feaf 100644
+--- a/node_modules/react-native-draggable-flatlist/src/context/refContext.tsx
++++ b/node_modules/react-native-draggable-flatlist/src/context/refContext.tsx
+@@ -1,14 +1,18 @@
+-import React, { useContext } from "react";
++import React, { useContext, useEffect } from "react";
+ import { useMemo, useRef } from "react";
+ import { FlatList } from "react-native-gesture-handler";
+-import Animated, { WithSpringConfig } from "react-native-reanimated";
++import Animated, {
++  type SharedValue,
++  useSharedValue,
++  WithSpringConfig,
++} from "react-native-reanimated";
+ import { DEFAULT_PROPS } from "../constants";
+-import { useProps } from "./propsContext";
+ import { CellData, DraggableFlatListProps } from "../types";
++import { useProps } from "./propsContext";
+ 
+ type RefContextValue<T> = {
+   propsRef: React.MutableRefObject<DraggableFlatListProps<T>>;
+-  animationConfigRef: React.MutableRefObject<WithSpringConfig>;
++  animationConfigRef: SharedValue<WithSpringConfig>;
+   cellDataRef: React.MutableRefObject<Map<string, CellData>>;
+   keyToIndexRef: React.MutableRefObject<Map<string, number>>;
+   containerRef: React.RefObject<Animated.View>;
+@@ -16,7 +20,7 @@ type RefContextValue<T> = {
+   scrollViewRef: React.RefObject<Animated.ScrollView>;
+ };
+ const RefContext = React.createContext<RefContextValue<any> | undefined>(
+-  undefined
++  undefined,
+ );
+ 
+ export default function RefProvider<T>({
+@@ -34,7 +38,7 @@ export function useRefs<T>() {
+   const value = useContext(RefContext);
+   if (!value) {
+     throw new Error(
+-      "useRefs must be called from within a RefContext.Provider!"
++      "useRefs must be called from within a RefContext.Provider!",
+     );
+   }
+   return value as RefContextValue<T>;
+@@ -50,12 +54,19 @@ function useSetupRefs<T>({
+ 
+   const propsRef = useRef(props);
+   propsRef.current = props;
+-  const animConfig = {
+-    ...DEFAULT_PROPS.animationConfig,
+-    ...animationConfig,
+-  } as WithSpringConfig;
+-  const animationConfigRef = useRef(animConfig);
+-  animationConfigRef.current = animConfig;
++  const animConfig = useMemo(
++    () =>
++      ({
++        ...DEFAULT_PROPS.animationConfig,
++        ...animationConfig,
++      }) as WithSpringConfig,
++    [animationConfig],
++  );
++  const animationConfigRef = useSharedValue(animConfig);
++
++  useEffect(() => {
++    animationConfigRef.value = animConfig;
++  }, [animConfig]);
+ 
+   const cellDataRef = useRef(new Map<string, CellData>());
+   const keyToIndexRef = useRef(new Map<string, number>());
+@@ -86,7 +97,7 @@ function useSetupRefs<T>({
+       propsRef,
+       scrollViewRef,
+     }),
+-    []
++    [],
+   );
+ 
+   return refs;
+diff --git a/node_modules/react-native-draggable-flatlist/src/hooks/useCellTranslate.tsx b/node_modules/react-native-draggable-flatlist/src/hooks/useCellTranslate.tsx
+index ce4ab68..efea240 100644
+--- a/node_modules/react-native-draggable-flatlist/src/hooks/useCellTranslate.tsx
++++ b/node_modules/react-native-draggable-flatlist/src/hooks/useCellTranslate.tsx
+@@ -101,7 +101,7 @@ export function useCellTranslate({ cellIndex, cellSize, cellOffset }: Params) {
+       ? activeCellSize.value * (isAfterActive ? -1 : 1)
+       : 0;
+ 
+-    return withSpring(translationAmt, animationConfigRef.current);
++    return withSpring(translationAmt, animationConfigRef.value);
+   }, [activeKey, cellIndex]);
+ 
+   return translate;
+diff --git a/node_modules/react-native-draggable-flatlist/src/hooks/useOnCellActiveAnimation.ts b/node_modules/react-native-draggable-flatlist/src/hooks/useOnCellActiveAnimation.ts
+index 7c20587..2701dbc 100644
+--- a/node_modules/react-native-draggable-flatlist/src/hooks/useOnCellActiveAnimation.ts
++++ b/node_modules/react-native-draggable-flatlist/src/hooks/useOnCellActiveAnimation.ts
+@@ -1,6 +1,7 @@
+-import { useRef } from "react";
++import { useEffect } from "react";
+ import Animated, {
+   useDerivedValue,
++  useSharedValue,
+   withSpring,
+   WithSpringConfig,
+ } from "react-native-reanimated";
+@@ -13,10 +14,13 @@ type Params = {
+ };
+ 
+ export function useOnCellActiveAnimation(
+-  { animationConfig }: Params = { animationConfig: {} }
++  { animationConfig }: Params = { animationConfig: {} },
+ ) {
+-  const animationConfigRef = useRef(animationConfig);
+-  animationConfigRef.current = animationConfig;
++  const animationConfigRef = useSharedValue(animationConfig);
++
++  useEffect(() => {
++    animationConfigRef.value = animationConfig;
++  }, [animationConfig]);
+ 
+   const isActive = useIsActive();
+ 
+@@ -26,8 +30,8 @@ export function useOnCellActiveAnimation(
+     const toVal = isActive && isTouchActiveNative.value ? 1 : 0;
+     return withSpring(toVal, {
+       ...DEFAULT_ANIMATION_CONFIG,
+-      ...animationConfigRef.current,
+-    });
++      ...animationConfigRef.value,
++    } as WithSpringConfig);
+   }, [isActive]);
+ 
+   return {
