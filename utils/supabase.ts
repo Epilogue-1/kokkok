@@ -735,7 +735,7 @@ export function getReplies(parentId: number) {
   return async ({ page = 0, limit = 10 }): Promise<InfiniteResponse<Reply>> => {
     try {
       const start = page === 0 ? 0 : (page - 1) * limit + 1;
-      const end = page === 0 ? 1 : start + limit;
+      const end = page === 0 ? 0 : start + limit - 1;
 
       const { count } = await supabase
         .from("comment")

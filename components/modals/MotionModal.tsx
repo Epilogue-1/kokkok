@@ -31,7 +31,7 @@ export default function MotionModal({
   closeThreshold = 0.3,
 }: CustomModalProps) {
   const slideAnim = useRef(new Animated.Value(0));
-  const heightAnim = useRef(new Animated.Value(initialHeight));
+  const heightAnim = useRef(new Animated.Value(0)); // 초기값을 0으로 변경
   const heightRef = useRef(initialHeight);
   const maxHeightRef = useRef(maxHeight);
   const [showToast, setShowToast] = useState(false);
@@ -50,7 +50,6 @@ export default function MotionModal({
       onClose();
       setTimeout(() => {
         heightRef.current = initialHeight;
-        heightAnim.current.setValue(initialHeight);
       }, 100);
     });
   }, [onClose, initialHeight]);
@@ -136,21 +135,32 @@ export default function MotionModal({
     if (visible) {
       // 초기값 설정
       slideAnim.current.setValue(0);
+      heightAnim.current.setValue(0); // 높이 초기값을 0으로 설정
 
-      // spring 애니메이션으로 변경
+      // 첫 번째로 슬라이드 애니메이션 실행
       Animated.spring(slideAnim.current, {
         toValue: 1,
         useNativeDriver: false,
-        stiffness: 300, // 강성 (탄성력)
-        damping: 25, // 감쇠
-        mass: 0.8, // 질량
+        stiffness: 300,
+        damping: 25,
+        mass: 0.8,
+      }).start();
+
+      // 동시에 높이 애니메이션도 실행
+      Animated.spring(heightAnim.current, {
+        toValue: initialHeight,
+        useNativeDriver: false,
+        stiffness: 300,
+        damping: 25,
+        mass: 0.8,
       }).start(() => {
         setShowToast(true);
+        heightRef.current = initialHeight;
       });
     } else {
       setShowToast(false);
     }
-  }, [visible]);
+  }, [visible, initialHeight]);
 
   return (
     <Modal

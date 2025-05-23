@@ -1,7 +1,4 @@
-import { CommentSkeleton } from "@/components/Skeleton";
 import { CommentOptionsModal } from "@/components/modals/ListModal/CommentOptionsModal";
-import colors from "@/constants/colors";
-import Icons from "@/constants/icons";
 import images from "@/constants/images";
 import useFetchData from "@/hooks/useFetchData";
 import useInfiniteLoad from "@/hooks/useInfiniteLoad";
@@ -18,29 +15,38 @@ import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import { useEffect, useState } from "react";
-import { Image, Pressable, Text, TouchableOpacity, View } from "react-native";
-import { FlatList } from "react-native";
+import { Pressable, View } from "react-native";
+import CommentActions from "./CommentActions";
+import CommentContent from "./CommentContent";
+import CommentHeader from "./CommentHeader";
+import CommentReplies from "./CommentReplies";
 
 const LIMIT = 5;
 
-interface CommentItemProps {
+// 공통 타입 정의
+export type Author = {
+  id: string;
+  username: string;
+  avatarUrl: string | null;
+} | null;
+
+export interface ReplyTo {
+  id: string;
+  username: string;
+  avatarUrl: string | null;
+}
+
+// 타입 정의
+export interface CommentItemProps {
   id: number;
   postId: number;
   contents: string;
-  author: {
-    id: string;
-    username: string;
-    avatarUrl: string | null;
-  } | null;
+  author: Author;
   liked?: boolean;
   likedAvatars: string[];
   createdAt: string;
   parentsCommentId?: number;
-  replyTo?: {
-    id: string;
-    username: string;
-    avatarUrl: string | null;
-  };
+  replyTo?: ReplyTo;
   totalReplies?: number;
   onReply: (
     userId: string,
@@ -74,14 +80,12 @@ export default function CommentItem({
   const [userId, setUserId] = useState<string | null>(null);
   const [isLiked, setIsLiked] = useState(liked);
   const [isTextMore, setIsTextMore] = useState(false);
-  const { truncateText, calculateMaxChars } = useTruncateText();
-  const { openModal } = useModal();
   const [userLikedAvatars, setUserLikedAvatars] =
     useState<string[]>(likedAvatars);
 
   const router = useRouter();
-
-  const diff = diffDate(new Date(createdAt));
+  const { openModal } = useModal();
+  const { truncateText, calculateMaxChars } = useTruncateText();
 
   // 답글 가져오기
   const {
@@ -105,6 +109,7 @@ export default function CommentItem({
     "사용자 정보를 불러오는데 실패했습니다.",
   );
 
+  // 옵션 모달 열기
   const handleOpenModal = () => {
     openModal(
       <CommentOptionsModal
@@ -117,24 +122,12 @@ export default function CommentItem({
     );
   };
 
-  // 좋아요 토글
+  // 좋아요 토글 뮤테이션
   const toggleLike = useMutation({
     mutationFn: () => toggleLikeComment(id),
     onMutate: () => {
       setIsLiked((prev) => !prev);
-
-      if (!isLiked) {
-        const avatarToUse =
-          author?.avatarUrl ||
-          userData?.avatarUrl ||
-          images.AvaTarDefault ||
-          "";
-        setUserLikedAvatars((prev) => [...(prev || []), avatarToUse]);
-      } else {
-        setUserLikedAvatars((prev) =>
-          prev.filter((prevAvatar) => prevAvatar !== author?.avatarUrl),
-        );
-      }
+      updateAvatarsList();
     },
     onSuccess: () => {
       if (isLiked && userId !== author?.id) {
@@ -143,15 +136,26 @@ export default function CommentItem({
     },
     onError: () => {
       setIsLiked((prev) => !prev);
-      if (!isLiked) {
-        setUserLikedAvatars((prev) =>
-          prev.filter((prevAvatar) => prevAvatar !== author?.avatarUrl),
-        );
-      } else {
-        setUserLikedAvatars((prev) => [...prev, author?.avatarUrl || ""]);
-      }
+      // 좋아요 목록 되돌리기
+      updateAvatarsList(true);
     },
   });
+
+  // 아바타 목록 업데이트 함수
+  const updateAvatarsList = (isRollback = false) => {
+    const currentIsLiked = isRollback ? !isLiked : isLiked;
+    const avatarToUse = userData?.avatarUrl || images.AvaTarDefault || "";
+
+    if (!currentIsLiked) {
+      // 좋아요 추가: 사용자 아바타 추가
+      setUserLikedAvatars((prev) => [...(prev || []), avatarToUse]);
+    } else {
+      // 좋아요 취소: 사용자 아바타 제거
+      setUserLikedAvatars((prev) =>
+        prev.filter((prevAvatar) => prevAvatar !== avatarToUse),
+      );
+    }
+  };
 
   // 좋아요 알림
   const sendNotificationMutation = useMutation({
@@ -182,208 +186,76 @@ export default function CommentItem({
     handleLoadId();
   }, []);
 
+  // 남은 답글 수 계산
+  const remainingReplies =
+    (totalReplies || 0) -
+    (replyData?.pages.reduce((acc, page) => acc + page.data.length, 0) ?? 0);
+
+  // 날짜 포맷팅
+  const diff = diffDate(new Date(createdAt));
+
   return (
     <Pressable
       onLongPress={() => {
         if (author?.id === userId) handleOpenModal();
       }}
     >
-      {/* header */}
-      <View className={"flex-row items-center justify-between"}>
-        {/* user info */}
-        <TouchableOpacity
-          onPress={() => {
-            onCommentsClose();
-            if (author?.id === userId) router.push("/mypage");
-            else router.push(`/user/${author?.id}`);
-          }}
-          className="flex-1"
-        >
-          <View className="flex-1 flex-row items-center gap-[8px]">
-            <Image
-              source={
-                author?.avatarUrl
-                  ? { uri: author.avatarUrl }
-                  : images.AvaTarDefault
-              }
-              resizeMode="cover"
-              className="size-[32px] rounded-full"
-            />
-            <View className="max-w-[80%]">
-              <Text
-                className="title-5 text-black"
-                numberOfLines={1}
-                ellipsizeMode="tail"
-              >
-                {author?.username}
-              </Text>
-              <Text className="caption-2 text-gray-40">{diff}</Text>
-            </View>
-          </View>
-        </TouchableOpacity>
+      {/* 댓글 헤더 */}
+      <CommentHeader
+        author={author}
+        diff={diff}
+        isLiked={isLiked}
+        userId={userId}
+        handleOpenModal={handleOpenModal}
+        onCommentsClose={onCommentsClose}
+        router={router}
+        toggleLike={toggleLike}
+      />
 
-        <View className="flex-row items-center">
-          {/* like */}
-          <TouchableOpacity
-            onPress={() => {
-              if (!toggleLike.isPending) toggleLike.mutate();
-            }}
-            className="p-[8px]"
-          >
-            {isLiked ? (
-              <Icons.HeartFilledIcon
-                width={24}
-                height={24}
-                color={colors.secondary.red}
-              />
-            ) : (
-              <Icons.HeartIcon width={24} height={24} color={colors.gray[90]} />
-            )}
-          </TouchableOpacity>
+      {/* 댓글 내용 */}
+      <CommentContent
+        contents={contents}
+        isReply={isReply}
+        replyTo={replyTo}
+        author={author}
+        userId={userId}
+        handleOpenModal={handleOpenModal}
+        isTextMore={isTextMore}
+        setIsTextMore={setIsTextMore}
+        truncateText={truncateText}
+        calculateMaxChars={calculateMaxChars}
+      />
 
-          {/* kebab button */}
-          {author?.id && (
-            <TouchableOpacity
-              onPress={handleOpenModal}
-              className="py-[8px] pl-[8px]"
-            >
-              <Icons.KebabMenuIcon
-                width={24}
-                height={24}
-                color={colors.black}
-              />
-            </TouchableOpacity>
-          )}
-        </View>
-      </View>
+      {/* 댓글 액션 (답글 버튼, 좋아요) */}
+      <CommentActions
+        author={author}
+        userLikedAvatars={userLikedAvatars}
+        onReply={onReply}
+        id={id}
+        parentsCommentId={parentsCommentId}
+        onLikedAuthorPress={onLikedAuthorPress}
+      />
 
-      {/* contents */}
-      <View className="flex-1 flex-row flex-wrap py-[16px]">
-        <Text
-          onPress={() =>
-            contents.length > calculateMaxChars && setIsTextMore(!isTextMore)
-          }
-          onLongPress={() => {
-            if (author?.id === userId) handleOpenModal();
-          }}
-          className="body-3 flex-1 text-gray-100"
-        >
-          {isReply && replyTo?.username && (
-            <Text className="title-5 text-primary">@{replyTo.username} </Text>
-          )}
-          {isTextMore ? contents : truncateText(contents)}
-          {contents.length > calculateMaxChars && (
-            <Text className="title-5 -mb-[3px] text-gray-45">
-              {isTextMore ? " 접기" : "더보기"}
-            </Text>
-          )}
-        </Text>
-      </View>
-
-      <View className="flex-row items-center justify-between pb-[16px]">
-        {/* reply button */}
-        <TouchableOpacity
-          onPress={() => {
-            if (author) {
-              onReply(author.id, author.username, parentsCommentId ?? id, id);
-            }
-          }}
-          className="h-[26px] flex-row items-center pb-[8px]"
-        >
-          <Text className="caption-2 w-[80px] text-gray-80">답글달기</Text>
-        </TouchableOpacity>
-
-        {/* likeAvatar */}
-        {userLikedAvatars && userLikedAvatars.length > 0 && (
-          <TouchableOpacity
-            onPress={() => onLikedAuthorPress(id)}
-            className="flex-row items-center"
-          >
-            {userLikedAvatars.slice(0, 2).map((avatar, index) => (
-              <Image
-                key={`avatar-${index}-${id}`}
-                source={avatar ? { uri: avatar } : images.AvaTarDefault}
-                resizeMode="cover"
-                className={`size-[26px] rounded-full border-2 border-[#FCFBFD] ${index !== 0 ? "-ml-[9px]" : ""}`}
-                style={{
-                  zIndex: 5 - index,
-                }}
-              />
-            ))}
-            <Text className="body-5 text-gray-80">
-              {userLikedAvatars.length > 2
-                ? "외 여러 명이 좋아해요"
-                : "이 좋아해요"}
-            </Text>
-          </TouchableOpacity>
-        )}
-      </View>
-
-      {/* reply */}
+      {/* 답글 목록 */}
       {!!totalReplies && totalReplies > 0 && (
-        <View className="pl-[8px]">
-          {!!replyData && (
-            <FlatList
-              className="gap-2"
-              data={replyData.pages.flatMap((page) => page.data)}
-              keyExtractor={(item) => item.id.toString()}
-              renderItem={({ item, index }) => (
-                <CommentItem
-                  id={item.id}
-                  postId={postId}
-                  contents={item.contents}
-                  author={{
-                    id: item.userData.id,
-                    username: item.userData.username,
-                    avatarUrl: item.userData.avatarUrl,
-                  }}
-                  liked={item.isLiked}
-                  likedAvatars={item.likedAvatars}
-                  createdAt={item.createdAt}
-                  parentsCommentId={item.parentsCommentId}
-                  replyTo={item.replyTo}
-                  onReply={onReply}
-                  isReply={true}
-                  onCommentsClose={onCommentsClose}
-                  onLikedAuthorPress={onLikedAuthorPress}
-                  onDeletedPress={onDeletedPress}
-                />
-              )}
-              ListFooterComponent={() =>
-                isFetchingNextPage ? <CommentSkeleton /> : null
-              }
-            />
-          )}
-
-          {!replyData && isFetching && <CommentSkeleton />}
-
-          {(totalReplies > 1 || hasNextPage) &&
-            !!(
-              totalReplies -
-              (replyData?.pages.reduce(
-                (acc, page) => acc + page.data.length,
-                0,
-              ) ?? 0)
-            ) && (
-              <TouchableOpacity
-                onPress={loadMore}
-                className="w-full flex-1 items-center justify-center"
-              >
-                <Text className="caption-2 mb-[16px] text-gray-60">
-                  + 답글{" "}
-                  {totalReplies -
-                    (replyData?.pages.reduce(
-                      (acc, page) => acc + page.data.length,
-                      0,
-                    ) ?? 0)}
-                  개 더보기
-                </Text>
-              </TouchableOpacity>
-            )}
-        </View>
+        <CommentReplies
+          replyData={replyData}
+          totalReplies={totalReplies}
+          hasNextPage={hasNextPage}
+          remainingReplies={remainingReplies}
+          isFetchingNextPage={isFetchingNextPage}
+          isFetching={isFetching}
+          loadMore={loadMore}
+          id={id}
+          postId={postId}
+          onReply={onReply}
+          onCommentsClose={onCommentsClose}
+          onLikedAuthorPress={onLikedAuthorPress}
+          onDeletedPress={onDeletedPress}
+        />
       )}
 
-      {/* divider */}
+      {/* 구분선 */}
       {!isReply && <View className="mb-[20px] h-[1px] w-full bg-gray-10" />}
     </Pressable>
   );
