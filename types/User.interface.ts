@@ -18,4 +18,5 @@ export interface User extends UserProfile {
   notificationCheckedAt: string;
   createdAt: string;
   isOAuth?: boolean;
+  backgroundUrl?: string | null;
 }

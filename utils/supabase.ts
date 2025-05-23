@@ -266,30 +266,70 @@ export async function getCurrentUser(): Promise<User> {
 export async function updateMyProfile(profile: {
   username: string;
   description: string;
-  avatarUrl?: ImagePicker.ImagePickerAsset;
+  avatarUrl?: ImagePicker.ImagePickerAsset | null;
+  backgroundUrl?: ImagePicker.ImagePickerAsset | string | null;
 }) {
   const userId = await getUserIdFromStorage();
 
   try {
     let newAvatarUrl: string | undefined;
+    let newBackgroundUrl: string | null | undefined;
 
-    if (profile.avatarUrl === null || profile.avatarUrl === undefined) {
+    // Avatar URL 처리
+    if (profile.avatarUrl === null) {
       // 이미지 삭제 시 기본 이미지 URL 사용
       newAvatarUrl = DEFAULT_AVATAR_URL;
-    } else if (profile.avatarUrl && !profile.avatarUrl.uri.startsWith("http")) {
+    } else if (
+      profile.avatarUrl &&
+      typeof profile.avatarUrl === "object" &&
+      "uri" in profile.avatarUrl &&
+      !profile.avatarUrl.uri.startsWith("http")
+    ) {
       // 새로운 이미지이고 로컬 파일인 경우에만 업로드
-      newAvatarUrl = await uploadImage(profile.avatarUrl);
+      newAvatarUrl = await uploadImage(
+        profile.avatarUrl as ImagePicker.ImagePickerAsset,
+      );
     }
 
-    const { avatarUrl, ...profileData } = profile;
+    // Background URL 처리
+    if (profile.backgroundUrl === null) {
+      // 이미지 삭제 요청
+      newBackgroundUrl = null;
+    } else if (
+      profile.backgroundUrl &&
+      typeof profile.backgroundUrl === "object" &&
+      "uri" in profile.backgroundUrl &&
+      !profile.backgroundUrl.uri.startsWith("http")
+    ) {
+      // 새로운 이미지이고 로컬 파일인 경우 업로드
+      newBackgroundUrl = await uploadImage(
+        profile.backgroundUrl as ImagePicker.ImagePickerAsset,
+      );
+    } else if (typeof profile.backgroundUrl === "string") {
+      // 기존 URL 사용
+      newBackgroundUrl = profile.backgroundUrl;
+    }
 
-    await supabase
-      .from("user")
-      .update({
-        ...profileData,
-        ...(newAvatarUrl && { avatarUrl: newAvatarUrl }),
-      })
-      .eq("id", userId);
+    const { avatarUrl, backgroundUrl, ...profileData } = profile;
+
+    const updateData: {
+      username: string;
+      description: string;
+      avatarUrl?: string;
+      backgroundUrl?: string | null;
+    } = {
+      ...profileData,
+    };
+
+    if (newAvatarUrl !== undefined) {
+      updateData.avatarUrl = newAvatarUrl;
+    }
+
+    if (newBackgroundUrl !== undefined) {
+      updateData.backgroundUrl = newBackgroundUrl;
+    }
+
+    await supabase.from("user").update(updateData).eq("id", userId);
   } catch (error) {
     const errorMessage =
       error instanceof Error ? error.message : "프로필 업데이트에 실패했습니다";

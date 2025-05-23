@@ -5,13 +5,20 @@ import useFetchData from "@/hooks/useFetchData";
 import useManageFriend from "@/hooks/useManageFriend";
 import { getRelationship } from "@/utils/supabase";
 import { router } from "expo-router";
-import { Image, Text, TouchableOpacity, View } from "react-native";
+import {
+  Image,
+  ImageBackground,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 interface ProfileSectionProps {
   userId?: string | string[];
   username: string;
   avatarUrl?: string;
   description?: string;
+  backgroundUrl?: string | null;
   onSettingsPress: () => void;
 }
 
@@ -20,16 +27,28 @@ export default function ProfileSection({
   username,
   avatarUrl,
   description,
+  backgroundUrl, // 추가
   onSettingsPress,
 }: ProfileSectionProps) {
+  const contentContainerStyle = backgroundUrl ? "mt-[202px]" : "mt-[148px]";
   return (
     <>
-      <View className="absolute h-[105px] w-full bg-primary" />
-      <View className="mt-[98px] rounded-t-[3px] bg-white px-4">
+      {backgroundUrl ? (
+        <ImageBackground
+          source={{ uri: backgroundUrl }}
+          className="absolute top-0 right-0 left-0 aspect-video w-full"
+          resizeMode="cover"
+        />
+      ) : (
+        <View className="absolute top-0 right-0 left-0 h-[150px] w-full bg-primary" />
+      )}
+      <View
+        className={`rounded-t-[3px] bg-white px-5 ${contentContainerStyle}`}
+      >
         <View className="w-full justify-between">
           <Image
             source={avatarUrl ? { uri: avatarUrl } : images.AvaTarDefault}
-            className="absolute top-[-50px] z-50 size-[100px] rounded-full border-[1.5px] border-white"
+            className="absolute top-[-22px] z-50 size-[80px] rounded-full border-[3px] border-white"
             accessibilityLabel="프로필 이미지"
             accessibilityRole="image"
             resizeMode="cover"
@@ -47,9 +66,9 @@ export default function ProfileSection({
               />
             </TouchableOpacity>
           </View>
-          <View className="mt-[13px] w-full flex-row items-center gap-6 px-[12px]">
+          <View className="mt-[30px] w-full flex-row items-center gap-6">
             <Text
-              className="title-3 flex-1"
+              className="title-2 flex-1 text-gray-100"
               numberOfLines={1}
               ellipsizeMode="tail"
             >
@@ -58,9 +77,12 @@ export default function ProfileSection({
           </View>
         </View>
 
-        <View className="mt-[12px]">
+        <View className="mt-[20px]">
           {description ? (
-            <Text className="body-5 rounded-[10px] bg-gray-10 p-4 text-gray-80">
+            <Text
+              className="body-3 mb-[40px] rounded-[10px] text-gray-100"
+              numberOfLines={4}
+            >
               {description}
             </Text>
           ) : (
