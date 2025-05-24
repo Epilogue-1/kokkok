@@ -8,6 +8,7 @@ import useCheckPrivacy from "@/hooks/useCheckPrivacy";
 import useFetchData from "@/hooks/useFetchData";
 import useInfiniteLoad from "@/hooks/useInfiniteLoad";
 import useRefresh from "@/hooks/useRefresh";
+import type { Post } from "@/types/Post.interface";
 import { getPostLikes, getPosts } from "@/utils/supabase";
 import { useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
@@ -114,7 +115,7 @@ export default function Home() {
         data={data?.pages.flatMap((page) => page.data) ?? []}
         keyExtractor={(item) => item.id.toString()}
         contentContainerStyle={{ gap: 10 }}
-        renderItem={({ item: post }) => (
+        renderItem={({ item: post }: { item: Post }) => (
           <PostItem
             key={post.id}
             author={{
@@ -126,6 +127,7 @@ export default function Home() {
             liked={post.isLikedByUser}
             likedAuthorAvatars={post.likedAvatars ?? []}
             contents={post.contents}
+            privacy={post.privacy}
             createdAt={post.createdAt}
             commentsCount={post.totalComments ?? 0}
             comment={{

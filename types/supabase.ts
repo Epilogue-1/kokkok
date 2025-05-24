@@ -644,6 +644,7 @@ export type Database = {
           images: string[];
           ratio: number;
           contents: string;
+          privacy: Database["public"]["Enums"]["privacyType"];
           createdAt: string;
           userData: {
             id: string;
