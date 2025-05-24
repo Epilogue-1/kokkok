@@ -1,4 +1,4 @@
-import { Text, TouchableOpacity, View } from "react-native";
+import { Platform, Text, TouchableOpacity, View } from "react-native";
 
 type ModalPosition = "center" | "bottom";
 export interface ListButton {
@@ -15,11 +15,15 @@ interface ListModalProps {
 export const ListModal: React.FC<ListModalProps> = ({ position, buttons }) => {
   const containerPadding = position === "center" ? "px-[46px]" : "";
   const borderRadiusStyle =
-    position === "center" ? "rounded-xl" : "rounded-t-xl";
+    position === "center" ? "rounded-[10px]" : "rounded-t-[10px]";
+
+  const bottomPadding = Platform.OS === "ios" ? "pb-[20px]" : "";
 
   return (
     <View className={containerPadding}>
-      <View className={`items-center bg-white ${borderRadiusStyle}`}>
+      <View
+        className={`items-center bg-white ${borderRadiusStyle} ${bottomPadding}`}
+      >
         {buttons.map((buttonItem, idx) => {
           const isNotLast = idx !== buttons.length - 1;
           const dividerClass = isNotLast ? "border-gray-20 border-b" : "";
