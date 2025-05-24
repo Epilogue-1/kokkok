@@ -30,6 +30,7 @@ module.exports = {
       googleServicesFile: "./google-services.json",
       package: "com.epilogue.kokkok",
     },
+
     web: {
       favicon: "./assets/favicon.png",
       bundler: "metro",
@@ -50,6 +51,12 @@ module.exports = {
           url: "https://sentry.io/",
         },
       ],
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          iosUrlScheme: process.env.GOOGLE_IOS_URL,
+        },
+      ],
     ],
     extra: {
       router: {
@@ -62,6 +69,8 @@ module.exports = {
       SUPABASE_URL: process.env.SUPABASE_URL,
       SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY,
       SENTRY_DSN: process.env.SENTRY_DSN,
+      GOOGLE_IOS_URL: process.env.GOOGLE_IOS_URL,
+      GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
     },
     owner: "epilogue-1",
   },
