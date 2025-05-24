@@ -16,6 +16,7 @@ import { validateSignInForm } from "@/utils/validation";
 import icons from "@constants/icons";
 import images, { DEFAULT_AVATAR_URL } from "@constants/images";
 import type { Provider } from "@supabase/supabase-js";
+import * as AppleAuthentication from "expo-apple-authentication";
 import { makeRedirectUri } from "expo-auth-session";
 import * as QueryParams from "expo-auth-session/build/QueryParams";
 import * as Linking from "expo-linking";
@@ -111,6 +112,78 @@ const SignIn = () => {
           router.replace("/onboarding");
           return;
         }
+      }
+    }
+  };
+
+  const performAppleSignIn = async () => {
+    try {
+      const credential = await AppleAuthentication.signInAsync({
+        requestedScopes: [
+          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+          AppleAuthentication.AppleAuthenticationScope.EMAIL,
+        ],
+      });
+
+      if (credential.identityToken) {
+        const {
+          data: { user },
+          error,
+        } = await supabase.auth.signInWithIdToken({
+          provider: "apple",
+          token: credential.identityToken,
+        });
+
+        if (error) {
+          Alert.alert("알림", "Apple 로그인에 실패했습니다.");
+          console.error("Apple Sign In Error:", error);
+          return;
+        }
+
+        if (user) {
+          const { data: existingUser } = await supabase
+            .from("user")
+            .select()
+            .eq("id", user.id)
+            .single();
+
+          if (!existingUser && user.email) {
+            const fullName =
+              credential.fullName?.givenName && credential.fullName?.familyName
+                ? `${credential.fullName.givenName} ${credential.fullName.familyName}`
+                : user.email.split("@")[0];
+
+            const { error: insertError } = await supabase.from("user").insert({
+              id: user.id,
+              email: user.email,
+              username: fullName,
+              avatarUrl: DEFAULT_AVATAR_URL,
+              isOAuth: true,
+            });
+
+            if (insertError) {
+              Alert.alert("알림", "사용자 정보 저장에 실패했습니다.");
+              console.error("User Insert Error:", insertError);
+              return;
+            }
+            router.replace("/onboarding");
+            return;
+          }
+        }
+      } else {
+        Alert.alert("알림", "Apple ID 토큰을 가져오지 못했습니다.");
+      }
+    } catch (e: unknown) {
+      if (
+        typeof e === "object" &&
+        e !== null &&
+        "code" in e &&
+        e.code === "ERR_REQUEST_CANCELED"
+      ) {
+        console.log("Apple Sign In Canceled");
+      } else {
+        Alert.alert("알림", "Apple 로그인 중 오류가 발생했습니다.");
+        console.error("Apple Sign In Exception:", e);
       }
     }
   };
@@ -216,7 +289,10 @@ const SignIn = () => {
               <View>
                 <Text className="title-3 text-gray-80">간편 로그인</Text>
               </View>
-              <View className="mt-[16px] flex-row items-center gap-[40px]">
+              <View className="mt-[16px] flex-row items-center gap-[16px]">
+                <TouchableOpacity onPress={performAppleSignIn}>
+                  <icons.AppleIcon width={56} height={56} />
+                </TouchableOpacity>
                 <TouchableOpacity onPress={() => performOAuth("google")}>
                   <icons.GoogleIcon width={56} height={56} />
                 </TouchableOpacity>
