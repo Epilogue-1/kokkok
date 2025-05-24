@@ -1,6 +1,6 @@
 import { Redirect, Stack } from "expo-router";
 
-import { Header, HeaderWithBack } from "@/components/Header";
+import { HeaderWithBack } from "@/components/Header";
 import { useAuthSession } from "@/hooks/useAuthSession";
 import { useQueryClient } from "@tanstack/react-query";
 
@@ -18,6 +18,12 @@ const AuthLayout = () => {
           name="sign-in"
           options={{
             headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="email"
+          options={{
+            header: () => <HeaderWithBack name="EMAILLOGIN" />,
           }}
         />
         <Stack.Screen
