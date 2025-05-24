@@ -4,9 +4,11 @@ import MotionModal from "@/components/modals/MotionModal";
 import colors from "@/constants/colors";
 import Icons from "@/constants/icons";
 import { default as imgs } from "@/constants/images";
+import useCheckPrivacy from "@/hooks/useCheckPrivacy";
 import useFetchData from "@/hooks/useFetchData";
 import useInfiniteLoad from "@/hooks/useInfiniteLoad";
 import useRefresh from "@/hooks/useRefresh";
+import type { Post } from "@/types/Post.interface";
 import { getPostLikes, getPosts } from "@/utils/supabase";
 import { useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
@@ -28,6 +30,7 @@ const LIMIT = 10;
 const { height: deviceHeight } = Dimensions.get("window");
 
 export default function Home() {
+  const { privacy } = useCheckPrivacy();
   const [userId, setUserId] = useState<string | null>(null);
   const [isCommentsVisible, setIsCommentsVisible] = useState(false);
   const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
@@ -70,8 +73,8 @@ export default function Home() {
 
   // post 조회
   const { data, isFetchingNextPage, refetch, loadMore } = useInfiniteLoad({
-    queryFn: getPosts,
-    queryKey: ["posts"],
+    queryFn: (params) => getPosts({ ...params, privacy }),
+    queryKey: ["posts", privacy],
     limit: LIMIT,
   });
 
@@ -112,7 +115,7 @@ export default function Home() {
         data={data?.pages.flatMap((page) => page.data) ?? []}
         keyExtractor={(item) => item.id.toString()}
         contentContainerStyle={{ gap: 10 }}
-        renderItem={({ item: post }) => (
+        renderItem={({ item: post }: { item: Post }) => (
           <PostItem
             key={post.id}
             author={{
@@ -124,6 +127,7 @@ export default function Home() {
             liked={post.isLikedByUser}
             likedAuthorAvatars={post.likedAvatars ?? []}
             contents={post.contents}
+            privacy={post.privacy}
             createdAt={post.createdAt}
             commentsCount={post.totalComments ?? 0}
             comment={{

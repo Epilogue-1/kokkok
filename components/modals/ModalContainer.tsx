@@ -31,24 +31,29 @@ export interface ModalItemRef {
 
 const ModalItem = forwardRef<ModalItemRef, ModalItemProps>(
   ({ index, modal, isTop, onClose }, ref) => {
-    const fadeAnim = useRef(
-      new Animated.Value(modal.position === "center" ? 0 : 1),
-    ).current;
+    const fadeAnim = useRef(new Animated.Value(0)).current;
     const slideAnim = useRef(
-      new Animated.Value(modal.position === "bottom" ? 0 : 1),
+      new Animated.Value(modal.position === "bottom" ? 1 : 0),
     ).current;
 
     const [isClosing, setIsClosing] = useState(false);
-    const animationRef = useRef<Animated.CompositeAnimation>();
+    const animationRef = useRef<Animated.CompositeAnimation | null>(null);
 
     useEffect(() => {
       if (modal.position === "bottom") {
-        animationRef.current = Animated.timing(slideAnim, {
-          toValue: 1,
-          useNativeDriver: true,
-          duration: 500,
-          easing: Easing.bezier(0.5, 1, 0.3, 1),
-        });
+        animationRef.current = Animated.parallel([
+          Animated.timing(fadeAnim, {
+            toValue: 1,
+            useNativeDriver: true,
+            duration: 300,
+          }),
+          Animated.timing(slideAnim, {
+            toValue: 0,
+            useNativeDriver: true,
+            duration: 500,
+            easing: Easing.bezier(0.5, 1, 0.3, 1),
+          }),
+        ]);
       } else if (modal.position === "center") {
         animationRef.current = Animated.timing(fadeAnim, {
           toValue: 1,
@@ -71,13 +76,13 @@ const ModalItem = forwardRef<ModalItemRef, ModalItemProps>(
 
       if (modal.position === "bottom") {
         animationRef.current = Animated.parallel([
-          Animated.timing(slideAnim, {
+          Animated.timing(fadeAnim, {
             toValue: 0,
             useNativeDriver: true,
             duration: 300,
           }),
-          Animated.timing(fadeAnim, {
-            toValue: 0,
+          Animated.timing(slideAnim, {
+            toValue: 1,
             useNativeDriver: true,
             duration: 300,
           }),
@@ -118,7 +123,7 @@ const ModalItem = forwardRef<ModalItemRef, ModalItemProps>(
                       {
                         translateY: slideAnim.interpolate({
                           inputRange: [0, 1],
-                          outputRange: [500, 0],
+                          outputRange: [0, 500],
                         }),
                       },
                     ]
@@ -133,7 +138,7 @@ const ModalItem = forwardRef<ModalItemRef, ModalItemProps>(
   },
 );
 
-export default function ModalContainer(): JSX.Element | null {
+export default function ModalContainer() {
   const [modalStack] = useAtom(modalStackAtom);
   const { closeModal } = useModal();
   const topModalRef = useRef<ModalItemRef>(null);

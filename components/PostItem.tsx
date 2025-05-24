@@ -3,6 +3,7 @@ import icons from "@/constants/icons";
 import { default as imgs } from "@/constants/images";
 import { useModal } from "@/hooks/useModal";
 import { useTruncateText } from "@/hooks/useTruncateText";
+import type { Database } from "@/types/supabase";
 import { diffDate } from "@/utils/formatDate";
 import { createNotification, toggleLikePost } from "@/utils/supabase";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -20,6 +21,7 @@ interface PostItemProps {
   };
   images: string[];
   contents?: string | null;
+  privacy: Database["public"]["Enums"]["privacyType"];
   liked: boolean;
   likedAuthorAvatars?: string[];
   createdAt: string;
@@ -40,6 +42,7 @@ export default function PostItem({
   author,
   images,
   contents,
+  privacy,
   liked,
   likedAuthorAvatars,
   createdAt,
@@ -116,13 +119,13 @@ export default function PostItem({
   return (
     <View className="grow bg-white">
       {/* header */}
-      <View className="h-[64px] flex-row items-center justify-between bg-white px-[16px]">
+      <View className="h-[64px] flex-row items-center justify-between gap-[32px] bg-white px-[16px]">
         <TouchableOpacity
           onPress={() => {
             if (userId === author.id) router.push("/mypage");
             else router.push(`/user/${author.id}`);
           }}
-          className="flex-row items-center gap-2 py-[4px] pr-[16px]"
+          className="h-[48px] flex-1 flex-row items-center gap-[8px]"
         >
           {/* avatar */}
           <Image
@@ -131,25 +134,66 @@ export default function PostItem({
             className="size-[32px] rounded-full"
           />
           {/* username */}
-          <Text className="title-5 text-gray-80">{author.name}</Text>
+          <Text
+            className="title-5 flex-1 text-gray-80"
+            numberOfLines={1}
+            ellipsizeMode="tail"
+          >
+            {author.name}
+          </Text>
         </TouchableOpacity>
 
-        {/* meatball */}
-        <TouchableOpacity
-          onPress={() => {
-            openModal(
-              <PostOptionsModal
-                isOwner={userId === author.id}
-                reportedId={author.id}
-                postId={postId}
-              />,
-              "bottom",
-            );
-          }}
-          className="items-center justify-center py-[4px] pl-[8px]"
-        >
-          <icons.MeatballIcon width={24} height={24} color={colors.gray[70]} />
-        </TouchableOpacity>
+        <View className="flex-shrink-0 flex-row items-center gap-[16px]">
+          {/* privacy */}
+          <View className="flex-row items-center justify-center gap-[4px] rounded-full bg-gray-20 px-[10px] py-[4px]">
+            {privacy === "friend" && (
+              <>
+                <icons.PeopleIcon
+                  width={16}
+                  height={16}
+                  color={colors.gray[100]}
+                />
+                <Text className="font-pregular text-[11px] text-gray-100 leading-[150%]">
+                  친구 공개
+                </Text>
+              </>
+            )}
+            {privacy === "all" && (
+              <>
+                <icons.EarthIcon
+                  width={16}
+                  height={16}
+                  color={colors.gray[100]}
+                />
+
+                <Text className="font-pregular text-[11px] text-gray-100 leading-[150%]">
+                  전체 공개
+                </Text>
+              </>
+            )}
+          </View>
+
+          {/* meatball */}
+          <TouchableOpacity
+            onPress={() => {
+              openModal(
+                <PostOptionsModal
+                  isOwner={userId === author.id}
+                  reportedId={author.id}
+                  postId={postId}
+                />,
+                "bottom",
+              );
+            }}
+            className="items-center justify-center "
+          >
+            <icons.MeatballIcon
+              width={24}
+              height={24}
+              color={colors.gray[70]}
+            />
+          </TouchableOpacity>
+        </View>
       </View>
 
       {/* carousel */}

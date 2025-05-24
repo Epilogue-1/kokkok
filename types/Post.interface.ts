@@ -1,3 +1,5 @@
+import type { Database } from "./supabase";
+
 interface UserData {
   id: string;
   username: string;
@@ -17,6 +19,7 @@ export interface Post {
   id: number;
   images: string[];
   contents: string | null;
+  privacy: Database["public"]["Enums"]["privacyType"];
   createdAt: string;
   userData: UserData;
   commentData: CommentData;
