@@ -86,18 +86,19 @@ export default function PostDetail() {
       {post && (
         <PostItem
           author={{
-            id: post?.userData?.id || "",
-            name: post?.userData?.username || "",
-            avatar: post?.userData?.avatarUrl || "",
+            id: post.userData?.id || "",
+            name: post.userData?.username || "",
+            avatar: post.userData?.avatarUrl || "",
           }}
-          images={post?.images || []}
-          contents={post?.contents || ""}
-          liked={post?.isLikedByUser || false}
-          likedAuthorAvatars={post?.likedAvatars || []}
-          createdAt={post?.createdAt || ""}
-          commentsCount={post?.totalComments || 0}
+          images={post.images || []}
+          contents={post.contents || ""}
+          privacy={post.privacy || "all"}
+          liked={post.isLikedByUser || false}
+          likedAuthorAvatars={post.likedAvatars || []}
+          createdAt={post.createdAt || ""}
+          commentsCount={post.totalComments || 0}
           comment={
-            post?.commentData
+            post.commentData
               ? {
                   author: {
                     name: post.commentData.author.username,
