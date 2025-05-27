@@ -280,7 +280,7 @@ export default function Upload() {
           onPress={() => handlePrivacyChange("all")}
           activeOpacity={0.7}
           className={`mx-[-1px] h-[44px] flex-1 flex-row items-center justify-center gap-[12px] rounded-[10px] ${
-            localPrivacy === "all" ? "border-[1.5px] border-primary" : ""
+            localPrivacy === "all" ? "border-[1.5px] border-primary bg-white" : ""
           }`}
           disabled={isLoading}
         >
@@ -303,7 +303,7 @@ export default function Upload() {
           onPress={() => handlePrivacyChange("friend")}
           activeOpacity={0.7}
           className={`mx-[-1px] h-[44px] flex-1 flex-row items-center justify-center gap-[12px] rounded-[10px] ${
-            localPrivacy === "friend" ? "border-[1.5px] border-primary" : ""
+            localPrivacy === "friend" ? "border-[1.5px] border-primary bg-white" : ""
           }`}
           disabled={isLoading}
         >
