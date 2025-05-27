@@ -138,7 +138,7 @@ export default function PostItem({
           <View className="flex-shrink gap-[2px]">
             {/* username */}
             <Text
-              className="title-5 h-[21px] text-gray-80"
+              className="title-5 h-[21px] text-gray-100"
               numberOfLines={1}
               ellipsizeMode="tail"
             >
@@ -152,9 +152,9 @@ export default function PostItem({
                   <icons.PeopleIcon
                     width={16}
                     height={16}
-                    color={colors.gray[100]}
+                    color={colors.gray[70]}
                   />
-                  <Text className="font-pregular text-[11px] text-gray-100 leading-[150%]">
+                  <Text className="font-medium text-[11px] text-gray-70 leading-[150%]">
                     친구 공개
                   </Text>
                 </>
@@ -164,10 +164,10 @@ export default function PostItem({
                   <icons.EarthIcon
                     width={16}
                     height={16}
-                    color={colors.gray[100]}
+                    color={colors.gray[70]}
                   />
 
-                  <Text className="font-pregular text-[11px] text-gray-100 leading-[150%]">
+                  <Text className="font-pmedium text-[11px] text-gray-70 leading-[150%]">
                     전체 공개
                   </Text>
                 </>
@@ -214,23 +214,23 @@ export default function PostItem({
           >
             {isLiked ? (
               <icons.HeartFilledIcon
-                width={24}
-                height={24}
+                width={28}
+                height={28}
                 color={colors.secondary.red}
               />
             ) : (
-              <icons.HeartIcon width={24} height={24} color={colors.gray[90]} />
+              <icons.HeartIcon width={28} height={28} color={colors.gray[90]} />
             )}
           </TouchableOpacity>
 
           {/* comments */}
           <TouchableOpacity
             onPress={() => onCommentsPress(postId)}
-            className="ml-[10px] flex-row items-center gap-[4px]"
+            className="ml-[20px] flex-row items-center gap-[2px]"
           >
-            <icons.CommentIcon width={24} height={24} color={colors.gray[90]} />
+            <icons.CommentIcon width={28} height={28} color={colors.gray[90]} />
             {commentsCount > 0 && (
-              <Text className="font-psemibold text-[13px] text-gray-90 leading-[150%]">
+              <Text className="font-pmedium text-[14px] text-gray-100 leading-[150%]">
                 {commentsCount > 99 ? "99+" : commentsCount}
               </Text>
             )}
@@ -240,7 +240,7 @@ export default function PostItem({
 
       {/* content & comments */}
       {(!!contents?.length || !!comment?.content?.length) && (
-        <View className="gap-[8px] bg-white px-[16px] pt-[12px]">
+        <View className="gap-[8px] bg-white px-[16px] pt-[8px]">
           {/* content */}
           {!!contents?.length && (
             <Pressable

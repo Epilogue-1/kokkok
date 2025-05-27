@@ -10,6 +10,7 @@ import CheckIcon from "@/assets/icons/check.svg";
 import CheckBoldIcon from "@/assets/icons/check_bold.svg";
 import ChevronLeftIcon from "@/assets/icons/chevron-left.svg";
 import ChevronRightIcon from "@/assets/icons/chevron-right.svg";
+import ChevronDownIcon from "@/assets/icons/chevron-down.svg";
 import CommentIcon from "@/assets/icons/comment.svg";
 import EarthIcon from "@/assets/icons/earth.svg";
 import EyeOffIcon from "@/assets/icons/eye-off.svg";
@@ -55,6 +56,7 @@ export default {
   CheckBoldIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  ChevronDownIcon,
   CommentIcon,
   EarthIcon,
   EyeIcon,

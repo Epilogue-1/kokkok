@@ -165,12 +165,10 @@ export function HeaderWithPrivacy() {
           className="flex-row items-center gap-[12px]"
         >
           <Text className="title-1 text-gray-100">{privacyText}</Text>
-          <icons.ChevronLeftIcon
-            width={16}
-            height={16}
-            color="#222222"
-            className=""
-            style={{ transform: [{ rotate: "-90deg" }] }}
+          <icons.ChevronDownIcon
+            width={18}
+            height={18}
+            color={colors.gray[90]}
           />
         </TouchableOpacity>
 
