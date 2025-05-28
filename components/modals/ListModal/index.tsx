@@ -17,7 +17,8 @@ export const ListModal: React.FC<ListModalProps> = ({ position, buttons }) => {
   const borderRadiusStyle =
     position === "center" ? "rounded-[10px]" : "rounded-t-[10px]";
 
-  const bottomPadding = Platform.OS === "ios" ? "pb-[20px]" : "";
+  const bottomPadding =
+    position === "bottom" ? (Platform.OS === "ios" ? "pb-[20px]" : "") : "";
 
   return (
     <View className={containerPadding}>
