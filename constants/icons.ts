@@ -35,6 +35,8 @@ import ProfileIcon from "@/assets/icons/profile.svg";
 import ProfileFilledIcon from "@/assets/icons/profile_fill.svg";
 import SearchIcon from "@/assets/icons/search.svg";
 import SettingIcon from "@/assets/icons/setting.svg";
+import StarIcon from "@/assets/icons/star.svg";
+import StarFilledIcon from "@/assets/icons/star_fill.svg";
 import ThreadIcon from "@/assets/icons/thread.svg";
 import TrashCanIcon from "@/assets/icons/trash_can.svg";
 import XIcon from "@/assets/icons/x.svg";
@@ -77,6 +79,8 @@ export default {
   ProfileFilledIcon,
   SearchIcon,
   SettingIcon,
+  StarIcon,
+  StarFilledIcon,
   TrashCanIcon,
   ThreadIcon,
   XIcon,
