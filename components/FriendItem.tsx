@@ -2,6 +2,7 @@ import { Link } from "expo-router";
 import { useEffect, useState } from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 
+import colors from "@/constants/colors";
 import icons from "@/constants/icons";
 import images from "@/constants/images";
 import { POKE_TIME } from "@/constants/time";
@@ -38,19 +39,19 @@ const FriendProfile = ({
   description,
 }: UserProfile) => {
   return (
-    <Link href={`/user/${id}`}>
-      <View className="flex-row gap-3">
+    <Link className="grow" href={`/user/${id}`}>
+      <View className="flex-row gap-[12px]">
         <Image
           source={avatarUrl ? { uri: avatarUrl } : images.AvaTarDefault}
           style={{ width: 48, height: 48, borderRadius: 9999 }}
         />
 
-        <View className={`w-[150px] ${description ? "gap-[4px]" : "mt-3"}`}>
-          <Text className="title-5 text-gray-80" numberOfLines={1}>
+        <View className={`w-[140px] ${description ? "gap-[4px]" : "mt-3"}`}>
+          <Text className="title-5" numberOfLines={1}>
             {username}
           </Text>
           {description && (
-            <Text className="caption-2 text-gray-60" numberOfLines={1}>
+            <Text className="caption-2" numberOfLines={1}>
               {description}
             </Text>
           )}
@@ -87,11 +88,16 @@ export function FriendItem({ friend }: FriendItemProps) {
   }, [lastPokeCreatedAt, timerStart]);
 
   return (
-    <View className="flex-row items-center justify-between border-gray-20 border-b-[1px] py-4">
+    <View className="flex-row items-center border-gray-20 border-b-[1px] py-4">
+      <TouchableOpacity className="mr-[10px] h-[32px] w-[32px] items-start justify-center pl-[4px]">
+        {/* <icons.StarFilledIcon width={20} height={20} color="#FFE818" /> */}
+        <icons.StarIcon width={20} height={20} color={colors.gray[60]} />
+      </TouchableOpacity>
+
       <FriendProfile {...friend} />
 
       <TouchableOpacity
-        className={`${isPokeDisable ? "bg-gray-40" : "bg-primary"} h-[36px] w-[89px] flex-row items-center justify-center rounded-[10px]`}
+        className={`${isPokeDisable ? "bg-gray-40" : "bg-primary"} h-[36px] w-[84px] flex-row items-center justify-center rounded-[10px]`}
         disabled={isPokeDisable}
         accessibilityLabel="친구 찌르기"
         accessibilityHint="이 버튼을 누르면 친구에게 찌르기 알람을 보냅니다"
