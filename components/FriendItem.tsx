@@ -87,7 +87,7 @@ export function FriendItem({ friend }: FriendItemProps) {
   }, [lastPokeCreatedAt, timerStart]);
 
   return (
-    <View className="flex-row items-center justify-between border-gray-20 border-b-[1px] px-2 py-4">
+    <View className="flex-row items-center justify-between border-gray-20 border-b-[1px] py-4">
       <FriendProfile {...friend} />
 
       <TouchableOpacity
@@ -126,7 +126,7 @@ export function NonFriendItem({ user }: NonFriendItemProps) {
     useCreateRequest();
 
   return (
-    <View className="flex-row items-center justify-between border-gray-20 border-b-[1px] px-2 py-4">
+    <View className="flex-row items-center justify-between border-gray-20 border-b-[1px] py-4">
       <FriendProfile {...user} />
 
       <TouchableOpacity

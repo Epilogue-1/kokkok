@@ -51,7 +51,7 @@ export function SearchLayout<T>({
     <SafeAreaView edges={[]} className="flex-1 bg-white">
       <FlatList
         ref={flatListRef}
-        className="w-full grow px-6"
+        className="w-full grow px-[16px]"
         data={data}
         keyExtractor={(elem) => elem.id}
         renderItem={renderItem}
