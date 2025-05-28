@@ -24,7 +24,7 @@ const SCREEN_OPTIONS = {
 
 const TabBarLabel = (title: string, focused: boolean) => (
   <Text
-    className={`title-2 ${focused ? " text-gray-90" : " text-gray-80 font-pmedium"}`}
+    className={`title-2 ${focused ? " text-gray-90" : "font-pmedium text-gray-80"}`}
   >
     {title}
   </Text>

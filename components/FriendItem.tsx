@@ -87,11 +87,11 @@ export function FriendItem({ friend }: FriendItemProps) {
   }, [lastPokeCreatedAt, timerStart]);
 
   return (
-    <View className="py-4 px-2 border-b-[1px] border-gray-20 flex-row justify-between items-center">
+    <View className="flex-row items-center justify-between border-gray-20 border-b-[1px] px-2 py-4">
       <FriendProfile {...friend} />
 
       <TouchableOpacity
-        className={`${isPokeDisable ? "bg-gray-40" : "bg-primary"} w-[89px] h-[36px] rounded-[10px] flex-row items-center justify-center`}
+        className={`${isPokeDisable ? "bg-gray-40" : "bg-primary"} h-[36px] w-[89px] flex-row items-center justify-center rounded-[10px]`}
         disabled={isPokeDisable}
         accessibilityLabel="친구 찌르기"
         accessibilityHint="이 버튼을 누르면 친구에게 찌르기 알람을 보냅니다"
@@ -102,12 +102,12 @@ export function FriendItem({ friend }: FriendItemProps) {
       >
         {friend.status === "done" ? (
           <View className="flex-row items-center justify-center">
-            <Text className="caption-2 text-white mr-[5px]">운동 완료</Text>
+            <Text className="caption-2 mr-[5px] text-white">운동 완료</Text>
             <icons.FaceDoneIcon width={19} height={19} />
           </View>
         ) : friend.status === "rest" ? (
           <View className="flex-row items-center justify-center">
-            <Text className="caption-2 text-white mr-[8px]">쉬는 중</Text>
+            <Text className="caption-2 mr-[8px] text-white">쉬는 중</Text>
             <icons.FaceRestIcon width={19} height={19} />
           </View>
         ) : (
@@ -126,11 +126,11 @@ export function NonFriendItem({ user }: NonFriendItemProps) {
     useCreateRequest();
 
   return (
-    <View className="py-4 px-2 border-b-[1px] border-gray-20 flex-row justify-between items-center">
+    <View className="flex-row items-center justify-between border-gray-20 border-b-[1px] px-2 py-4">
       <FriendProfile {...user} />
 
       <TouchableOpacity
-        className="bg-primary w-[84px] h-[36px] rounded-[10px] items-center justify-center"
+        className="h-[36px] w-[84px] items-center justify-center rounded-[10px] bg-primary"
         disabled={isCreatePending}
         accessibilityLabel="친구 요청"
         accessibilityHint="이 버튼을 누르면 친구 요청을 보냅니다"
@@ -155,12 +155,12 @@ export function FriendRequest({
     useRefuseRequest();
 
   return (
-    <View className="py-4 border-b-[1px] border-gray-20 flex-row justify-between items-center">
+    <View className="flex-row items-center justify-between border-gray-20 border-b-[1px] py-4">
       <FriendProfile {...fromUser} />
 
       <View className="flex-row gap-[12px]">
         <TouchableOpacity
-          className="bg-primary px-[12px] py-[11px] rounded-[10px]"
+          className="rounded-[10px] bg-primary px-[12px] py-[11px]"
           onPress={() => handleAccept({ requestId, fromUserId: fromUser.id })}
           disabled={isAcceptPending || isRefusePending || isLoading}
           accessibilityLabel="친구 요청 수락"
@@ -170,7 +170,7 @@ export function FriendRequest({
         </TouchableOpacity>
 
         <TouchableOpacity
-          className="bg-white  px-[12px] py-[11px] rounded-[10px] border-primary border-[1px]"
+          className="rounded-[10px] border-[1px] border-primary bg-white px-[12px] py-[11px]"
           onPress={() =>
             handleRefuse({
               requestId,
