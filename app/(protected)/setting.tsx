@@ -37,6 +37,7 @@ const NOTIFICATION_TYPE_GROUPS: { [key: string]: NotificationType[] } = {
   mention: ["mention"],
   poke: ["poke"],
   friend: ["friend"],
+  favorite: ["favorite"],
 } as const;
 
 export default function Setting() {
@@ -153,8 +154,12 @@ function NotificationSetting({ setting }: { setting?: PushSetting | null }) {
       value: useSharedValue(granted.includes("poke")),
     },
     friend: {
-      title: "친구요청 알림",
+      title: "친구 요청 알림",
       value: useSharedValue(granted.includes("friend")),
+    },
+    favorite: {
+      title: "친한 친구 알림",
+      value: useSharedValue(granted.includes("favorite")),
     },
   } as const;
   type SwitchType = keyof typeof SWITCH_CONFIG;

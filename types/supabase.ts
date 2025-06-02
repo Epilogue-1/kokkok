@@ -694,7 +694,8 @@ export type Database = {
         | "like"
         | "commentLike"
         | "mention"
-        | "friend";
+        | "friend"
+        | "favorite";
       reportType:
         | "Inappropriate"
         | "Conflict"
