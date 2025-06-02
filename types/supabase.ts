@@ -149,6 +149,42 @@ export type Database = {
           },
         ];
       };
+      favorite: {
+        Row: {
+          id: number;
+          createdAt: string;
+          userId: string;
+          favoriteUserId: string;
+        };
+        Insert: {
+          id?: number;
+          createdAt?: string;
+          userId: string;
+          favoriteUserId: string;
+        };
+        Update: {
+          id?: number;
+          createdAt?: string;
+          userId?: string;
+          favoriteUserId?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "friendRequest_from_fkey";
+            columns: ["userId"];
+            isOneToOne: false;
+            referencedRelation: "user";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "friendRequest_to_fkey";
+            columns: ["favoriteUserId"];
+            isOneToOne: false;
+            referencedRelation: "user";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       friendRequest: {
         Row: {
           createdAt: string;

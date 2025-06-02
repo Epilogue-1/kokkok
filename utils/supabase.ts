@@ -1381,6 +1381,64 @@ export async function addWorkoutHistory({ date }: { date: string }) {
 
 // ============================================
 //
+//                   favorite
+//
+// ============================================
+
+// 사용자가 즐겨찾기한 유저 목록 조회
+export async function getFavoriteUsers(): Promise<
+  { favoriteUserId: string }[]
+> {
+  const userId = await getUserIdFromStorage();
+  const { data, error } = await supabase
+    .from("favorite")
+    .select("favoriteUserId")
+    .eq("userId", userId);
+
+  if (error) {
+    throw error;
+  }
+
+  const favofites = data ?? [];
+  return favofites;
+}
+
+// TODO: 사용자를 즐겨찾기한 유저 목록 조회
+// export async function getUsersWhoFavoritedMe(): Promise<string[]> {
+//   const userId = await getUserIdFromStorage();
+// }
+
+// 즐겨찾기 토글
+export async function toggleFavorite(favoriteUserId: string): Promise<void> {
+  try {
+    const userId = await getUserIdFromStorage();
+
+    // 즐겨찾기 여부 조회
+    const { data: favoriteData, error: favoriteError } = await supabase
+      .from("favorite")
+      .select("id")
+      .eq("userId", userId)
+      .eq("favoriteUserId", favoriteUserId)
+      .single();
+
+    if (favoriteError && favoriteError.code !== "PGRST116") {
+      throw favoriteError;
+    }
+
+    if (favoriteData) {
+      // 즐겨찾기 해제
+      await supabase.from("favorite").delete().eq("id", favoriteData.id);
+    } else {
+      // 즐겨찾기 설정
+      await supabase.from("favorite").insert({ userId, favoriteUserId });
+    }
+  } catch (error) {
+    throw new Error("즐겨찾기 토글 요청이 실패했습니다: toggleFavorite");
+  }
+}
+
+// ============================================
+//
 //                 notification
 //
 // ============================================

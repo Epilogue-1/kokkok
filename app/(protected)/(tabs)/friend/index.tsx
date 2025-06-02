@@ -5,9 +5,15 @@ import ErrorScreen from "@/components/ErrorScreen";
 import { FriendItem } from "@/components/FriendItem";
 import LoadingScreen from "@/components/LoadingScreen";
 import { SearchLayout } from "@/components/SearchLayout";
+import useFetchData from "@/hooks/useFetchData";
 import useInfiniteLoad from "@/hooks/useInfiniteLoad";
 import { debounce } from "@/utils/DelayManager";
-import { getFriends, subscribeFriendsStatus, supabase } from "@/utils/supabase";
+import {
+  getFavoriteUsers,
+  getFriends,
+  subscribeFriendsStatus,
+  supabase,
+} from "@/utils/supabase";
 import { useFocusEffect } from "expo-router";
 
 const LIMIT = 12;
@@ -30,6 +36,24 @@ export default function Friend() {
     limit: LIMIT,
   });
   const friends = friendData?.pages.flatMap((page) => page.data) || [];
+
+  // 유저의 즐겨찾기 정보 조회
+  const { data: favoriteData } = useFetchData<
+    { favoriteUserId: string }[] | null
+  >(
+    ["favorite"],
+    () => getFavoriteUsers(),
+    "즐겨찾기 정보 조회에 실패했습니다.",
+  );
+
+  const favorites = favoriteData ?? [];
+  const isFavoritedUser = (
+    favoriteUsers: { favoriteUserId: string }[],
+    userId: string,
+  ) =>
+    favoriteUsers.some(
+      (favoriteUser) => favoriteUser.favoriteUserId === userId,
+    );
 
   const handleKeywordChange = debounce((newKeyword: string) => {
     setKeyword(newKeyword);
@@ -88,7 +112,12 @@ export default function Friend() {
       onChangeKeyword={handleKeywordChange}
       loadMore={loadMore}
       isFetchingNextPage={isFetchingNextPage}
-      renderItem={({ item: friend }) => <FriendItem friend={friend} />}
+      renderItem={({ item: friend }) => (
+        <FriendItem
+          friend={friend}
+          isFavorited={isFavoritedUser(favorites, friend.id)}
+        />
+      )}
       emptyComponent={
         <ErrorScreen
           errorMessage={

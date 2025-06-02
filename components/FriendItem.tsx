@@ -1,7 +1,9 @@
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "expo-router";
 import { useEffect, useState } from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 
+import { showToast } from "@/components/ToastConfig";
 import colors from "@/constants/colors";
 import icons from "@/constants/icons";
 import images from "@/constants/images";
@@ -11,12 +13,13 @@ import useManageFriend from "@/hooks/useManageFriend";
 import { useTimerWithStartAndDuration } from "@/hooks/useTimer";
 import type { UserProfile } from "@/types/User.interface";
 import { formatTime } from "@/utils/formatTime";
-import { getLatestStabForFriend } from "@/utils/supabase";
+import { getLatestStabForFriend, toggleFavorite } from "@/utils/supabase";
 
 /* Interfaces */
 
 interface FriendItemProps {
   friend: UserProfile;
+  isFavorited: boolean;
 }
 
 interface NonFriendItemProps {
@@ -63,7 +66,7 @@ const FriendProfile = ({
 
 /* Components */
 
-export function FriendItem({ friend }: FriendItemProps) {
+export function FriendItem({ friend, isFavorited }: FriendItemProps) {
   const [isProcessing, setIsProcessing] = useState(false);
 
   const { data: lastPokeCreatedAt } = useFetchData<string>(
@@ -80,6 +83,38 @@ export function FriendItem({ friend }: FriendItemProps) {
     onError: () => setIsProcessing(false),
   });
 
+  const queryClient = useQueryClient();
+  const [starMark, setStarMark] = useState(isFavorited);
+  const toggleFavoriteMutation = useMutation({
+    mutationFn: () => toggleFavorite(friend.id),
+    onMutate: () => {
+      const previous = starMark;
+      setStarMark(!previous);
+      return { previous };
+    },
+    onSuccess: (_, __, context) => {
+      const previous = context?.previous;
+
+      const toastMessage = previous
+        ? `${friend.username}님을 즐겨찾기에서 해제했습니다.`
+        : `${friend.username}님을 즐겨찾기했습니다.`;
+      showToast("success", toastMessage);
+    },
+    onError: (_, __, context) => {
+      const previous = context?.previous ?? false;
+
+      setStarMark(previous);
+      showToast("error", `${friend.username}님 즐겨찾기에 실패했습니다.`);
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["favorite"] });
+    },
+  });
+
+  const handlePressFavorite = () => {
+    toggleFavoriteMutation.mutate();
+  };
+
   useEffect(() => {
     if (lastPokeCreatedAt) {
       timerStart(Date.parse(lastPokeCreatedAt), POKE_TIME);
@@ -89,9 +124,15 @@ export function FriendItem({ friend }: FriendItemProps) {
 
   return (
     <View className="flex-row items-center border-gray-20 border-b-[1px] py-4">
-      <TouchableOpacity className="mr-[10px] h-[32px] w-[32px] items-start justify-center pl-[4px]">
-        {/* <icons.StarFilledIcon width={20} height={20} color="#FFE818" /> */}
-        <icons.StarIcon width={20} height={20} color={colors.gray[60]} />
+      <TouchableOpacity
+        className="mr-[10px] h-[32px] w-[32px] items-start justify-center pl-[4px]"
+        onPress={handlePressFavorite}
+      >
+        {starMark ? (
+          <icons.StarFilledIcon width={20} height={20} color="#FFE818" />
+        ) : (
+          <icons.StarIcon width={20} height={20} color={colors.gray[60]} />
+        )}
       </TouchableOpacity>
 
       <FriendProfile {...friend} />
