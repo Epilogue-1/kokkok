@@ -11,8 +11,10 @@ import { useModal } from "@/hooks/useModal";
 import { formatDate } from "@/utils/formatDate";
 import {
   addWorkoutHistory,
+  createNotification,
   createPost,
   getPost,
+  getUsersWhoFavoritedMe,
   updatePost,
 } from "@/utils/supabase";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -142,6 +144,33 @@ export default function Upload() {
     onError: () => postUploadFailModal(),
   });
 
+  // 즐겨찾기 알림 뮤테이션
+  const sendNotificationMutation = useMutation({
+    mutationFn: async () => {
+      try {
+        // 나를 즐겨찾기한 유저들 조회
+        const favoritedData = await getUsersWhoFavoritedMe();
+
+        const results = await Promise.allSettled(
+          favoritedData.map((favorited) => {
+            createNotification({ to: favorited.userId, type: "favorite" });
+          }),
+        );
+
+        // 실패한 알림 개수 경고 표시
+        const failed = results.filter((r) => r.status === "rejected");
+        if (failed.length > 0) {
+          console.warn(`알림 전송 실패 ${failed.length}건`);
+        }
+      } catch (error) {
+        console.error(
+          "즐겨찾기 알림 전송 실패: sendNotificationMutation",
+          error,
+        );
+      }
+    },
+  });
+
   // 폼 초기화 함수
   const resetForm = useCallback(() => {
     setImageItems([]); // 이미지 목록 초기화
@@ -171,6 +200,10 @@ export default function Upload() {
         await addWorkoutHistoryMutation.mutateAsync();
         // 게시글 업로드
         await uploadPostMutation.mutateAsync();
+        // 오늘 첫 게시글이라면, 나를 즐겨찾기한 유저들에게 알람 전송
+        // TODO: if (true) { // 오늘 첫 게시글이라면
+        await sendNotificationMutation.mutateAsync();
+        // }
       }
     } catch {
       postUploadFailModal();

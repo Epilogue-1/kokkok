@@ -1403,10 +1403,21 @@ export async function getFavoriteUsers(): Promise<
   return favofites;
 }
 
-// TODO: 사용자를 즐겨찾기한 유저 목록 조회
-// export async function getUsersWhoFavoritedMe(): Promise<string[]> {
-//   const userId = await getUserIdFromStorage();
-// }
+// 사용자를 즐겨찾기한 유저 목록 조회
+export async function getUsersWhoFavoritedMe(): Promise<{ userId: string }[]> {
+  const userId = await getUserIdFromStorage();
+  const { data, error } = await supabase
+    .from("favorite")
+    .select("userId")
+    .eq("favoriteUserId", userId);
+
+  if (error) {
+    throw error;
+  }
+
+  const favofiteds = data ?? [];
+  return favofiteds;
+}
 
 // 즐겨찾기 토글
 export async function toggleFavorite(favoriteUserId: string): Promise<void> {
