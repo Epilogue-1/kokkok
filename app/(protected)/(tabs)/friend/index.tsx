@@ -38,11 +38,9 @@ export default function Friend() {
   const friends = friendData?.pages.flatMap((page) => page.data) || [];
 
   // 유저의 즐겨찾기 정보 조회
-  const { data: favoriteData } = useFetchData<
-    { favoriteUserId: string }[] | null
-  >(
+  const { data: favoriteData } = useFetchData<{ favoriteUserId: string }[]>(
     ["favorite"],
-    () => getFavoriteUsers(),
+    getFavoriteUsers,
     "즐겨찾기 정보 조회에 실패했습니다.",
   );
 
