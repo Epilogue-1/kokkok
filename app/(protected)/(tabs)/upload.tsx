@@ -15,6 +15,7 @@ import {
   createPost,
   getPost,
   getUsersWhoFavoritedMe,
+  isWorkoutDoneToday,
   updatePost,
 } from "@/utils/supabase";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -196,14 +197,17 @@ export default function Upload() {
         // 게시글 수정
         await editPostMutation.mutateAsync();
       } else {
-        // 운동 기록 추가
-        await addWorkoutHistoryMutation.mutateAsync();
         // 게시글 업로드
         await uploadPostMutation.mutateAsync();
-        // 오늘 첫 게시글이라면, 나를 즐겨찾기한 유저들에게 알람 전송
-        // TODO: if (true) { // 오늘 첫 게시글이라면
-        await sendNotificationMutation.mutateAsync();
-        // }
+
+        // 오늘 첫 업로드라면, 나를 즐겨찾기한 유저들에게 알람 전송
+        const isDone = await isWorkoutDoneToday();
+        if (!isDone) {
+          await sendNotificationMutation.mutateAsync();
+        }
+
+        // 운동 기록 추가
+        await addWorkoutHistoryMutation.mutateAsync();
       }
     } catch {
       postUploadFailModal();

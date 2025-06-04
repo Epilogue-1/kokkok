@@ -1277,6 +1277,29 @@ export async function getHistories(
   return data as History[];
 }
 
+export async function isWorkoutDoneToday(): Promise<boolean> {
+  const userId = await getUserIdFromStorage();
+
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, "0");
+  const day = String(today.getDate()).padStart(2, "0");
+  const todayString = `${year}-${month}-${day}`;
+
+  const { data, error } = await supabase
+    .from("workoutHistory")
+    .select("status")
+    .eq("date", todayString)
+    .eq("userId", userId);
+
+  if (error) {
+    throw error;
+  }
+
+  const isDone = data.some((item) => item.status === "done");
+  return isDone;
+}
+
 // 쉬는 날 조회
 export async function getRestDays(): Promise<Pick<History, "date">[]> {
   const userId = await getUserIdFromStorage();
