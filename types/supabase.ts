@@ -149,6 +149,42 @@ export type Database = {
           },
         ];
       };
+      favorite: {
+        Row: {
+          createdAt: string;
+          favoriteUserId: string;
+          id: number;
+          userId: string;
+        };
+        Insert: {
+          createdAt?: string;
+          favoriteUserId: string;
+          id?: number;
+          userId: string;
+        };
+        Update: {
+          createdAt?: string;
+          favoriteUserId?: string;
+          id?: number;
+          userId?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "favorite_favoriteUserId_fkey";
+            columns: ["favoriteUserId"];
+            isOneToOne: false;
+            referencedRelation: "user";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "favorite_userId_fkey";
+            columns: ["userId"];
+            isOneToOne: false;
+            referencedRelation: "user";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       friendRequest: {
         Row: {
           createdAt: string;
@@ -701,6 +737,14 @@ export type Database = {
         };
         Returns: {
           status: Database["public"]["Enums"]["workoutstatus"];
+        }[];
+      };
+      get_user_page_posts: {
+        Args: { targetUserId: string };
+        Returns: {
+          id: number;
+          images: string[];
+          privacy: Database["public"]["Enums"]["privacyType"];
         }[];
       };
       increment_comment_likes: {

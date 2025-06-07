@@ -471,14 +471,12 @@ export const getPosts = async ({
 // 유저 게시물 조회
 export async function getUserPosts(userId: string) {
   try {
-    const { data: posts, error: postsError } = await supabase
-      .from("post")
-      .select(`
-        id,
-        images
-      `)
-      .eq("userId", userId)
-      .order("createdAt", { ascending: false });
+    const { data: posts, error: postsError } = await supabase.rpc(
+      "get_user_page_posts",
+      {
+        targetUserId: userId,
+      },
+    );
 
     if (postsError) throw postsError;
 
