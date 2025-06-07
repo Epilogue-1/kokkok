@@ -26,7 +26,9 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import {
   Alert,
   Image,
+  KeyboardAvoidingView,
   Platform,
+  ScrollView,
   Text,
   TextInput,
   TouchableOpacity,
@@ -243,7 +245,7 @@ export default function Upload() {
     isLoading ||
     (postId
       ? !hasContentChanged && !hasImagesChanged && !hasPrivacyChanged
-      : imageItems.length === 0 && contents === "");
+      : imageItems.length === 0);
 
   // 버튼 텍스트
   const getButtonText = () => {
@@ -273,153 +275,171 @@ export default function Upload() {
   };
 
   return (
-    <View className="flex-1 bg-white">
-      {/* 프라이버시 선택 버튼 - UI는 그대로 유지 */}
-      <View className="mx-[16px] mt-[24px] h-[44px] flex-row items-center justify-center rounded-[10px] border border-gray-20 bg-gray-10 ">
-        <TouchableOpacity
-          onPress={() => handlePrivacyChange("all")}
-          activeOpacity={0.7}
-          className={`mx-[-1px] h-[44px] flex-1 flex-row items-center justify-center gap-[12px] rounded-[10px] ${
-            localPrivacy === "all" ? "border-[1.5px] border-primary bg-white" : ""
-          }`}
-          disabled={isLoading}
-        >
-          <Icons.EarthIcon
-            width={20}
-            height={20}
-            color={localPrivacy === "all" ? colors.primary : colors.gray[65]}
-          />
-          <Text
-            className={
+    <KeyboardAvoidingView
+      className="flex-1 bg-white"
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
+      <ScrollView
+        className="flex-1"
+        contentContainerStyle={{ flexGrow: 1 }}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
+        horizontal={false}
+      >
+        {/* 공개 범위 설정 */}
+        <View className="mx-[16px] mt-[24px] h-[44px] flex-row items-center justify-center rounded-[10px] border border-gray-20 bg-gray-10 ">
+          <TouchableOpacity
+            onPress={() => handlePrivacyChange("all")}
+            activeOpacity={0.7}
+            className={`mx-[-1px] h-[44px] flex-1 flex-row items-center justify-center gap-[12px] rounded-[10px] ${
               localPrivacy === "all"
-                ? "title-5 text-primary"
-                : "body-3 text-gray-65"
-            }
+                ? "border-[1.5px] border-primary bg-white"
+                : ""
+            }`}
+            disabled={isLoading}
           >
-            전체 공개
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => handlePrivacyChange("friend")}
-          activeOpacity={0.7}
-          className={`mx-[-1px] h-[44px] flex-1 flex-row items-center justify-center gap-[12px] rounded-[10px] ${
-            localPrivacy === "friend" ? "border-[1.5px] border-primary bg-white" : ""
-          }`}
-          disabled={isLoading}
-        >
-          <Icons.PeopleIcon
-            width={20}
-            height={20}
-            color={localPrivacy === "friend" ? colors.primary : colors.gray[65]}
-          />
-          <Text
-            className={
-              localPrivacy === "friend"
-                ? "title-5 text-primary"
-                : "body-3 text-gray-65"
-            }
-          >
-            친구 공개
-          </Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* 이미지 리스트 (드래그 가능) */}
-      <DraggableFlatList
-        ref={flatListRef}
-        horizontal
-        data={imageItems}
-        onDragEnd={({ data }) =>
-          setImageItems(data.map((item, index) => ({ ...item, index })))
-        }
-        keyExtractor={(item, index) => `${item.type}-${item.uri}-${index}`}
-        renderItem={({ item, drag, getIndex }) => (
-          <ScaleDecorator>
-            <TouchableOpacity
-              onLongPress={drag}
-              delayLongPress={200}
-              activeOpacity={0.7}
-              className="relative"
-              disabled={isLoading}
+            <Icons.EarthIcon
+              width={20}
+              height={20}
+              color={localPrivacy === "all" ? colors.primary : colors.gray[65]}
+            />
+            <Text
+              className={
+                localPrivacy === "all"
+                  ? "title-5 text-primary"
+                  : "body-3 text-gray-65"
+              }
             >
-              <Image
-                source={{ uri: item.uri }}
-                className="size-[152px] rounded-[15px]"
-              />
+              전체 공개
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => handlePrivacyChange("friend")}
+            activeOpacity={0.7}
+            className={`mx-[-1px] h-[44px] flex-1 flex-row items-center justify-center gap-[12px] rounded-[10px] ${
+              localPrivacy === "friend"
+                ? "border-[1.5px] border-primary bg-white"
+                : ""
+            }`}
+            disabled={isLoading}
+          >
+            <Icons.PeopleIcon
+              width={20}
+              height={20}
+              color={
+                localPrivacy === "friend" ? colors.primary : colors.gray[65]
+              }
+            />
+            <Text
+              className={
+                localPrivacy === "friend"
+                  ? "title-5 text-primary"
+                  : "body-3 text-gray-65"
+              }
+            >
+              친구 공개
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* 이미지 리스트 (드래그 가능) */}
+        <DraggableFlatList
+          ref={flatListRef}
+          horizontal
+          data={imageItems}
+          onDragEnd={({ data }) =>
+            setImageItems(data.map((item, index) => ({ ...item, index })))
+          }
+          keyExtractor={(item, index) => `${item.type}-${item.uri}-${index}`}
+          renderItem={({ item, drag, getIndex }) => (
+            <ScaleDecorator>
               <TouchableOpacity
-                className="-top-3 -right-3 absolute size-[25.5px] items-center justify-center rounded-full border-[1.5px] border-white bg-gray-25"
+                onLongPress={drag}
+                delayLongPress={200}
+                activeOpacity={0.7}
+                className="relative"
+                disabled={isLoading}
+              >
+                <Image
+                  source={{ uri: item.uri }}
+                  className="size-[152px] rounded-[15px]"
+                />
+                <TouchableOpacity
+                  className="-top-3 -right-3 absolute size-[25.5px] items-center justify-center rounded-full border-[1.5px] border-white bg-gray-25"
+                  onPress={() =>
+                    setImageItems((prev) =>
+                      prev.filter((_, idx) => idx !== getIndex()),
+                    )
+                  }
+                  disabled={isLoading}
+                >
+                  <Icons.XIcon width={16} height={16} color={colors.white} />
+                </TouchableOpacity>
+              </TouchableOpacity>
+            </ScaleDecorator>
+          )}
+          className="flex-shrink-0 flex-grow-0 px-[16px] py-[24px]"
+          contentContainerStyle={{ gap: 16 }}
+          autoscrollSpeed={70}
+          activationDistance={5}
+          dragHitSlop={{ top: 0, bottom: 0, left: 10, right: 10 }}
+          showsHorizontalScrollIndicator={false}
+          dragItemOverflow={true}
+          scrollEnabled={true}
+          ListFooterComponent={
+            imageItems.length < IMAGE_LIMIT ? (
+              <TouchableOpacity
+                className="size-[152px] items-center justify-center rounded-[15px] bg-gray-25"
                 onPress={() =>
-                  setImageItems((prev) =>
-                    prev.filter((_, idx) => idx !== getIndex()),
+                  openModal(
+                    <ImageUploadOptionsModal
+                      flatListRef={flatListRef}
+                      imageItems={imageItems}
+                      setImageItems={setImageItems}
+                      isLoading={isLoading}
+                    />,
                   )
                 }
                 disabled={isLoading}
               >
-                <Icons.XIcon width={16} height={16} color={colors.white} />
+                <Icons.CameraAddIcon
+                  width={24}
+                  height={24}
+                  color={colors.white}
+                />
               </TouchableOpacity>
-            </TouchableOpacity>
-          </ScaleDecorator>
-        )}
-        className="flex-shrink-0 flex-grow-0 px-[16px] py-[24px]"
-        contentContainerStyle={{ gap: 16 }}
-        autoscrollSpeed={70}
-        activationDistance={5}
-        dragHitSlop={{ top: 0, bottom: 0, left: 10, right: 10 }}
-        showsHorizontalScrollIndicator={false}
-        dragItemOverflow={true}
-        scrollEnabled={true}
-        ListFooterComponent={
-          imageItems.length < IMAGE_LIMIT ? (
-            <TouchableOpacity
-              className="size-[152px] items-center justify-center rounded-[15px] bg-gray-25"
-              onPress={() =>
-                openModal(
-                  <ImageUploadOptionsModal
-                    flatListRef={flatListRef}
-                    imageItems={imageItems}
-                    setImageItems={setImageItems}
-                    isLoading={isLoading}
-                  />,
-                )
-              }
-              disabled={isLoading}
-            >
-              <Icons.CameraAddIcon
-                width={24}
-                height={24}
-                color={colors.white}
-              />
-            </TouchableOpacity>
-          ) : null
-        }
-      />
-
-      {/* 글 입력란 */}
-      <View className="w-full items-center justify-center px-[16px]">
-        <TextInput
-          className="body-1 h-[150px] w-full rounded-[15px] border border-gray-20 bg-gray-10 p-4 text-gray-100"
-          placeholder="자유롭게 글을 적어주세요. (선택)"
-          placeholderTextColor={colors.gray[40]}
-          multiline
-          textAlignVertical="top"
-          value={contents}
-          onChangeText={setContents}
-          editable={!isLoading}
+            ) : null
+          }
         />
-      </View>
 
-      {/* 인증 버튼 */}
-      <View
-        className={`flex-1 justify-end px-6 ${Platform.OS === "ios" ? "pb-[48px]" : "pb-[32px]"}`}
-      >
-        <TouchableOpacity
-          className="mt-8 h-[62px] w-full items-center justify-center rounded-[10px] bg-primary disabled:bg-gray-20"
-          onPress={handleUpload}
-          disabled={isButtonDisabled}
+        {/* 글 입력란 */}
+        <View className="w-full items-center justify-center px-[16px]">
+          <TextInput
+            className="body-1 h-[150px] w-full rounded-[15px] border border-gray-20 bg-gray-10 p-4 text-gray-100"
+            placeholder="자유롭게 글을 적어주세요. (선택)"
+            placeholderTextColor={colors.gray[40]}
+            multiline
+            textAlignVertical="top"
+            value={contents}
+            onChangeText={setContents}
+            editable={!isLoading}
+          />
+        </View>
+
+        {/* 인증 버튼 */}
+        <View
+          className={`mt-auto px-6 ${Platform.OS === "ios" ? "pb-[48px]" : "pb-[32px]"}`}
         >
-          <Text className="heading-2 text-white">{getButtonText()}</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+          <TouchableOpacity
+            className="mt-8 h-[62px] w-full items-center justify-center rounded-[10px] bg-primary disabled:bg-gray-20"
+            onPress={handleUpload}
+            disabled={isButtonDisabled}
+          >
+            <Text className="heading-2 text-white">{getButtonText()}</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
