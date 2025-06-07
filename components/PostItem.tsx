@@ -162,8 +162,8 @@ export default function PostItem({
               {privacy === "all" && (
                 <>
                   <icons.EarthIcon
-                    width={16}
-                    height={16}
+                    width={14}
+                    height={14}
                     color={colors.gray[70]}
                   />
 
