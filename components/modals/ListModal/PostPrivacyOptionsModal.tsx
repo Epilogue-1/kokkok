@@ -12,7 +12,7 @@ export const PostPrivacyOptionsModal: React.FC = () => {
 
   const buttons = [
     {
-      text: "전체 글",
+      text: "전체글",
       value: "all" as const,
       onPress: async () => {
         await savePrivacy("all");
@@ -20,7 +20,7 @@ export const PostPrivacyOptionsModal: React.FC = () => {
       },
     },
     {
-      text: "친구 글",
+      text: "친구글",
       value: "friend" as const,
       onPress: async () => {
         await savePrivacy("friend");
