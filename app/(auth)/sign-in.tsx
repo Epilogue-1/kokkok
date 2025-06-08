@@ -7,6 +7,7 @@ import * as QueryParams from "expo-auth-session/build/QueryParams";
 import * as Linking from "expo-linking";
 import { Link, router } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
+import { useEffect } from "react";
 import {
   Alert,
   Image,
@@ -43,8 +44,44 @@ const createSessionFromUrl = async (url: string) => {
 
 const SignIn = () => {
   const { bottom } = useSafeAreaInsets();
+
   const url = Linking.useURL();
-  if (url) createSessionFromUrl(url);
+
+  useEffect(() => {
+    const handleAuthRedirect = async () => {
+      if (url) {
+        const session = await createSessionFromUrl(url);
+        if (session?.user) {
+          const { data: existingUser } = await supabase
+            .from("user")
+            .select("id")
+            .eq("id", session.user.id)
+            .single();
+
+          if (!existingUser && session.user.email) {
+            const { error: insertError } = await supabase.from("user").insert({
+              id: session.user.id,
+              email: session.user.email,
+              username:
+                session.user.user_metadata.full_name ||
+                session.user.email.split("@")[0],
+              avatarUrl: DEFAULT_AVATAR_URL,
+              isOAuth: true,
+            });
+
+            if (insertError) {
+              Alert.alert("알림", "사용자 정보 저장에 실패했습니다.");
+              console.error("User Insert Error:", insertError);
+              return;
+            }
+            router.replace("/onboarding");
+          }
+        }
+      }
+    };
+    
+    handleAuthRedirect();
+  }, [url]);
 
   const performGoogleSignIn = async () => {
     const { data, error } = await supabase.auth.signInWithOAuth({
@@ -65,43 +102,7 @@ const SignIn = () => {
       return;
     }
 
-    const res = await WebBrowser.openAuthSessionAsync(
-      data?.url ?? "",
-      redirectTo,
-    );
-
-    if (res.type === "success") {
-      const { url } = res;
-      const session = await createSessionFromUrl(url);
-
-      if (session?.user) {
-        const { data: existingUser } = await supabase
-          .from("user")
-          .select()
-          .eq("id", session.user.id)
-          .single();
-
-        if (!existingUser && session.user.email) {
-          const { error: insertError } = await supabase.from("user").insert({
-            id: session.user.id,
-            email: session.user.email,
-            username:
-              session.user.user_metadata.full_name ||
-              session.user.email.split("@")[0],
-            avatarUrl: DEFAULT_AVATAR_URL,
-            isOAuth: true,
-          });
-
-          if (insertError) {
-            Alert.alert("알림", "사용자 정보 저장에 실패했습니다.");
-            console.error("User Insert Error:", insertError);
-            return;
-          }
-          router.replace("/onboarding");
-          return;
-        }
-      }
-    }
+    await WebBrowser.openAuthSessionAsync(data?.url ?? "", redirectTo);
   };
 
   const performAppleSignIn = async () => {
@@ -156,6 +157,8 @@ const SignIn = () => {
             }
             router.replace("/onboarding");
             return;
+          } else {
+            router.replace("/home");
           }
         }
       } else {
