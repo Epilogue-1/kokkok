@@ -79,7 +79,7 @@ const SignIn = () => {
         }
       }
     };
-    
+
     handleAuthRedirect();
   }, [url]);
 
@@ -157,8 +157,6 @@ const SignIn = () => {
             }
             router.replace("/onboarding");
             return;
-          } else {
-            router.replace("/home");
           }
         }
       } else {
