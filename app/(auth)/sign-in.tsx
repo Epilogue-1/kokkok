@@ -2,7 +2,11 @@ import icons from "@/constants/icons";
 import images, { DEFAULT_AVATAR_URL } from "@/constants/images";
 import { supabase } from "@/utils/supabase";
 import * as AppleAuthentication from "expo-apple-authentication";
+import { makeRedirectUri } from "expo-auth-session";
+import * as QueryParams from "expo-auth-session/build/QueryParams";
+import * as Linking from "expo-linking";
 import { Link, router } from "expo-router";
+import * as WebBrowser from "expo-web-browser";
 import {
   Alert,
   Image,
@@ -15,7 +19,87 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+WebBrowser.maybeCompleteAuthSession(); // required for web only
+const redirectTo = makeRedirectUri({});
+
+const createSessionFromUrl = async (url: string) => {
+  const { params, errorCode } = QueryParams.getQueryParams(url);
+
+  if (errorCode) throw new Error(errorCode);
+  const { access_token, refresh_token } = params;
+
+  if (!access_token) return;
+
+  const { data, error } = await supabase.auth.setSession({
+    access_token,
+    refresh_token,
+  });
+  if (error) throw error;
+  return data.session;
+};
+
 const SignIn = () => {
+  const url = Linking.useURL();
+  if (url) createSessionFromUrl(url);
+
+  const performGoogleSignIn = async () => {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo,
+        skipBrowserRedirect: true,
+        scopes: "email profile",
+        queryParams: {
+          prompt: "select_account",
+          access_type: "offline",
+        },
+      },
+    });
+    if (error) {
+      Alert.alert("알림", "OAuth 로그인에 실패했습니다.");
+      console.error("OAuth Error:", error);
+      return;
+    }
+
+    const res = await WebBrowser.openAuthSessionAsync(
+      data?.url ?? "",
+      redirectTo,
+    );
+
+    if (res.type === "success") {
+      const { url } = res;
+      const session = await createSessionFromUrl(url);
+
+      if (session?.user) {
+        const { data: existingUser } = await supabase
+          .from("user")
+          .select()
+          .eq("id", session.user.id)
+          .single();
+
+        if (!existingUser && session.user.email) {
+          const { error: insertError } = await supabase.from("user").insert({
+            id: session.user.id,
+            email: session.user.email,
+            username:
+              session.user.user_metadata.full_name ||
+              session.user.email.split("@")[0],
+            avatarUrl: DEFAULT_AVATAR_URL,
+            isOAuth: true,
+          });
+
+          if (insertError) {
+            Alert.alert("알림", "사용자 정보 저장에 실패했습니다.");
+            console.error("User Insert Error:", insertError);
+            return;
+          }
+          router.replace("/onboarding");
+          return;
+        }
+      }
+    }
+  };
+
   const performAppleSignIn = async () => {
     try {
       const credential = await AppleAuthentication.signInAsync({
@@ -116,7 +200,7 @@ const SignIn = () => {
                 </View>
               </Link>
 
-              <TouchableOpacity>
+              <TouchableOpacity onPress={performGoogleSignIn}>
                 <View className="h-[52px] w-full flex-row items-center justify-center gap-[10px] rounded-[10px] border border-gray-90">
                   <icons.OAuthGoogle width={24} height={24} />
                   <Text className="font-psemibold text-[17px] text-gray-90">
@@ -125,14 +209,16 @@ const SignIn = () => {
                 </View>
               </TouchableOpacity>
 
-              <TouchableOpacity onPress={performAppleSignIn}>
-                <View className="h-[52px] w-full flex-row items-center justify-center gap-[10px] rounded-[10px] bg-gray-90">
-                  <icons.OAuthApple width={32} height={32} />
-                  <Text className="font-psemibold text-[17px] text-white">
-                    애플로 시작하기
-                  </Text>
-                </View>
-              </TouchableOpacity>
+              {Platform.OS === "ios" && (
+                <TouchableOpacity onPress={performAppleSignIn}>
+                  <View className="h-[52px] w-full flex-row items-center justify-center gap-[10px] rounded-[10px] bg-gray-90">
+                    <icons.OAuthApple width={32} height={32} />
+                    <Text className="font-psemibold text-[17px] text-white">
+                      애플로 시작하기
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              )}
             </View>
           </View>
         </ScrollView>
