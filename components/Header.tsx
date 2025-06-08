@@ -1,11 +1,13 @@
 import { router } from "expo-router";
-import { Image, Text, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import colors from "@/constants/colors";
 import icons from "@/constants/icons";
-import images from "@/constants/images";
 import useCheckNewNotification from "@/hooks/useCheckNewNotification";
+import useCheckPrivacy from "@/hooks/useCheckPrivacy";
+import { useModal } from "@/hooks/useModal";
+import { PostPrivacyOptionsModal } from "./modals/ListModal/PostPrivacyOptionsModal";
 
 const HEADER_TITLE = {
   LOGIN: "로그인",
@@ -32,7 +34,7 @@ interface HeaderProps {
 export function Header({ name }: HeaderProps) {
   return (
     <SafeAreaView edges={["top"]} className="border-gray-20 border-b bg-white">
-      <View className="h-14 items-center justify-center">
+      <View className="h-[56px] items-center justify-center">
         <Text className="title-1">{HEADER_TITLE[name]}</Text>
       </View>
     </SafeAreaView>
@@ -42,7 +44,7 @@ export function Header({ name }: HeaderProps) {
 export function HeaderWithBack({ name }: HeaderProps) {
   return (
     <SafeAreaView edges={["top"]} className="border-gray-20 border-b bg-white">
-      <View className="h-14 items-center justify-center px-4">
+      <View className="h-[56px] items-center justify-center px-[16px]">
         <TouchableOpacity
           onPress={() => router.back()}
           accessibilityLabel="뒤로가기"
@@ -85,17 +87,8 @@ export function HeaderWithNotification({ name }: HeaderProps) {
 
   return (
     <SafeAreaView edges={["top"]} className="border-gray-20 border-b bg-white">
-      <View className="h-14 flex-row items-center justify-between px-4">
-        {/* 홈의 경우 로고 이미지 사용 */}
-        {name === "HOME" ? (
-          <Image
-            source={images.AuthLogo}
-            style={{ width: 70, height: 16 }}
-            accessibilityLabel="KokKok 로고"
-          />
-        ) : (
-          <Text className="title-1">{HEADER_TITLE[name]}</Text>
-        )}
+      <View className="h-[56px] flex-row items-center justify-between px-[16px]">
+        <Text className="title-1">{HEADER_TITLE[name]}</Text>
 
         <View className="flex-row gap-6">
           {/* 새 알람 여부에 따른 아이콘 렌더링 */}
@@ -126,7 +119,7 @@ export function HeaderWithUsername({
       edges={isMyPage ? ["top"] : []}
       className="border-gray-20 border-b bg-white"
     >
-      <View className="h-14 flex-row items-center gap-6 px-4">
+      <View className="h-[56px] flex-row items-center gap-6 px-[16px]">
         <TouchableOpacity
           onPress={() => router.back()}
           accessibilityLabel="뒤로가기"
@@ -145,6 +138,49 @@ export function HeaderWithUsername({
           <Text className="title-2 flex-shrink-0">
             {isMyPage ? "님의 페이지" : "님의 게시글"}
           </Text>
+        </View>
+      </View>
+    </SafeAreaView>
+  );
+}
+
+export function HeaderWithPrivacy() {
+  const hasNewNotification = useCheckNewNotification();
+  const { privacy } = useCheckPrivacy();
+  const { openModal } = useModal();
+
+  // 현재 프라이버시 설정에 따라 텍스트 표시
+  const privacyText = privacy === "all" ? "전체글" : "친구글";
+
+  const handleSelectPrivacy = () => {
+    openModal(<PostPrivacyOptionsModal />, "bottom");
+  };
+
+  return (
+    <SafeAreaView edges={["top"]} className="border-gray-20 border-b bg-white">
+      <View className="h-[56px] flex-row items-center justify-between px-[16px]">
+        <TouchableOpacity
+          onPress={handleSelectPrivacy}
+          accessibilityLabel={privacyText}
+          className="flex-row items-center gap-[12px]"
+        >
+          <Text className="title-1 text-gray-100">{privacyText}</Text>
+          <icons.ChevronDownIcon
+            width={18}
+            height={18}
+            color={colors.gray[90]}
+          />
+        </TouchableOpacity>
+
+        <View className="flex-row gap-6">
+          {/* 새 알람 여부에 따른 아이콘 렌더링 */}
+          <TouchableOpacity onPress={() => router.push("/notification")}>
+            {hasNewNotification ? (
+              <icons.BellWithDotIcon width={24} height={24} />
+            ) : (
+              <icons.BellIcon width={24} height={24} color={colors.gray[100]} />
+            )}
+          </TouchableOpacity>
         </View>
       </View>
     </SafeAreaView>

@@ -14,7 +14,11 @@ import {
   View,
 } from "react-native";
 
-import { HeaderWithBack, HeaderWithNotification } from "@/components/Header";
+import {
+  HeaderWithBack,
+  HeaderWithNotification,
+  HeaderWithPrivacy,
+} from "@/components/Header";
 import useSubscribeNotification from "@/hooks/useSubscribeNotification";
 import colors from "@constants/colors";
 import icons from "@constants/icons";
@@ -264,7 +268,7 @@ export default function TabsLayout() {
         <Tabs.Screen
           name="home"
           options={{
-            header: () => <HeaderWithNotification name="HOME" />,
+            header: () => <HeaderWithPrivacy />,
             title: "Home",
             tabBarIcon: ({ color, focused }) => (
               <TabIcon color={color} name="HOME" focused={focused} />
@@ -299,6 +303,14 @@ export default function TabsLayout() {
               </View>
             ),
           }}
+          listeners={({ navigation }) => ({
+            tabPress: () => {
+              navigation.setParams({ postId: undefined });
+            },
+            blur: () => {
+              navigation.setParams({ postId: undefined });
+            },
+          })}
         />
         <Tabs.Screen
           name="history"

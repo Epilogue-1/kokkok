@@ -3,6 +3,7 @@ import icons from "@/constants/icons";
 import { default as imgs } from "@/constants/images";
 import { useModal } from "@/hooks/useModal";
 import { useTruncateText } from "@/hooks/useTruncateText";
+import type { Database } from "@/types/supabase";
 import { diffDate } from "@/utils/formatDate";
 import { createNotification, toggleLikePost } from "@/utils/supabase";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -20,6 +21,7 @@ interface PostItemProps {
   };
   images: string[];
   contents?: string | null;
+  privacy: Database["public"]["Enums"]["privacyType"];
   liked: boolean;
   likedAuthorAvatars?: string[];
   createdAt: string;
@@ -40,6 +42,7 @@ export default function PostItem({
   author,
   images,
   contents,
+  privacy,
   liked,
   likedAuthorAvatars,
   createdAt,
@@ -116,22 +119,61 @@ export default function PostItem({
   return (
     <View className="grow bg-white">
       {/* header */}
-      <View className="h-[64px] flex-row items-center justify-between bg-white px-[16px]">
+      <View className="h-[68px] flex-row items-center justify-between gap-[72px] bg-white px-[16px]">
+        {/* author */}
         <TouchableOpacity
           onPress={() => {
             if (userId === author.id) router.push("/mypage");
             else router.push(`/user/${author.id}`);
           }}
-          className="flex-row items-center gap-2 py-[4px] pr-[16px]"
+          className="h-[60px] flex-shrink flex-row items-center gap-[10px]"
         >
           {/* avatar */}
           <Image
             source={author.avatar ? { uri: author.avatar } : imgs.AvaTarDefault}
             resizeMode="cover"
-            className="size-[32px] rounded-full"
+            className="size-[44px] rounded-full"
           />
-          {/* username */}
-          <Text className="title-5 text-gray-80">{author.name}</Text>
+
+          <View className="flex-shrink gap-[2px]">
+            {/* username */}
+            <Text
+              className="title-5 h-[21px] text-gray-100"
+              numberOfLines={1}
+              ellipsizeMode="tail"
+            >
+              {author.name}
+            </Text>
+
+            {/* privacy */}
+            <View className="flex-row items-center gap-[4px]">
+              {privacy === "friend" && (
+                <>
+                  <icons.PeopleIcon
+                    width={16}
+                    height={16}
+                    color={colors.gray[70]}
+                  />
+                  <Text className="font-medium text-[11px] text-gray-70 leading-[150%]">
+                    친구 공개
+                  </Text>
+                </>
+              )}
+              {privacy === "all" && (
+                <>
+                  <icons.EarthIcon
+                    width={14}
+                    height={14}
+                    color={colors.gray[70]}
+                  />
+
+                  <Text className="font-pmedium text-[11px] text-gray-70 leading-[150%]">
+                    전체 공개
+                  </Text>
+                </>
+              )}
+            </View>
+          </View>
         </TouchableOpacity>
 
         {/* meatball */}
@@ -146,7 +188,7 @@ export default function PostItem({
               "bottom",
             );
           }}
-          className="items-center justify-center py-[4px] pl-[8px]"
+          className="items-center justify-center "
         >
           <icons.MeatballIcon width={24} height={24} color={colors.gray[70]} />
         </TouchableOpacity>
@@ -172,23 +214,23 @@ export default function PostItem({
           >
             {isLiked ? (
               <icons.HeartFilledIcon
-                width={24}
-                height={24}
+                width={28}
+                height={28}
                 color={colors.secondary.red}
               />
             ) : (
-              <icons.HeartIcon width={24} height={24} color={colors.gray[90]} />
+              <icons.HeartIcon width={28} height={28} color={colors.gray[90]} />
             )}
           </TouchableOpacity>
 
           {/* comments */}
           <TouchableOpacity
             onPress={() => onCommentsPress(postId)}
-            className="ml-[10px] flex-row items-center gap-[4px]"
+            className="ml-[20px] flex-row items-center gap-[2px]"
           >
-            <icons.CommentIcon width={24} height={24} color={colors.gray[90]} />
+            <icons.CommentIcon width={28} height={28} color={colors.gray[90]} />
             {commentsCount > 0 && (
-              <Text className="font-psemibold text-[13px] text-gray-90 leading-[150%]">
+              <Text className="font-pmedium text-[14px] text-gray-100 leading-[150%]">
                 {commentsCount > 99 ? "99+" : commentsCount}
               </Text>
             )}
@@ -198,7 +240,7 @@ export default function PostItem({
 
       {/* content & comments */}
       {(!!contents?.length || !!comment?.content?.length) && (
-        <View className="gap-[8px] bg-white px-[16px] pt-[12px]">
+        <View className="gap-[8px] bg-white px-[16px] pt-[8px]">
           {/* content */}
           {!!contents?.length && (
             <Pressable
