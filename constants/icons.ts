@@ -32,8 +32,6 @@ import HomeFilledIcon from "@/assets/icons/home_fill.svg";
 import KakaoIcon from "@/assets/icons/kakao.svg";
 import KebabMenuIcon from "@/assets/icons/kebab.svg";
 import MeatballIcon from "@/assets/icons/meatball.svg";
-import OAuthApple from "@/assets/icons/oauth_apple.svg";
-import OAuthGoogle from "@/assets/icons/oauth_google.svg";
 import PlusIcon from "@/assets/icons/plus.svg";
 import ProfileIcon from "@/assets/icons/profile.svg";
 import ProfileFilledIcon from "@/assets/icons/profile_fill.svg";
@@ -79,8 +77,6 @@ export default {
   KakaoIcon,
   KebabMenuIcon,
   MeatballIcon,
-  OAuthApple,
-  OAuthGoogle,
   PlusIcon,
   ProfileIcon,
   ProfileFilledIcon,

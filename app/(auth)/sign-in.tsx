@@ -206,7 +206,7 @@ const SignIn = () => {
 
               <TouchableOpacity onPress={performGoogleSignIn}>
                 <View className="h-[52px] w-full flex-row items-center justify-center gap-[10px] rounded-[10px] border border-gray-90">
-                  <icons.OAuthGoogle width={24} height={24} />
+                  <icons.GoogleIcon width={24} height={24} />
                   <Text className="font-psemibold text-[17px] text-gray-90">
                     구글로 시작하기
                   </Text>
@@ -216,7 +216,7 @@ const SignIn = () => {
               {Platform.OS === "ios" && (
                 <TouchableOpacity onPress={performAppleSignIn}>
                   <View className="h-[52px] w-full flex-row items-center justify-center gap-[10px] rounded-[10px] bg-gray-90">
-                    <icons.OAuthApple width={32} height={32} />
+                    <icons.AppleIcon width={32} height={32} />
                     <Text className="font-psemibold text-[17px] text-white">
                       애플로 시작하기
                     </Text>
