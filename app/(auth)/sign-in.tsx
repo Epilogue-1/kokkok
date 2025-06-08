@@ -17,7 +17,10 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 
 WebBrowser.maybeCompleteAuthSession(); // required for web only
 const redirectTo = makeRedirectUri({});
@@ -39,6 +42,7 @@ const createSessionFromUrl = async (url: string) => {
 };
 
 const SignIn = () => {
+  const { bottom } = useSafeAreaInsets();
   const url = Linking.useURL();
   if (url) createSessionFromUrl(url);
 
@@ -223,6 +227,27 @@ const SignIn = () => {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
+      <View
+        className="absolute w-full items-center"
+        style={{ bottom: bottom + 12 }}
+      >
+        <View className="items-center">
+          <Text className="font-pregular text-[11px] text-gray-80">
+            가입을 진행할 경우, 아래의 정책에 동의한 것으로 간주합니다.
+          </Text>
+          <TouchableOpacity
+            onPress={() =>
+              Linking.openURL(
+                "https://ash-anchovy-874.notion.site/188b8ea65e92808fa75aea1e1a255563",
+              )
+            }
+          >
+            <Text className="font-pregular text-[11px] text-gray-80 underline">
+              서비스약관 및 개인정보처리방침
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
     </SafeAreaView>
   );
 };
