@@ -205,14 +205,16 @@ const SignIn = () => {
                 </View>
               </Link>
 
-              <TouchableOpacity onPress={performGoogleSignIn}>
-                <View className="h-[52px] w-full flex-row items-center justify-center gap-[10px] rounded-[10px] border border-gray-90">
-                  <icons.GoogleIcon width={24} height={24} />
-                  <Text className="font-psemibold text-[17px] text-gray-90">
-                    구글로 시작하기
-                  </Text>
-                </View>
-              </TouchableOpacity>
+              {Platform.OS === "android" && (
+                <TouchableOpacity onPress={performGoogleSignIn}>
+                  <View className="h-[52px] w-full flex-row items-center justify-center gap-[10px] rounded-[10px] border border-gray-90">
+                    <icons.GoogleIcon width={24} height={24} />
+                    <Text className="font-psemibold text-[17px] text-gray-90">
+                      구글로 시작하기
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              )}
 
               {Platform.OS === "ios" && (
                 <TouchableOpacity onPress={performAppleSignIn}>
