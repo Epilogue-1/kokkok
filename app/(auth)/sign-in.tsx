@@ -1,28 +1,27 @@
+import icons from "@/constants/icons";
+import images, { DEFAULT_AVATAR_URL } from "@/constants/images";
+import { supabase } from "@/utils/supabase";
+import * as AppleAuthentication from "expo-apple-authentication";
+import { makeRedirectUri } from "expo-auth-session";
+import * as QueryParams from "expo-auth-session/build/QueryParams";
+import * as Linking from "expo-linking";
+import { Link, router } from "expo-router";
+import * as WebBrowser from "expo-web-browser";
+import { useEffect } from "react";
 import {
   Alert,
   Image,
   KeyboardAvoidingView,
-  SafeAreaView,
+  Platform,
   ScrollView,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
-
-import colors from "@/constants/colors";
-import { signIn, supabase } from "@/utils/supabase";
-import { validateSignInForm } from "@/utils/validation";
-import icons from "@constants/icons";
-import images, { DEFAULT_AVATAR_URL } from "@constants/images";
-import type { Provider } from "@supabase/supabase-js";
-import { makeRedirectUri } from "expo-auth-session";
-import * as QueryParams from "expo-auth-session/build/QueryParams";
-import * as Linking from "expo-linking";
-import { Link, useRouter } from "expo-router";
-import * as WebBrowser from "expo-web-browser";
-import { useState } from "react";
-import { Platform } from "react-native";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 
 WebBrowser.maybeCompleteAuthSession(); // required for web only
 const redirectTo = makeRedirectUri({});
@@ -44,102 +43,137 @@ const createSessionFromUrl = async (url: string) => {
 };
 
 const SignIn = () => {
+  const { bottom } = useSafeAreaInsets();
+
   const url = Linking.useURL();
-  if (url) createSessionFromUrl(url);
 
-  const router = useRouter();
+  useEffect(() => {
+    const handleAuthRedirect = async () => {
+      if (url) {
+        const session = await createSessionFromUrl(url);
+        if (session?.user) {
+          const { data: existingUser } = await supabase
+            .from("user")
+            .select("id")
+            .eq("id", session.user.id)
+            .single();
 
-  const [userInput, setUserInput] = useState({
-    email: "",
-    password: "",
-  });
+          if (!existingUser && session.user.email) {
+            const { error: insertError } = await supabase.from("user").insert({
+              id: session.user.id,
+              email: session.user.email,
+              username:
+                session.user.user_metadata.full_name ||
+                session.user.email.split("@")[0],
+              avatarUrl: DEFAULT_AVATAR_URL,
+              isOAuth: true,
+            });
 
-  const [showPassword, setShowPassword] = useState(false);
+            if (insertError) {
+              Alert.alert("알림", "사용자 정보 저장에 실패했습니다.");
+              console.error("User Insert Error:", insertError);
+              return;
+            }
+            router.replace("/onboarding");
+          }
+        }
+      }
+    };
 
-  const performOAuth = async (provider: Provider) => {
+    handleAuthRedirect();
+  }, [url]);
+
+  const performGoogleSignIn = async () => {
     const { data, error } = await supabase.auth.signInWithOAuth({
-      provider: provider,
+      provider: "google",
       options: {
         redirectTo,
         skipBrowserRedirect: true,
-        // OAuth 스코프 설정 구글이면 이메일과 프로필, 깃허브면 이메일과 사용자 정보
-        scopes:
-          provider === "google" ? "email profile" : "read:user user:email",
-        queryParams:
-          provider === "google"
-            ? {
-                prompt: "select_account",
-                access_type: "offline",
-              }
-            : {
-                login: "true",
-              },
+        scopes: "email profile",
+        queryParams: {
+          prompt: "select_account",
+          access_type: "offline",
+        },
       },
     });
-    if (error) throw error;
-
-    const res = await WebBrowser.openAuthSessionAsync(
-      data?.url ?? "",
-      redirectTo,
-    );
-
-    if (res.type === "success") {
-      const { url } = res;
-      const session = await createSessionFromUrl(url);
-
-      // OAuth 사용자 정보 저장
-      if (session?.user) {
-        const { data: existingUser } = await supabase
-          .from("user")
-          .select()
-          .eq("id", session.user.id)
-          .single();
-
-        if (!existingUser && session.user.email) {
-          const { error: insertError } = await supabase.from("user").insert({
-            id: session.user.id,
-            email: session.user.email,
-            username:
-              session.user.user_metadata.full_name ||
-              session.user.email.split("@")[0],
-            avatarUrl: DEFAULT_AVATAR_URL,
-            isOAuth: true,
-          });
-
-          if (insertError) throw insertError;
-
-          router.replace("/onboarding");
-          return;
-        }
-      }
+    if (error) {
+      Alert.alert("알림", "OAuth 로그인에 실패했습니다.");
+      console.error("OAuth Error:", error);
+      return;
     }
+
+    await WebBrowser.openAuthSessionAsync(data?.url ?? "", redirectTo);
   };
 
-  const handleSignIn = async () => {
+  const performAppleSignIn = async () => {
     try {
-      const validationError = validateSignInForm(
-        userInput.email,
-        userInput.password,
-      );
-
-      if (validationError) {
-        Alert.alert("알림", validationError.message);
-        return;
-      }
-
-      await signIn({
-        email: userInput.email,
-        password: userInput.password,
+      const credential = await AppleAuthentication.signInAsync({
+        requestedScopes: [
+          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+          AppleAuthentication.AppleAuthenticationScope.EMAIL,
+        ],
       });
-    } catch (error: unknown) {
-      const errorMessage =
-        error instanceof Error
-          ? error.message === "Invalid login credentials"
-            ? "이메일 또는 비밀번호가 올바르지 않습니다."
-            : error.message
-          : "로그인에 실패했습니다.";
 
-      Alert.alert("알림", errorMessage);
+      if (credential.identityToken) {
+        const {
+          data: { user },
+          error,
+        } = await supabase.auth.signInWithIdToken({
+          provider: "apple",
+          token: credential.identityToken,
+        });
+
+        if (error) {
+          Alert.alert("알림", "Apple 로그인에 실패했습니다.");
+          console.error("Apple Sign In Error:", error);
+          return;
+        }
+
+        if (user) {
+          const { data: existingUser } = await supabase
+            .from("user")
+            .select()
+            .eq("id", user.id)
+            .single();
+
+          if (!existingUser && user.email) {
+            const fullName =
+              credential.fullName?.givenName && credential.fullName?.familyName
+                ? `${credential.fullName.givenName} ${credential.fullName.familyName}`
+                : user.email.split("@")[0];
+
+            const { error: insertError } = await supabase.from("user").insert({
+              id: user.id,
+              email: user.email,
+              username: fullName,
+              avatarUrl: DEFAULT_AVATAR_URL,
+              isOAuth: true,
+            });
+
+            if (insertError) {
+              Alert.alert("알림", "사용자 정보 저장에 실패했습니다.");
+              console.error("User Insert Error:", insertError);
+              return;
+            }
+            router.replace("/onboarding");
+            return;
+          }
+        }
+      } else {
+        Alert.alert("알림", "Apple ID 토큰을 가져오지 못했습니다.");
+      }
+    } catch (e: unknown) {
+      if (
+        typeof e === "object" &&
+        e !== null &&
+        "code" in e &&
+        e.code === "ERR_REQUEST_CANCELED"
+      ) {
+        console.log("Apple Sign In Canceled");
+      } else {
+        Alert.alert("알림", "Apple 로그인 중 오류가 발생했습니다.");
+        console.error("Apple Sign In Exception:", e);
+      }
     }
   };
 
@@ -149,97 +183,74 @@ const SignIn = () => {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
         <ScrollView keyboardShouldPersistTaps="handled" className="h-full">
-          <View className="mt-[92px] items-center justify-center px-6">
+          <View className="mt-[97px] flex items-center px-[16px]">
             <Image
               source={images.AuthLogo}
-              className="h-[37px] w-[163px]"
+              className="h-[44px] w-[195px]"
               resizeMode="contain"
             />
+            <Text className="mt-[16px] mb-[42px] font-bold text-[17px] text-primary">
+              콕콕이와 함께 운동해요!
+            </Text>
 
-            <View className="mt-[85px] flex w-full gap-[24px]">
-              <TextInput
-                className="placeholder:body-1 h-[52px] w-full rounded-[10px] border border-gray-25 px-4 text-gray-90 focus:border-primary"
-                placeholder="이메일을 입력해주세요"
-                placeholderTextColor={colors.gray[60]}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                accessibilityLabel="이메일 입력"
-                accessibilityHint="이메일을 입력해주세요."
-                value={userInput.email}
-                onChangeText={(text) =>
-                  setUserInput((prev) => ({ ...prev, email: text }))
-                }
-              />
-              <View className="w-full">
-                <TextInput
-                  className="placeholder:body-1 h-[52px] w-full rounded-[10px] border border-gray-25 px-4 text-gray-90 focus:border-primary"
-                  placeholder="비밀번호를 입력해주세요"
-                  placeholderTextColor={colors.gray[60]}
-                  autoCapitalize="none"
-                  secureTextEntry={!showPassword}
-                  accessibilityLabel="비밀번호 입력"
-                  accessibilityHint="비밀번호를 입력해주세요."
-                  value={userInput.password}
-                  onChangeText={(text) =>
-                    setUserInput((prev) => ({ ...prev, password: text }))
-                  }
-                />
-                <TouchableOpacity
-                  className="-translate-y-1/2 absolute top-1/2 right-4"
-                  onPress={() => setShowPassword((prev) => !prev)}
-                  accessibilityLabel={
-                    showPassword ? "비밀번호 숨기기" : "비밀번호 표시"
-                  }
-                  accessibilityRole="button"
-                >
-                  {showPassword ? (
-                    <icons.EyeOffIcon width={24} height={24} color="#828282" />
-                  ) : (
-                    <icons.EyeIcon width={24} height={24} color="#828282" />
-                  )}
+            <icons.SignInKoKKoK width={164} height={164} />
+
+            <View className="mt-[46px] gap-[16px]">
+              <Link href="/email">
+                <View className="mt-[46px] h-[52px] w-full flex-row items-center justify-center gap-[10px] rounded-[10px] bg-primary">
+                  <icons.EmailIcon width={24} height={24} />
+                  <Text className="font-psemibold text-[17px] text-white">
+                    이메일로 시작하기
+                  </Text>
+                </View>
+              </Link>
+
+              {Platform.OS === "android" && (
+                <TouchableOpacity onPress={performGoogleSignIn}>
+                  <View className="h-[52px] w-full flex-row items-center justify-center gap-[10px] rounded-[10px] border border-gray-90">
+                    <icons.GoogleIcon width={24} height={24} />
+                    <Text className="font-psemibold text-[17px] text-gray-90">
+                      구글로 시작하기
+                    </Text>
+                  </View>
                 </TouchableOpacity>
-              </View>
-            </View>
+              )}
 
-            <Link className="mt-[10px] ml-auto" href="/password-reset/step1">
-              <Text className="body-1 text-purple">비밀번호를 잊으셨나요?</Text>
-            </Link>
-
-            <TouchableOpacity
-              className="mt-[36px] h-[56px] w-full items-center justify-center rounded-[10px] bg-primary"
-              onPress={handleSignIn}
-            >
-              <Text className="title-2 text-white">로그인</Text>
-            </TouchableOpacity>
-
-            <View className="mt-14 flex items-center">
-              <View>
-                <Text className="title-3 text-gray-80">간편 로그인</Text>
-              </View>
-              <View className="mt-[16px] flex-row items-center gap-[40px]">
-                <TouchableOpacity onPress={() => performOAuth("google")}>
-                  <icons.GoogleIcon width={56} height={56} />
+              {Platform.OS === "ios" && (
+                <TouchableOpacity onPress={performAppleSignIn}>
+                  <View className="h-[52px] w-full flex-row items-center justify-center gap-[10px] rounded-[10px] bg-gray-90">
+                    <icons.AppleIcon width={32} height={32} />
+                    <Text className="font-psemibold text-[17px] text-white">
+                      애플로 시작하기
+                    </Text>
+                  </View>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => performOAuth("github")}>
-                  <icons.GithubIcon width={56} height={56} />
-                </TouchableOpacity>
-              </View>
-            </View>
-
-            <View className="mt-[56px]">
-              <Text className="body-1 text-gray-60">
-                계정이 없다면?{" "}
-                <Link
-                  href="/sign-up/step1"
-                  className="title-4 mr-[4px] text-purple"
-                >
-                  이메일로 회원가입
-                </Link>
-              </Text>
+              )}
             </View>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
+      <View
+        className="absolute w-full items-center"
+        style={{ bottom: bottom + 12 }}
+      >
+        <View className="items-center">
+          <Text className="font-pregular text-[11px] text-gray-80">
+            가입을 진행할 경우, 아래의 정책에 동의한 것으로 간주합니다.
+          </Text>
+          <TouchableOpacity
+            onPress={() =>
+              Linking.openURL(
+                "https://ash-anchovy-874.notion.site/188b8ea65e92808fa75aea1e1a255563",
+              )
+            }
+          >
+            <Text className="font-pregular text-[11px] text-gray-80 underline">
+              서비스약관 및 개인정보처리방침
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
     </SafeAreaView>
   );
 };

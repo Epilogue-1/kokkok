@@ -24,6 +24,7 @@ const HEADER_TITLE = {
   FRIEND: "친구",
   SEARCH_FRIEND: "친구 찾기",
   POST_DETAIL: "게시물",
+  EMAILLOGIN: "이메일 로그인",
 } as const;
 type HeaderType = keyof typeof HEADER_TITLE;
 

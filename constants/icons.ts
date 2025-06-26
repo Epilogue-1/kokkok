@@ -1,4 +1,5 @@
 import AddIcon from "@/assets/icons/add.svg";
+import AppleIcon from "@/assets/icons/apple.svg";
 import ArrowUpIcon from "@/assets/icons/arrow-up.svg";
 import BellWithDotIcon from "@/assets/icons/bell-with-dot.svg";
 import BellIcon from "@/assets/icons/bell.svg";
@@ -12,6 +13,7 @@ import ChevronLeftIcon from "@/assets/icons/chevron-left.svg";
 import ChevronRightIcon from "@/assets/icons/chevron-right.svg";
 import ChevronDownIcon from "@/assets/icons/chevron-down.svg";
 import CommentIcon from "@/assets/icons/comment.svg";
+import EmailIcon from "@/assets/icons/email.svg";
 import EarthIcon from "@/assets/icons/earth.svg";
 import EyeOffIcon from "@/assets/icons/eye-off.svg";
 import EyeIcon from "@/assets/icons/eye.svg";
@@ -42,8 +44,11 @@ import SettingIcon from "@/assets/icons/setting.svg";
 import ThreadIcon from "@/assets/icons/thread.svg";
 import TrashCanIcon from "@/assets/icons/trash_can.svg";
 import XIcon from "@/assets/icons/x.svg";
+import SignInKoKKoK from "@assets/icons/signin_kokkok.svg";
 
 export default {
+  AppleIcon,
+  ArrowUpIcon,
   AddIcon,
   ArrowUpIcon,
   BellIcon,
@@ -58,6 +63,8 @@ export default {
   ChevronRightIcon,
   ChevronDownIcon,
   CommentIcon,
+  CheckIcon,
+  EmailIcon,
   EarthIcon,
   EyeIcon,
   EyeOffIcon,
@@ -85,6 +92,8 @@ export default {
   ProfileFilledIcon,
   SearchIcon,
   SettingIcon,
+  SignInKoKKoK,
+  TrashCanIcon,
   ThreadIcon,
   TrashCanIcon,
   XIcon,
