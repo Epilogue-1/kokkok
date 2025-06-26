@@ -1,4 +1,5 @@
 import Icons from "@/constants/icons";
+import type { JSX } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 
 type EmojiType = "SAD" | "HAPPY";

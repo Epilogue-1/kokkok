@@ -19,7 +19,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 const { height: deviceHeight } = Dimensions.get("window");
 
 export default function PostDetail() {
-  const { postId } = useLocalSearchParams();
+  const { postId, openComments } = useLocalSearchParams();
   const [userId, setUserId] = useState<string | null>(null);
   const [isCommentsVisible, setIsCommentsVisible] = useState(false);
   const [isLikedModalVisible, setIsLikedModalVisible] = useState(false);
@@ -77,6 +77,15 @@ export default function PostDetail() {
     handleLoadId();
   }, []);
 
+  // openComments 파라미터가 있으면 댓글창 자동 열기
+  useEffect(() => {
+    if (openComments === "true" && post && !isCommentsVisible) {
+      setIsCommentsVisible(true);
+      // 파라미터 사용 후 제거하여 다시 열리지 않도록 처리
+      router.setParams({ openComments: undefined });
+    }
+  }, [openComments, post, isCommentsVisible, router]);
+
   return (
     <SafeAreaView edges={["top"]} className="flex-1 bg-white">
       <HeaderWithUsername
@@ -86,18 +95,19 @@ export default function PostDetail() {
       {post && (
         <PostItem
           author={{
-            id: post?.userData?.id || "",
-            name: post?.userData?.username || "",
-            avatar: post?.userData?.avatarUrl || "",
+            id: post.userData?.id || "",
+            name: post.userData?.username || "",
+            avatar: post.userData?.avatarUrl || "",
           }}
-          images={post?.images || []}
-          contents={post?.contents || ""}
-          liked={post?.isLikedByUser || false}
-          likedAuthorAvatars={post?.likedAvatars || []}
-          createdAt={post?.createdAt || ""}
-          commentsCount={post?.totalComments || 0}
+          images={post.images || []}
+          contents={post.contents || ""}
+          privacy={post.privacy || "all"}
+          liked={post.isLikedByUser || false}
+          likedAuthorAvatars={post.likedAvatars || []}
+          createdAt={post.createdAt || ""}
+          commentsCount={post.totalComments || 0}
           comment={
-            post?.commentData
+            post.commentData
               ? {
                   author: {
                     name: post.commentData.author.username,

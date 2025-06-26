@@ -30,7 +30,7 @@ export const IMAGE_OPTIONS: ImagePickerOptions = {
 interface ImageUploadOptionsModalProps {
   imageItems: ImageItem[];
   setImageItems: React.Dispatch<React.SetStateAction<ImageItem[]>>;
-  flatListRef: React.RefObject<FlatList<ImageItem>>;
+  flatListRef: React.RefObject<FlatList<ImageItem> | null>;
   isLoading: boolean;
 }
 
