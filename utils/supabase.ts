@@ -1422,8 +1422,8 @@ export async function getFavoriteUsers(): Promise<
     throw error;
   }
 
-  const favofites = data ?? [];
-  return favofites;
+  const favorites = data ?? [];
+  return favorites;
 }
 
 // 사용자를 즐겨찾기한 유저 목록 조회
@@ -1438,8 +1438,8 @@ export async function getUsersWhoFavoritedMe(): Promise<{ userId: string }[]> {
     throw error;
   }
 
-  const favofiteds = data ?? [];
-  return favofiteds;
+  const favoriteds = data ?? [];
+  return favoriteds;
 }
 
 // 즐겨찾기 토글
