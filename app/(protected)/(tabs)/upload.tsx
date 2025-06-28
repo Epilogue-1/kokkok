@@ -8,6 +8,7 @@ import colors from "@/constants/colors";
 import Icons from "@/constants/icons";
 import useFetchData from "@/hooks/useFetchData";
 import { useModal } from "@/hooks/useModal";
+import { NOTIFICATION_TYPE } from "@/types/Notification.interface";
 import { formatDate } from "@/utils/formatDate";
 import {
   addWorkoutHistory,
@@ -154,7 +155,10 @@ export default function Upload() {
 
         const results = await Promise.allSettled(
           favoritedData.map((favorited) => {
-            createNotification({ to: favorited.userId, type: "favorite" });
+            createNotification({
+              to: favorited.userId,
+              type: NOTIFICATION_TYPE.FAVORITE,
+            });
           }),
         );
 
