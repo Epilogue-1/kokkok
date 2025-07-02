@@ -100,7 +100,7 @@ export default function Upload() {
         .map((item) => item.imagePickerAsset!)
         .filter(Boolean);
       return createPost({
-        contents,
+        contents: contents.trim(),
         images: newImages,
         privacy: localPrivacy,
       });
@@ -146,7 +146,7 @@ export default function Upload() {
 
       return updatePost({
         postId,
-        contents,
+        contents: contents.trim(),
         images: newImages,
         prevImages,
         privacy: localPrivacy,
