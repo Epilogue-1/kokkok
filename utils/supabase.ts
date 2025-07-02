@@ -928,7 +928,7 @@ export async function createComment({
       .insert({
         postId,
         userId,
-        contents,
+        contents: contents.trim(),
         parentsCommentId: parentId || null,
         replyCommentId: replyCommentId || null,
       })
