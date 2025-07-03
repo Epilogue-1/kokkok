@@ -32,11 +32,15 @@ export interface ModalItemRef {
 const ModalItem = React.memo(
   forwardRef<ModalItemRef, ModalItemProps>(
     ({ index, modal, isTop, onClose }, ref) => {
-      const fadeAnim = useMemo(() => new Animated.Value(0), []);
-      const slideAnim = useMemo(
-        () => new Animated.Value(modal.position === "bottom" ? 1 : 0),
-        [modal.position],
-      );
+      const fadeAnim = useRef(new Animated.Value(0)).current;
+      const slideAnim = useRef(
+        new Animated.Value(modal.position === "bottom" ? 1 : 0),
+      ).current;
+
+      // slideAnim 초기값을 modal.position에 따라 설정
+      useEffect(() => {
+        slideAnim.setValue(modal.position === "bottom" ? 1 : 0);
+      }, [modal.position, slideAnim]);
 
       const [isClosing, setIsClosing] = useState(false);
       const isMountedRef = useRef(true);
