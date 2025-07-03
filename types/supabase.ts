@@ -563,6 +563,7 @@ export type Database = {
           description: string | null;
           status: StatusType;
           totalCount: number;
+          favorite: boolean;
         }[];
       };
       get_friend_status: {

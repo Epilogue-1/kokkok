@@ -29,7 +29,7 @@ import type {
   NotificationData,
 } from "@/types/Notification.interface";
 import type { Comment, Post, Reply } from "@/types/Post.interface";
-import type { User, UserProfile } from "@/types/User.interface";
+import type { Friend, User, UserProfile } from "@/types/User.interface";
 import type { Database } from "@/types/supabase";
 import { formMessage } from "./formMessage";
 import { formatDate } from "./formatDate";
@@ -989,7 +989,7 @@ export function getFriends(keyword = "") {
   return async ({
     page = 0,
     limit = 12,
-  }): Promise<InfiniteResponse<UserProfile>> => {
+  }): Promise<InfiniteResponse<Friend>> => {
     const { data, error } = await supabase.rpc("get_friend_sort_by_status", {
       keyword,
       start_idx: page * limit,
@@ -1407,24 +1407,6 @@ export async function addWorkoutHistory({ date }: { date: string }) {
 //                   favorite
 //
 // ============================================
-
-// 사용자가 즐겨찾기한 유저 목록 조회
-export async function getFavoriteUsers(): Promise<
-  { favoriteUserId: string }[]
-> {
-  const userId = await getUserIdFromStorage();
-  const { data, error } = await supabase
-    .from("favorite")
-    .select("favoriteUserId")
-    .eq("userId", userId);
-
-  if (error) {
-    throw error;
-  }
-
-  const favorites = data ?? [];
-  return favorites;
-}
 
 // 사용자를 즐겨찾기한 유저 목록 조회
 export async function getUsersWhoFavoritedMe(): Promise<{ userId: string }[]> {

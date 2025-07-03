@@ -11,15 +11,14 @@ import { POKE_TIME } from "@/constants/time";
 import useFetchData from "@/hooks/useFetchData";
 import useManageFriend from "@/hooks/useManageFriend";
 import { useTimerWithStartAndDuration } from "@/hooks/useTimer";
-import type { UserProfile } from "@/types/User.interface";
+import type { Friend, UserProfile } from "@/types/User.interface";
 import { formatTime } from "@/utils/formatTime";
 import { getLatestStabForFriend, toggleFavorite } from "@/utils/supabase";
 
 /* Interfaces */
 
 interface FriendItemProps {
-  friend: UserProfile;
-  isFavorited: boolean;
+  friend: Friend;
 }
 
 interface NonFriendItemProps {
@@ -66,7 +65,7 @@ const FriendProfile = ({
 
 /* Components */
 
-export function FriendItem({ friend, isFavorited }: FriendItemProps) {
+export function FriendItem({ friend }: FriendItemProps) {
   const [isProcessing, setIsProcessing] = useState(false);
 
   const { data: lastPokeCreatedAt } = useFetchData<string>(
@@ -84,7 +83,7 @@ export function FriendItem({ friend, isFavorited }: FriendItemProps) {
   });
 
   const queryClient = useQueryClient();
-  const [starMark, setStarMark] = useState(isFavorited);
+  const [starMark, setStarMark] = useState(friend.favorite);
   const toggleFavoriteMutation = useMutation({
     mutationFn: () => toggleFavorite(friend.id),
     onMutate: () => {
@@ -107,7 +106,7 @@ export function FriendItem({ friend, isFavorited }: FriendItemProps) {
       showToast("error", `${friend.username}님 즐겨찾기에 실패했습니다.`);
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["favorite"] });
+      queryClient.invalidateQueries({ queryKey: ["friends"] });
     },
   });
 
