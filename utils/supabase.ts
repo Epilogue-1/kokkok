@@ -1,9 +1,3 @@
-import { DEFAULT_AVATAR_URL } from "@/constants/images";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import {
-  type RealtimePostgresInsertPayload,
-  createClient,
-} from "@supabase/supabase-js";
 import { decode } from "base64-arraybuffer";
 import Constants from "expo-constants";
 import * as FileSystem from "expo-file-system";
@@ -11,6 +5,7 @@ import type * as ImagePicker from "expo-image-picker";
 import * as SecureStore from "expo-secure-store";
 import { AppState } from "react-native";
 
+import { DEFAULT_AVATAR_URL } from "@/constants/images";
 import type { InfiniteResponse } from "@/hooks/useInfiniteLoad";
 import {
   RELATION_TYPE,
@@ -31,6 +26,11 @@ import type {
 import type { Comment, Post, Reply } from "@/types/Post.interface";
 import type { Friend, User, UserProfile } from "@/types/User.interface";
 import type { Database } from "@/types/supabase";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import {
+  type RealtimePostgresInsertPayload,
+  createClient,
+} from "@supabase/supabase-js";
 import { formMessage } from "./formMessage";
 import { formatDate } from "./formatDate";
 
@@ -437,18 +437,24 @@ export async function uploadImage(file: ImagePicker.ImagePickerAsset) {
 export const getPosts = async ({
   page = 0,
   limit = 10,
+  privacy = "all",
+}: {
+  page?: number;
+  limit?: number;
+  privacy?: Database["public"]["Enums"]["privacyType"];
 }): Promise<InfiniteResponse<Post>> => {
   try {
     const { count, error: countError } = await supabase
       .from("post")
       .select("*", { count: "exact", head: true });
 
-    const { data, error } = await supabase.rpc("get_posts", {
-      startindex: page * limit,
-      endindex: (page + 1) * limit - 1,
+    const { data, error } = await supabase.rpc("get_posts_privacy", {
+      startIndex: page * limit,
+      endIndex: (page + 1) * limit - 1,
+      privacySetting: privacy,
     });
 
-    if (error) throw new Error("게시글을 가져오는데 실패했습니다.");
+    if (error) throw new Error(error.message);
 
     return {
       data,
@@ -465,14 +471,12 @@ export const getPosts = async ({
 // 유저 게시물 조회
 export async function getUserPosts(userId: string) {
   try {
-    const { data: posts, error: postsError } = await supabase
-      .from("post")
-      .select(`
-        id,
-        images
-      `)
-      .eq("userId", userId)
-      .order("createdAt", { ascending: false });
+    const { data: posts, error: postsError } = await supabase.rpc(
+      "get_user_page_posts",
+      {
+        targetUserId: userId,
+      },
+    );
 
     if (postsError) throw postsError;
 
@@ -562,7 +566,12 @@ export async function toggleLikePost(postId: number) {
 export async function createPost({
   contents,
   images,
-}: { contents?: string; images: ImagePicker.ImagePickerAsset[] }) {
+  privacy = "all",
+}: {
+  contents?: string;
+  images: ImagePicker.ImagePickerAsset[];
+  privacy?: Database["public"]["Enums"]["privacyType"];
+}) {
   try {
     const userId = await getUserIdFromStorage();
 
@@ -589,6 +598,7 @@ export async function createPost({
           userId: userId,
           images: validImageUrls,
           contents: postContents || "",
+          privacy,
         },
       ])
       .select("*, user: userId (id, username, avatarUrl)")
@@ -613,11 +623,13 @@ export async function updatePost({
   images,
   prevImages,
   contents,
+  privacy = "all",
 }: {
   postId: number;
   images: { imagePickerAsset: ImagePicker.ImagePickerAsset; index: number }[];
   prevImages: { uri: string; index: number }[];
   contents: string;
+  privacy?: Database["public"]["Enums"]["privacyType"];
 }) {
   try {
     const userId = await getUserIdFromStorage();
@@ -653,7 +665,7 @@ export async function updatePost({
     // 게시글 수정
     const { data: updatedPost, error: updateError } = await supabase
       .from("post")
-      .update({ contents, images: allImagesUrl })
+      .update({ contents, images: allImagesUrl, privacy })
       .eq("id", postId)
       .select("*, user: userId (id, username, avatarUrl)")
       .single();

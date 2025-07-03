@@ -1,4 +1,5 @@
 import AddIcon from "@/assets/icons/add.svg";
+import AppleIcon from "@/assets/icons/apple.svg";
 import ArrowUpIcon from "@/assets/icons/arrow-up.svg";
 import BellWithDotIcon from "@/assets/icons/bell-with-dot.svg";
 import BellIcon from "@/assets/icons/bell.svg";
@@ -7,9 +8,13 @@ import CalendarFilledIcon from "@/assets/icons/calendar_fill.svg";
 import CameraAddIcon from "@/assets/icons/camera-add.svg";
 import CameraIcon from "@/assets/icons/camera.svg";
 import CheckIcon from "@/assets/icons/check.svg";
+import CheckBoldIcon from "@/assets/icons/check_bold.svg";
+import ChevronDownIcon from "@/assets/icons/chevron-down.svg";
 import ChevronLeftIcon from "@/assets/icons/chevron-left.svg";
 import ChevronRightIcon from "@/assets/icons/chevron-right.svg";
 import CommentIcon from "@/assets/icons/comment.svg";
+import EarthIcon from "@/assets/icons/earth.svg";
+import EmailIcon from "@/assets/icons/email.svg";
 import EyeOffIcon from "@/assets/icons/eye-off.svg";
 import EyeIcon from "@/assets/icons/eye.svg";
 import FaceDefaultIcon from "@/assets/icons/face_default.svg";
@@ -30,6 +35,7 @@ import HomeFilledIcon from "@/assets/icons/home_fill.svg";
 import KakaoIcon from "@/assets/icons/kakao.svg";
 import KebabMenuIcon from "@/assets/icons/kebab.svg";
 import MeatballIcon from "@/assets/icons/meatball.svg";
+import PeopleIcon from "@/assets/icons/people.svg";
 import PlusIcon from "@/assets/icons/plus.svg";
 import ProfileIcon from "@/assets/icons/profile.svg";
 import ProfileFilledIcon from "@/assets/icons/profile_fill.svg";
@@ -40,20 +46,26 @@ import StarFilledIcon from "@/assets/icons/star_fill.svg";
 import ThreadIcon from "@/assets/icons/thread.svg";
 import TrashCanIcon from "@/assets/icons/trash_can.svg";
 import XIcon from "@/assets/icons/x.svg";
+import SignInKoKKoK from "@assets/icons/signin_kokkok.svg";
 
 export default {
-  ArrowUpIcon,
+  AppleIcon,
   AddIcon,
+  ArrowUpIcon,
   BellIcon,
   BellWithDotIcon,
   CalendarIcon,
   CalendarFilledIcon,
   CameraAddIcon,
   CameraIcon,
+  CheckIcon,
+  CheckBoldIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  ChevronDownIcon,
   CommentIcon,
-  CheckIcon,
+  EmailIcon,
+  EarthIcon,
   EyeIcon,
   EyeOffIcon,
   FaceDefaultIcon,
@@ -74,6 +86,7 @@ export default {
   KakaoIcon,
   KebabMenuIcon,
   MeatballIcon,
+  PeopleIcon,
   PlusIcon,
   ProfileIcon,
   ProfileFilledIcon,
@@ -81,7 +94,8 @@ export default {
   SettingIcon,
   StarIcon,
   StarFilledIcon,
-  TrashCanIcon,
+  SignInKoKKoK,
   ThreadIcon,
+  TrashCanIcon,
   XIcon,
 };
