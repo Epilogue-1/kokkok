@@ -1,5 +1,4 @@
 import colors from "@/constants/colors";
-import type { UserProfile } from "@/types/User.interface";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
@@ -11,17 +10,21 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import SearchBar from "./SearchBar";
 
-interface SearchLayoutProps {
+interface ItemWithId {
+  id: string;
+}
+
+interface SearchLayoutProps<T extends ItemWithId> {
   refetch?: () => void;
-  data: UserProfile[]; // 추후 검색 사용 범위 넓어지면 변경 가능
+  data: T[]; // 추후 검색 사용 범위 넓어지면 변경 가능
   isFetchingNextPage?: boolean;
   onChangeKeyword: (newKeyword: string) => void;
   loadMore?: () => void;
-  renderItem: (itemInfo: ListRenderItemInfo<UserProfile>) => React.ReactElement;
+  renderItem: (itemInfo: ListRenderItemInfo<T>) => React.ReactElement;
   emptyComponent: React.ReactElement;
 }
 
-export function SearchLayout<T>({
+export function SearchLayout<T extends ItemWithId>({
   refetch,
   data,
   isFetchingNextPage,
@@ -29,7 +32,7 @@ export function SearchLayout<T>({
   loadMore,
   renderItem,
   emptyComponent,
-}: SearchLayoutProps) {
+}: SearchLayoutProps<T>) {
   const [keyword, setKeyword] = useState("");
   const flatListRef = useRef<FlatList>(null);
 
