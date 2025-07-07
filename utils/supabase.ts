@@ -24,7 +24,7 @@ import type {
   NotificationData,
 } from "@/types/Notification.interface";
 import type { Comment, Post, Reply } from "@/types/Post.interface";
-import type { User, UserProfile } from "@/types/User.interface";
+import type { Friend, User, UserProfile } from "@/types/User.interface";
 import type { Database } from "@/types/supabase";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
@@ -1001,7 +1001,7 @@ export function getFriends(keyword = "") {
   return async ({
     page = 0,
     limit = 12,
-  }): Promise<InfiniteResponse<UserProfile>> => {
+  }): Promise<InfiniteResponse<Friend>> => {
     const { data, error } = await supabase.rpc("get_friend_sort_by_status", {
       keyword,
       start_idx: page * limit,
@@ -1289,6 +1289,29 @@ export async function getHistories(
   return data as History[];
 }
 
+export async function isWorkoutDoneToday(): Promise<boolean> {
+  const userId = await getUserIdFromStorage();
+
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, "0");
+  const day = String(today.getDate()).padStart(2, "0");
+  const todayString = `${year}-${month}-${day}`;
+
+  const { data, error } = await supabase
+    .from("workoutHistory")
+    .select("status")
+    .eq("date", todayString)
+    .eq("userId", userId);
+
+  if (error) {
+    throw error;
+  }
+
+  const isDone = data.some((item) => item.status === "done");
+  return isDone;
+}
+
 // 쉬는 날 조회
 export async function getRestDays(): Promise<Pick<History, "date">[]> {
   const userId = await getUserIdFromStorage();
@@ -1389,6 +1412,57 @@ export async function addWorkoutHistory({ date }: { date: string }) {
   }
 
   return { message: "운동 기록이 추가되었습니다." };
+}
+
+// ============================================
+//
+//                   favorite
+//
+// ============================================
+
+// 사용자를 즐겨찾기한 유저 목록 조회
+export async function getUsersWhoFavoritedMe(): Promise<{ userId: string }[]> {
+  const userId = await getUserIdFromStorage();
+  const { data, error } = await supabase
+    .from("favorite")
+    .select("userId")
+    .eq("favoriteUserId", userId);
+
+  if (error) {
+    throw error;
+  }
+
+  const favoriteds = data ?? [];
+  return favoriteds;
+}
+
+// 즐겨찾기 토글
+export async function toggleFavorite(favoriteUserId: string): Promise<void> {
+  try {
+    const userId = await getUserIdFromStorage();
+
+    // 즐겨찾기 여부 조회
+    const { data: favoriteData, error: favoriteError } = await supabase
+      .from("favorite")
+      .select("id")
+      .eq("userId", userId)
+      .eq("favoriteUserId", favoriteUserId)
+      .single();
+
+    if (favoriteError && favoriteError.code !== "PGRST116") {
+      throw favoriteError;
+    }
+
+    if (favoriteData) {
+      // 즐겨찾기 해제
+      await supabase.from("favorite").delete().eq("id", favoriteData.id);
+    } else {
+      // 즐겨찾기 설정
+      await supabase.from("favorite").insert({ userId, favoriteUserId });
+    }
+  } catch (error) {
+    throw new Error("즐겨찾기 토글 요청이 실패했습니다: toggleFavorite");
+  }
 }
 
 // ============================================

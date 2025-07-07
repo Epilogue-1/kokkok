@@ -9,6 +9,10 @@ export const shortenMessage = (message: string, maxLength: number) => {
   return `${commentArray.length > maxLength ? commentArray.slice(0, maxLength).join("").concat("...") : message}`;
 };
 
+type NotificationConfig = Record<
+  NotificationType,
+  { title: string; content: string }
+>;
 interface FormMessageProps {
   type: NotificationType;
   username?: string;
@@ -22,7 +26,7 @@ export function formMessage({
   comment,
   isAccepted,
 }: FormMessageProps) {
-  const NOTIFICATION_CONFIG = {
+  const NOTIFICATION_CONFIG: NotificationConfig = {
     [NOTIFICATION_TYPE.POKE]: {
       title: "👈 콕!",
       content: `${username}님이 콕 찌르셨어요.`,
@@ -48,6 +52,10 @@ export function formMessage({
       content: isAccepted
         ? "친구 요청을 수락하셨어요😊"
         : "친구 요청을 보냈어요",
+    },
+    [NOTIFICATION_TYPE.FAVORITE]: {
+      title: `${username}님이`,
+      content: "오늘 운동을 완료했어요💪",
     },
   };
 

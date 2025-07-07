@@ -157,28 +157,28 @@ export type Database = {
           userId: string;
         };
         Insert: {
-          createdAt?: string;
-          favoriteUserId: string;
           id?: number;
+          createdAt?: string;
           userId: string;
+          favoriteUserId: string;
         };
         Update: {
-          createdAt?: string;
-          favoriteUserId?: string;
           id?: number;
+          createdAt?: string;
           userId?: string;
+          favoriteUserId?: string;
         };
         Relationships: [
           {
-            foreignKeyName: "favorite_favoriteUserId_fkey";
-            columns: ["favoriteUserId"];
+            foreignKeyName: "favorite_userId_fkey";
+            columns: ["userId"];
             isOneToOne: false;
             referencedRelation: "user";
             referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "favorite_userId_fkey";
-            columns: ["userId"];
+            foreignKeyName: "favorite_favoriteUserId_fkey";
+            columns: ["favoriteUserId"];
             isOneToOne: false;
             referencedRelation: "user";
             referencedColumns: ["id"];
@@ -565,6 +565,7 @@ export type Database = {
           description: string | null;
           status: StatusType;
           totalCount: number;
+          favorite: boolean;
         }[];
       };
       get_friend_status: {
@@ -767,7 +768,8 @@ export type Database = {
         | "like"
         | "commentLike"
         | "mention"
-        | "friend";
+        | "friend"
+        | "favorite";
       privacyType: "all" | "friend";
       reportType:
         | "Inappropriate"

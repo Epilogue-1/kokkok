@@ -37,6 +37,7 @@ const NOTIFICATION_TYPE_GROUPS: { [key: string]: NotificationType[] } = {
   mention: ["mention"],
   poke: ["poke"],
   friend: ["friend"],
+  favorite: ["favorite"],
 } as const;
 
 export default function Setting() {
@@ -79,7 +80,7 @@ export default function Setting() {
                 className="flex-row items-center justify-between"
                 onPress={() => router.push("/change-password")}
               >
-                <Text className=" text-gray-90 body-1">비밀번호 변경</Text>
+                <Text className="body-1 text-gray-90">비밀번호 변경</Text>
                 <Icons.ChevronRightIcon color={colors.gray[70]} />
               </TouchableOpacity>
             )}
@@ -87,14 +88,14 @@ export default function Setting() {
               className="flex-row items-center justify-between"
               onPress={() => openModal(<LogoutModal />)}
             >
-              <Text className=" text-gray-90 body-1">로그아웃</Text>
+              <Text className="body-1 text-gray-90">로그아웃</Text>
               <Icons.ChevronRightIcon color={colors.gray[70]} />
             </TouchableOpacity>
             <TouchableOpacity
               className="flex-row items-center justify-between"
               onPress={() => openModal(<DeleteAccountModal />)}
             >
-              <Text className=" text-gray-90 body-1">계정 탈퇴</Text>
+              <Text className="body-1 text-gray-90">계정 탈퇴</Text>
               <Icons.ChevronRightIcon color={colors.gray[70]} />
             </TouchableOpacity>
           </View>
@@ -153,8 +154,12 @@ function NotificationSetting({ setting }: { setting?: PushSetting | null }) {
       value: useSharedValue(granted.includes("poke")),
     },
     friend: {
-      title: "친구요청 알림",
+      title: "친구 요청 알림",
       value: useSharedValue(granted.includes("friend")),
+    },
+    favorite: {
+      title: "친한 친구 알림",
+      value: useSharedValue(granted.includes("favorite")),
     },
   } as const;
   type SwitchType = keyof typeof SWITCH_CONFIG;
@@ -256,7 +261,7 @@ function NotificationSetting({ setting }: { setting?: PushSetting | null }) {
       <View className="gap-5 pl-2">
         {Object.keys(SWITCH_CONFIG).map((type) => (
           <View key={type} className="flex-row items-center justify-between">
-            <Text className=" text-gray-90 body-1">
+            <Text className="body-1 text-gray-90">
               {SWITCH_CONFIG[type as SwitchType].title}
             </Text>
             <CustomSwitch

@@ -20,3 +20,7 @@ export interface User extends UserProfile {
   isOAuth?: boolean;
   backgroundUrl?: string | null;
 }
+
+export interface Friend extends UserProfile {
+  favorite: boolean;
+}

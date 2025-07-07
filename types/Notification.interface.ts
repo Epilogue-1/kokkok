@@ -7,6 +7,7 @@ export const NOTIFICATION_TYPE = {
   LIKE: "like",
   MENTION: "mention",
   FRIEND: "friend",
+  FAVORITE: "favorite",
 } as const;
 export type NotificationType =
   (typeof NOTIFICATION_TYPE)[keyof typeof NOTIFICATION_TYPE];
