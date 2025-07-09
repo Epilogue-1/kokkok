@@ -61,7 +61,7 @@ export default function PostItem({
   const router = useRouter();
   const { openModal } = useModal();
 
-  const { calculateMaxChars, truncateText } = useTruncateText();
+  const { calculateMaxChars, truncateText, shouldTruncate } = useTruncateText();
 
   const toggleLike = useMutation({
     mutationFn: () => toggleLikePost(postId),
@@ -244,13 +244,13 @@ export default function PostItem({
           {/* content */}
           {!!contents?.length && (
             <Pressable
-              disabled={!isMore && contents.length <= calculateMaxChars}
+              disabled={!isMore && !shouldTruncate(contents)}
               onPress={() => setIsMore(!isMore)}
               className="flex-row flex-wrap"
             >
               <Text className="title-5 text-gray-90">
                 {isMore ? contents : truncateText(contents)}
-                {contents.length > calculateMaxChars && (
+                {shouldTruncate(contents) && (
                   <Text className="title-5 -mb-[3px] text-gray-45">
                     {isMore ? " 접기" : " 더보기"}
                   </Text>
