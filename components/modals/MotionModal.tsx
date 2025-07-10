@@ -31,7 +31,7 @@ export default function MotionModal({
   closeThreshold = 0.3,
 }: CustomModalProps) {
   const slideAnim = useRef(new Animated.Value(0));
-  const heightAnim = useRef(new Animated.Value(0)); // 초기값을 0으로 변경
+  const heightAnim = useRef(new Animated.Value(0));
   const heightRef = useRef(initialHeight);
   const maxHeightRef = useRef(maxHeight);
   const [showToast, setShowToast] = useState(false);
