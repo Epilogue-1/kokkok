@@ -18,7 +18,13 @@
     },
     "production": {
       "autoIncrement": true,
-      "environment": "production"
+      "environment": "production",
+      "android": {
+        "image": "sdk-52"
+      },
+      "ios": {
+        "image": "sdk-52"
+      }
     }
   },
   "submit": {
