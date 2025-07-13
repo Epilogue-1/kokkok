@@ -11,10 +11,11 @@
       "environment": "development"
     },
     "preview": {
+      "autoIncrement": true,
+      "environment": "preview",
       "android": {
         "buildType": "apk"
-      },
-      "environment": "preview"
+      }
     },
     "production": {
       "autoIncrement": true,
