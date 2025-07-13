@@ -7,9 +7,8 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "build:ios": "eas build --platform ios --profile production --non-interactive",
-    "build:android": "eas build --platform android --profile production",
-    "submit:ios": "eas submit --platform ios --latest"
+    "test:ios": "eas build --platform ios --profile production --non-interactive --auto-submit",
+    "test:android": "eas build --platform android --profile preview"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "1.23.1",
