@@ -3,7 +3,7 @@ module.exports = {
     name: "kokkok",
     slug: "kokkok",
     scheme: "kokkok",
-    version: "1.2.0",
+    version: "1.3.1",
     orientation: "portrait",
     icon: "./assets/icon.png",
     userInterfaceStyle: "light",
