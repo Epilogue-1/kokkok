@@ -11,17 +11,28 @@
       "environment": "development"
     },
     "preview": {
+      "autoIncrement": true,
+      "environment": "preview",
       "android": {
         "buildType": "apk"
-      },
-      "environment": "preview"
+      }
     },
     "production": {
       "autoIncrement": true,
-      "environment": "production"
+      "environment": "production",
+      "android": {
+        "image": "sdk-52"
+      },
+      "ios": {
+        "image": "sdk-52"
+      }
     }
   },
   "submit": {
-    "production": {}
+    "production": {
+      "ios": {
+        "ascAppId": "6739578519"
+      }
+    }
   }
 }
