@@ -3,7 +3,7 @@ module.exports = {
     name: "kokkok",
     slug: "kokkok",
     scheme: "kokkok",
-    version: "1.0.0",
+    version: "1.2.0",
     orientation: "portrait",
     icon: "./assets/icon.png",
     userInterfaceStyle: "light",
@@ -21,6 +21,7 @@ module.exports = {
         NSCameraUsageDescription:
           "프로필 사진 촬영과 게시물에 새로운 사진을 추가하기 위해 카메라 접근 권한이 필요합니다.",
         UIViewControllerBasedStatusBarAppearance: true,
+        ITSAppUsesNonExemptEncryption: false,
       },
     },
     android: {
