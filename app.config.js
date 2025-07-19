@@ -28,7 +28,8 @@ module.exports = {
       adaptiveIcon: {
         foregroundImage: "./assets/adaptive-icon.png",
       },
-      googleServicesFile: "./google-services.json",
+      googleServicesFile:
+        process.env.GOOGLE_SERVICES_JSON ?? "./google-services.json",
       package: "com.epilogue.kokkok",
     },
     web: {
