@@ -1,4 +1,5 @@
 import { type InternalModal, modalStackAtom } from "@/contexts/modal.atom";
+import type { ModalAnimationConfig } from "@/contexts/modal.atom";
 import { useModal } from "@/hooks/useModal";
 import { useAtom } from "jotai";
 import {
@@ -9,17 +10,23 @@ import {
   useRef,
   useState,
 } from "react";
-import { Modal } from "react-native";
-import {
-  Animated,
-  BackHandler,
+import { Modal, Pressable } from "react-native";
+import { View } from "react-native";
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  runOnJS,
   Easing,
-  type GestureResponderEvent,
-  View,
-} from "react-native";
+} from "react-native-reanimated";
+import { SafeAreaView } from "react-native-safe-area-context";
+
+interface AnimationConfig {
+  opacity: number;
+  translateY: number;
+}
 
 interface ModalItemProps {
-  index: number;
   modal: InternalModal;
   isTop: boolean;
   onClose: () => void;
@@ -29,111 +36,123 @@ export interface ModalItemRef {
   handleClose: () => void;
 }
 
+const DEFAULT_ANIMATION_CONFIG: ModalAnimationConfig = {
+  open: {
+    opacity: 250,
+    translateY: 300,
+  },
+  close: {
+    opacity: 200,
+    translateY: 200,
+  },
+};
+
 const ModalItem = forwardRef<ModalItemRef, ModalItemProps>(
-  ({ index, modal, isTop, onClose }, ref) => {
-    const fadeAnim = useRef(new Animated.Value(0)).current;
-    const slideAnim = useRef(
-      new Animated.Value(modal.position === "bottom" ? 1 : 0),
-    ).current;
+  ({ modal, isTop, onClose }, ref) => {
+    const animationConfig = modal.animationConfig || DEFAULT_ANIMATION_CONFIG;
+    const opacity = useSharedValue(0);
+    const translateY = useSharedValue(modal.position === "bottom" ? 500 : 0);
 
     const [isClosing, setIsClosing] = useState(false);
-    const animationRef = useRef<Animated.CompositeAnimation | null>(null);
+    const [isAnimating, setIsAnimating] = useState(true);
 
     useEffect(() => {
+      setIsAnimating(true);
       if (modal.position === "bottom") {
-        animationRef.current = Animated.parallel([
-          Animated.timing(fadeAnim, {
-            toValue: 1,
-            useNativeDriver: true,
-            duration: 300,
-          }),
-          Animated.timing(slideAnim, {
-            toValue: 0,
-            useNativeDriver: true,
-            duration: 500,
-            easing: Easing.bezier(0.5, 1, 0.3, 1),
-          }),
-        ]);
-      } else if (modal.position === "center") {
-        animationRef.current = Animated.timing(fadeAnim, {
-          toValue: 1,
-          useNativeDriver: true,
-          duration: 300,
-          easing: Easing.bezier(0.5, 1, 0.3, 1),
+        opacity.value = withTiming(1, {
+          duration: animationConfig.open.opacity,
+          easing: Easing.out(Easing.cubic),
         });
+        translateY.value = withTiming(
+          0,
+          {
+            duration: animationConfig.open.translateY,
+            easing: Easing.out(Easing.cubic),
+          },
+          () => {
+            runOnJS(setIsAnimating)(false);
+          },
+        );
+      } else if (modal.position === "center") {
+        opacity.value = withTiming(
+          1,
+          {
+            duration: animationConfig.open.opacity,
+            easing: Easing.out(Easing.cubic),
+          },
+          () => {
+            runOnJS(setIsAnimating)(false);
+          },
+        );
       }
-
-      animationRef.current?.start();
-
-      return () => {
-        animationRef.current?.stop();
-      };
-    }, [modal.position, fadeAnim, slideAnim]);
+    }, [modal.position, opacity, translateY, animationConfig]);
 
     const handleClose = useCallback(() => {
       if (isClosing) return;
       setIsClosing(true);
 
       if (modal.position === "bottom") {
-        animationRef.current = Animated.parallel([
-          Animated.timing(fadeAnim, {
-            toValue: 0,
-            useNativeDriver: true,
-            duration: 300,
-          }),
-          Animated.timing(slideAnim, {
-            toValue: 1,
-            useNativeDriver: true,
-            duration: 300,
-          }),
-        ]);
-      } else if (modal.position === "center") {
-        animationRef.current = Animated.timing(fadeAnim, {
-          toValue: 0,
-          useNativeDriver: true,
-          duration: 300,
-          easing: Easing.bezier(0.5, 1, 0.3, 1),
+        opacity.value = withTiming(0, {
+          duration: animationConfig.close.opacity,
+          easing: Easing.in(Easing.cubic),
         });
+        translateY.value = withTiming(
+          500,
+          {
+            duration: animationConfig.close.translateY,
+            easing: Easing.in(Easing.cubic),
+          },
+          () => {
+            runOnJS(onClose)();
+          },
+        );
+      } else if (modal.position === "center") {
+        opacity.value = withTiming(
+          0,
+          {
+            duration: animationConfig.close.opacity,
+            easing: Easing.in(Easing.cubic),
+          },
+          () => {
+            runOnJS(onClose)();
+          },
+        );
       }
+    }, [
+      isClosing,
+      modal.position,
+      opacity,
+      translateY,
+      onClose,
+      animationConfig.close,
+    ]);
 
-      animationRef.current?.start(({ finished }) => {
-        if (finished) onClose();
-      });
-    }, [isClosing, modal.position, fadeAnim, slideAnim, onClose]);
+    const animatedStyle = useAnimatedStyle(() => {
+      return {
+        opacity: opacity.value,
+        transform:
+          modal.position === "bottom" ? [{ translateY: translateY.value }] : [],
+      };
+    });
 
     useImperativeHandle(ref, () => ({
       handleClose,
     }));
 
     return (
-      <Modal transparent animationType={"none"} className="absolute inset-0">
-        <View
-          className={`size-full flex-1 ${
-            index === 0 ? "bg-black/50" : ""
-          } ${modal.position === "center" ? "justify-center" : "justify-end"}`}
-          onTouchStart={isTop ? handleClose : undefined}
+      <View
+        className={`flex-1 ${
+          modal.position === "center" ? "justify-center" : "justify-end"
+        }`}
+        pointerEvents="box-none"
+      >
+        <Animated.View
+          style={animatedStyle}
+          pointerEvents={isAnimating ? "none" : "auto"}
         >
-          <Animated.View
-            onTouchStart={(e: GestureResponderEvent) => e.stopPropagation()}
-            style={{
-              opacity: fadeAnim,
-              transform:
-                modal.position === "bottom"
-                  ? [
-                      {
-                        translateY: slideAnim.interpolate({
-                          inputRange: [0, 1],
-                          outputRange: [0, 500],
-                        }),
-                      },
-                    ]
-                  : [],
-            }}
-          >
-            {modal.content}
-          </Animated.View>
-        </View>
-      </Modal>
+          {modal.content}
+        </Animated.View>
+      </View>
     );
   },
 );
@@ -143,44 +162,52 @@ export default function ModalContainer() {
   const { closeModal } = useModal();
   const topModalRef = useRef<ModalItemRef>(null);
 
-  useEffect(() => {
-    const onBackPress = (): boolean => {
-      if (modalStack.length > 0) {
-        if (topModalRef.current) {
-          topModalRef.current.handleClose();
-        } else {
-          closeModal();
-        }
-        return true;
-      }
-      return false;
-    };
+  const handleBackgroundPress = useCallback(() => {
+    if (topModalRef.current) {
+      topModalRef.current.handleClose();
+    } else {
+      closeModal();
+    }
+  }, [closeModal]);
 
-    const backHandler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      onBackPress,
-    );
-
-    return () => backHandler.remove();
-  }, [modalStack, closeModal]);
+  const handleRequestClose = useCallback(() => {
+    if (topModalRef.current) {
+      topModalRef.current.handleClose();
+    } else {
+      closeModal();
+    }
+  }, [closeModal]);
 
   if (modalStack.length === 0) return null;
 
   return (
-    <View className="absolute inset-0">
-      {modalStack.map((modal, index) => {
-        const isTop = index === modalStack.length - 1;
-        return (
-          <ModalItem
-            key={modal.id}
-            index={index}
-            modal={modal}
-            isTop={isTop}
-            onClose={closeModal}
-            ref={isTop ? topModalRef : null}
-          />
-        );
-      })}
+    <View className="absolute inset-0 size-full flex-1">
+      <Modal
+        transparent
+        animationType="none"
+        className="absolute inset-0 size-full flex-1"
+        onRequestClose={handleRequestClose}
+      >
+        <Pressable
+          className="size-full flex-1 bg-black/50"
+          onPress={handleBackgroundPress}
+        >
+          <SafeAreaView className="size-full flex-1" edges={["top", "bottom"]}>
+            {modalStack.map((modal, index) => {
+              const isTop = index === modalStack.length - 1;
+              return (
+                <ModalItem
+                  key={modal.id}
+                  modal={modal}
+                  isTop={isTop}
+                  onClose={closeModal}
+                  ref={isTop ? topModalRef : null}
+                />
+              );
+            })}
+          </SafeAreaView>
+        </Pressable>
+      </Modal>
     </View>
   );
 }
