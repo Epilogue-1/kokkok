@@ -164,11 +164,17 @@ const ModalItem = forwardRef<ModalItemRef, ModalItemProps>(
     }));
 
     return (
-      <View
+      <Pressable
         className={`flex-1 ${
           modal.position === "center" ? "justify-center" : "justify-end"
         }`}
-        pointerEvents="box-none"
+        style={{ backgroundColor: "transparent" }}
+        onPress={() => {
+          // 이 모달이 최상위 모달인 경우에만 애니메이션과 함께 닫기
+          if (isTop) {
+            handleClose();
+          }
+        }}
       >
         {/* 모션모달 위의 일반모달에 추가 배경 */}
         {hasMotionModalBelow && modal.type !== "motion" && (
@@ -177,27 +183,20 @@ const ModalItem = forwardRef<ModalItemRef, ModalItemProps>(
 
         <Animated.View
           style={animatedStyle}
-          pointerEvents={isAnimating ? "none" : isTop ? "auto" : "none"}
+          pointerEvents={isAnimating ? "none" : "auto"}
+          onStartShouldSetResponder={() => true}
         >
           {modal.content}
         </Animated.View>
-      </View>
+      </Pressable>
     );
   },
 );
 
 export default function ModalContainer() {
   const [modalStack] = useAtom(modalStackAtom);
-  const { closeModal } = useModal();
+  const { closeModal, closeModalById } = useModal();
   const topModalRef = useRef<ModalItemRef>(null);
-
-  const handleBackgroundPress = useCallback(() => {
-    if (topModalRef.current) {
-      topModalRef.current.handleClose();
-    } else {
-      closeModal();
-    }
-  }, [closeModal]);
 
   const handleRequestClose = useCallback(() => {
     if (topModalRef.current) {
@@ -217,10 +216,7 @@ export default function ModalContainer() {
         className="absolute inset-0 size-full flex-1"
         onRequestClose={handleRequestClose}
       >
-        <Pressable
-          className="size-full flex-1 bg-black/50"
-          onPress={handleBackgroundPress}
-        >
+        <View className="size-full flex-1 bg-black/50">
           <SafeAreaView className="size-full flex-1" edges={["top", "bottom"]}>
             {modalStack.map((modal, index) => {
               const isTop = index === modalStack.length - 1;
@@ -245,14 +241,14 @@ export default function ModalContainer() {
                     modal={modal}
                     isTop={isTop}
                     hasMotionModalBelow={hasMotionModalBelow}
-                    onClose={closeModal}
+                    onClose={() => closeModalById(modal.id)} // 각 모달이 자신의 ID로 닫히도록 수정
                     ref={isTop ? topModalRef : null}
                   />
                 </View>
               );
             })}
           </SafeAreaView>
-        </Pressable>
+        </View>
       </Modal>
     </View>
   );
