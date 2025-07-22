@@ -1,7 +1,6 @@
 import { CommentSkeleton } from "@/components/Skeleton";
 import colors from "@/constants/colors";
 import Icons from "@/constants/icons";
-import images from "@/constants/images";
 import useFetchData from "@/hooks/useFetchData";
 import useInfiniteLoad from "@/hooks/useInfiniteLoad";
 import { useModal } from "@/hooks/useModal";
@@ -22,7 +21,6 @@ import {
   ActivityIndicator,
   Dimensions,
   FlatList,
-  Image,
   Platform,
   RefreshControl,
   Text,
@@ -32,7 +30,6 @@ import {
 } from "react-native";
 import { showToast } from "../ToastConfig";
 import { CommentDeleteModal } from "../modals/DeleteModal/CommentDeleteModal";
-import MotionModal from "../modals/MotionModal";
 import CommentItem from "./CommentItem";
 import MentionInput from "./MentionInput";
 
@@ -40,15 +37,11 @@ const LIMIT = 5;
 const { height: deviceHeight, width: deviceWidth } = Dimensions.get("window");
 
 interface CommentsSectionProps {
-  visible: boolean;
-  onClose: () => void;
   postId: number;
   authorId: string;
 }
 
 export default function CommentsSection({
-  visible,
-  onClose,
   postId,
   authorId,
 }: CommentsSectionProps) {
@@ -193,10 +186,10 @@ export default function CommentsSection({
   });
 
   const onCloseComments = useCallback(() => {
-    onClose();
+    // MotionModalContent에서 자동으로 닫기 처리됨
     queryClient.removeQueries({ queryKey: ["comments", postId] });
     queryClient.removeQueries({ queryKey: ["replies"] });
-  }, [onClose, postId, queryClient]);
+  }, [postId, queryClient]);
 
   // 유저 아이디 불러오기
   useEffect(() => {
@@ -213,202 +206,139 @@ export default function CommentsSection({
   }, []);
 
   return (
-    <MotionModal
-      visible={visible}
-      onClose={onCloseComments}
-      maxHeight={deviceHeight}
-      initialHeight={deviceHeight * 0.8}
-    >
-      <View className="flex-1">
-        <View className="relative w-full ">
-          <LinearGradient
-            colors={["#fcfcfc", "rgba(255, 255, 255, 0)"]}
-            start={[0, 0]}
-            end={[0, 1]}
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              right: 0,
-              height: 10,
-              zIndex: 1,
-            }}
-          />
-        </View>
-
-        <FlatList
-          className="flex-1 px-8"
-          maintainVisibleContentPosition={{
-            minIndexForVisible: 0,
+    <View className="flex-1">
+      <View className="relative w-full ">
+        <LinearGradient
+          colors={["#fcfcfc", "rgba(255, 255, 255, 0)"]}
+          start={[0, 0]}
+          end={[0, 1]}
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 10,
+            zIndex: 1,
           }}
-          ListHeaderComponent={<View className="h-[10px]" />}
-          data={data?.pages.flatMap((page) => page.data) || []}
-          keyExtractor={(item) => item.id.toString()}
-          onEndReachedThreshold={0.5}
-          onEndReached={() => {
-            if (!isFetchingNextPage) loadMore();
-          }}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }
-          removeClippedSubviews={false}
-          maxToRenderPerBatch={10}
-          windowSize={5}
-          getItemLayout={(data, index) => ({
-            length: 100,
-            offset: 100 * index,
-            index,
-          })}
-          renderItem={({ item }) => (
-            <CommentItem
-              key={item.id}
-              id={Number(item.id)}
-              postId={postId}
-              contents={item.contents}
-              createdAt={item.createdAt}
-              likedAvatars={item.likedAvatars}
-              liked={item.isLiked}
-              author={item.userData}
-              totalReplies={item.totalReplies}
-              onReply={handleReply}
-              onCommentsClose={onClose}
-              onLikedAuthorPress={onLikedAuthorPress}
-              onDeletedPress={(commentId) => {
-                setSelectedCommentId(commentId);
-                openModal(
-                  <CommentDeleteModal commentId={commentId} postId={postId} />,
-                );
-              }}
-            />
-          )}
-          ListFooterComponent={
-            isFetchingNextPage ? (
-              <ActivityIndicator
-                size="large"
-                className="py-4"
-                color={colors.primary}
-              />
-            ) : null
-          }
-          showsVerticalScrollIndicator={false}
-          showsHorizontalScrollIndicator={false}
-          ListEmptyComponent={
-            isFetching ? (
-              <CommentSkeleton count={5} />
-            ) : (
-              <View className="flex-1 items-center justify-center">
-                <Text className="title-3 text-gray-70">
-                  아직 댓글이 없어요.
-                </Text>
-              </View>
-            )
-          }
         />
       </View>
 
-      {isLikedModalVisible && (
-        <MotionModal
-          visible={isLikedModalVisible}
-          onClose={() => setIsLikedModalVisible(false)}
-          maxHeight={deviceHeight}
-          initialHeight={deviceHeight * 0.6}
-        >
-          <View className="flex-1 ">
-            <FlatList
-              className="w-full px-4 py-2 "
-              data={likedAuthor}
-              keyExtractor={(item, index) => `liked-author-${index}`}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  onPress={() => {
-                    setIsLikedModalVisible(false);
-                    onClose();
-                    if (userId === item.author?.id) router.push("/mypage");
-                    else router.push(`/user/${item.author?.id}`);
-                  }}
-                  className="w-full flex-1 flex-row items-center gap-2 px-2 py-4"
-                >
-                  <Image
-                    source={
-                      item.author?.avatarUrl
-                        ? { uri: item.author?.avatarUrl }
-                        : images.AvaTarDefault
-                    }
-                    resizeMode="cover"
-                    className="size-10 rounded-full"
-                  />
-                  <Text
-                    className="flex-1 font-psemibold text-[16px] text-gray-90 leading-[150%]"
-                    numberOfLines={1}
-                    ellipsizeMode="tail"
-                  >
-                    {item.author?.username}
-                  </Text>
-
-                  <Icons.HeartFilledIcon
-                    width={24}
-                    height={24}
-                    color={colors.secondary.red}
-                  />
-                </TouchableOpacity>
-              )}
+      <FlatList
+        className="flex-1 px-8"
+        maintainVisibleContentPosition={{
+          minIndexForVisible: 0,
+        }}
+        ListHeaderComponent={<View className="h-[10px]" />}
+        data={data?.pages.flatMap((page) => page.data) || []}
+        keyExtractor={(item) => item.id.toString()}
+        onEndReachedThreshold={0.5}
+        onEndReached={() => {
+          if (!isFetchingNextPage) loadMore();
+        }}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+        removeClippedSubviews={false}
+        maxToRenderPerBatch={10}
+        windowSize={5}
+        getItemLayout={(data, index) => ({
+          length: 100,
+          offset: 100 * index,
+          index,
+        })}
+        renderItem={({ item }) => (
+          <CommentItem
+            key={item.id}
+            id={Number(item.id)}
+            postId={postId}
+            contents={item.contents}
+            createdAt={item.createdAt}
+            likedAvatars={item.likedAvatars}
+            liked={item.isLiked}
+            author={item.userData}
+            totalReplies={item.totalReplies}
+            onReply={handleReply}
+            onCommentsClose={() => {}} // MotionModalContent에서 자동 처리
+            onLikedAuthorPress={onLikedAuthorPress}
+            onDeletedPress={(commentId) => {
+              setSelectedCommentId(commentId);
+              openModal(
+                <CommentDeleteModal commentId={commentId} postId={postId} />,
+              );
+            }}
+          />
+        )}
+        ListFooterComponent={
+          isFetchingNextPage ? (
+            <ActivityIndicator
+              size="large"
+              className="py-4"
+              color={colors.primary}
             />
+          ) : null
+        }
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
+        ListEmptyComponent={
+          isFetching ? (
+            <CommentSkeleton count={5} />
+          ) : (
+            <View className="flex-1 items-center justify-center">
+              <Text className="title-3 text-gray-70">아직 댓글이 없어요.</Text>
+            </View>
+          )
+        }
+      />
+
+      {replyTo?.username && (
+        <View className="relative h-[40px] w-full flex-row items-center justify-center bg-gray-20">
+          <View
+            className="flex-row items-center justify-center text-center"
+            style={{ width: "70%" }}
+          >
+            <Text
+              className="shrink font-pmedium text-[#000] text-[14px] leading-[150%]"
+              numberOfLines={1}
+              ellipsizeMode="tail"
+            >
+              {replyTo?.username}
+            </Text>
+
+            <Text className="shrink-0 font-pmedium text-[14px] text-gray-60 leading-[150%]">
+              님께 답글 달기
+            </Text>
           </View>
-        </MotionModal>
+
+          <TouchableOpacity
+            className="-translate-y-1/2 absolute top-1/2 right-5"
+            onPress={() => setReplyTo(null)}
+          >
+            <Icons.XIcon width={16} height={16} color={colors.gray[90]} />
+          </TouchableOpacity>
+        </View>
       )}
 
-      {/* comment input */}
-      <>
-        {replyTo?.username && (
-          <View className="relative h-[40px] w-full flex-row items-center justify-center bg-gray-20">
-            <View
-              className="flex-row items-center justify-center text-center"
-              style={{ width: "70%" }}
-            >
-              <Text
-                className="shrink font-pmedium text-[#000] text-[14px] leading-[150%]"
-                numberOfLines={1}
-                ellipsizeMode="tail"
-              >
-                {replyTo.username}
-              </Text>
-
-              <Text className="shrink-0 font-pmedium text-[14px] text-gray-60 leading-[150%]">
-                님께 답글 달기
-              </Text>
-            </View>
-
-            <TouchableOpacity
-              className="-translate-y-1/2 absolute top-1/2 right-5"
-              onPress={() => setReplyTo(null)}
-            >
-              <Icons.XIcon width={16} height={16} color={colors.gray[90]} />
-            </TouchableOpacity>
-          </View>
-        )}
-
-        <View
-          className={`z-10 h-20 flex-row items-center border-gray-5 border-t bg-white px-[18px] pt-[16px] ${Platform.OS === "ios" ? "pb-8" : "pb-4"}`}
-        >
-          <MentionInput
-            ref={inputRef}
-            value={comment}
-            onChangeText={(text) => {
-              setComment(text);
-            }}
-            placeholder={
-              replyTo
-                ? `${replyTo.username.length > 10 ? `${replyTo.username.slice(0, 10)}...` : replyTo.username}님께 답글을 남겨보세요.`
-                : "댓글을 입력해주세요."
-            }
-            onSubmit={() => {
-              if (comment.trim() && !writeCommentMutation.isPending)
-                writeCommentMutation.mutate();
-            }}
-            isPending={writeCommentMutation.isPending}
-          />
-        </View>
-      </>
-    </MotionModal>
+      <View
+        className={`z-10 h-20 flex-row items-center border-gray-5 border-t bg-white px-[18px] pt-[16px] ${Platform.OS === "ios" ? "pb-8" : "pb-4"}`}
+      >
+        <MentionInput
+          ref={inputRef}
+          value={comment}
+          onChangeText={(text) => {
+            setComment(text);
+          }}
+          placeholder={
+            replyTo?.username
+              ? `${(replyTo.username as string).length > 10 ? `${(replyTo.username as string).slice(0, 10)}...` : (replyTo.username as string)}님께 답글을 남겨보세요.`
+              : "댓글을 입력해주세요."
+          }
+          onSubmit={() => {
+            if (comment.trim() && !writeCommentMutation.isPending)
+              writeCommentMutation.mutate();
+          }}
+          isPending={writeCommentMutation.isPending}
+        />
+      </View>
+    </View>
   );
 }
