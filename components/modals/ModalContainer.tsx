@@ -30,6 +30,7 @@ interface ModalItemProps {
   modal: InternalModal;
   isTop: boolean;
   onClose: () => void;
+  hasMotionModalBelow: boolean;
 }
 
 export interface ModalItemRef {
@@ -48,7 +49,7 @@ const DEFAULT_ANIMATION_CONFIG: ModalAnimationConfig = {
 };
 
 const ModalItem = forwardRef<ModalItemRef, ModalItemProps>(
-  ({ modal, isTop, onClose }, ref) => {
+  ({ modal, isTop, onClose, hasMotionModalBelow }, ref) => {
     const animationConfig = modal.animationConfig || DEFAULT_ANIMATION_CONFIG;
     const opacity = useSharedValue(0);
     const translateY = useSharedValue(modal.position === "bottom" ? 500 : 0);
@@ -58,6 +59,15 @@ const ModalItem = forwardRef<ModalItemRef, ModalItemProps>(
 
     useEffect(() => {
       setIsAnimating(true);
+
+      // motion 타입의 경우 자체 애니메이션을 사용하므로 즉시 표시
+      if (modal.type === "motion") {
+        opacity.value = 1;
+        translateY.value = 0;
+        setIsAnimating(false);
+        return;
+      }
+
       if (modal.position === "bottom") {
         opacity.value = withTiming(1, {
           duration: animationConfig.open.opacity,
@@ -85,11 +95,23 @@ const ModalItem = forwardRef<ModalItemRef, ModalItemProps>(
           },
         );
       }
-    }, [modal.position, opacity, translateY, animationConfig]);
+    }, [modal.position, modal.type, opacity, translateY, animationConfig]);
 
     const handleClose = useCallback(() => {
       if (isClosing) return;
       setIsClosing(true);
+
+      // motion 타입의 경우 MotionModalContent의 ref를 통해 내부 handleClose 호출
+      if (modal.type === "motion") {
+        if (modal.motionModalRef?.current?.handleClose) {
+          // MotionModalContent의 자체 애니메이션과 함께 닫기
+          modal.motionModalRef.current.handleClose();
+        } else {
+          // ref가 없거나 아직 설정되지 않은 경우 기본 처리
+          onClose();
+        }
+        return;
+      }
 
       if (modal.position === "bottom") {
         opacity.value = withTiming(0, {
@@ -121,6 +143,8 @@ const ModalItem = forwardRef<ModalItemRef, ModalItemProps>(
     }, [
       isClosing,
       modal.position,
+      modal.type,
+      modal.motionModalRef,
       opacity,
       translateY,
       onClose,
@@ -146,9 +170,14 @@ const ModalItem = forwardRef<ModalItemRef, ModalItemProps>(
         }`}
         pointerEvents="box-none"
       >
+        {/* 모션모달 위의 일반모달에 추가 배경 */}
+        {hasMotionModalBelow && modal.type !== "motion" && (
+          <View className="absolute inset-0 bg-black/30" />
+        )}
+
         <Animated.View
           style={animatedStyle}
-          pointerEvents={isAnimating ? "none" : "auto"}
+          pointerEvents={isAnimating ? "none" : isTop ? "auto" : "none"}
         >
           {modal.content}
         </Animated.View>
@@ -195,14 +224,31 @@ export default function ModalContainer() {
           <SafeAreaView className="size-full flex-1" edges={["top", "bottom"]}>
             {modalStack.map((modal, index) => {
               const isTop = index === modalStack.length - 1;
+              const hasMotionModalBelow = modalStack
+                .slice(0, index)
+                .some((m) => m.type === "motion");
+
               return (
-                <ModalItem
+                <View
                   key={modal.id}
-                  modal={modal}
-                  isTop={isTop}
-                  onClose={closeModal}
-                  ref={isTop ? topModalRef : null}
-                />
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    zIndex: 1000 + index,
+                  }}
+                  pointerEvents={isTop ? "auto" : "none"}
+                >
+                  <ModalItem
+                    modal={modal}
+                    isTop={isTop}
+                    hasMotionModalBelow={hasMotionModalBelow}
+                    onClose={closeModal}
+                    ref={isTop ? topModalRef : null}
+                  />
+                </View>
               );
             })}
           </SafeAreaView>
