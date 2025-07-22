@@ -6,7 +6,15 @@ import {
   useMemo,
   useRef,
 } from "react";
-import { Animated, Keyboard, PanResponder, Platform, View } from "react-native";
+import {
+  Animated,
+  Keyboard,
+  PanResponder,
+  Platform,
+  Pressable,
+  View,
+  useAnimatedValue,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 interface MotionModalContentProps {
@@ -29,8 +37,9 @@ const MotionModalContent = forwardRef<
     { maxHeight, initialHeight, closeThreshold = 0.3, onClose, children },
     ref,
   ) => {
-    const slideAnim = useRef(new Animated.Value(0));
-    const heightAnim = useRef(new Animated.Value(0));
+    // 분리된 애니메이션 값 사용 - 네이티브 드라이버 충돌 방지
+    const slideAnim = useAnimatedValue(0);
+    const heightAnim = useAnimatedValue(initialHeight);
     const heightRef = useRef(initialHeight);
     const maxHeightRef = useRef(maxHeight);
 
@@ -40,17 +49,17 @@ const MotionModalContent = forwardRef<
     );
 
     const handleClose = useCallback(() => {
-      Animated.timing(heightAnim.current, {
+      Animated.timing(heightAnim, {
         toValue: 0,
         duration: 200,
-        useNativeDriver: false,
+        useNativeDriver: false, // height는 레이아웃 속성이므로 false
       }).start(() => {
         onClose();
         setTimeout(() => {
           heightRef.current = initialHeight;
         }, 100);
       });
-    }, [onClose, initialHeight]);
+    }, [heightAnim, onClose, initialHeight]);
 
     // ref를 통해 외부에서 handleClose에 접근할 수 있도록 함
     useImperativeHandle(
@@ -67,7 +76,7 @@ const MotionModalContent = forwardRef<
           onStartShouldSetPanResponder: () => true,
           onPanResponderMove: (_, gestureState) => {
             const newHeight = clampHeight(heightRef.current - gestureState.dy);
-            heightAnim.current.setValue(newHeight);
+            heightAnim.setValue(newHeight);
           },
           onPanResponderRelease: (_, gestureState) => {
             const finalHeight = heightRef.current - gestureState.dy;
@@ -77,21 +86,25 @@ const MotionModalContent = forwardRef<
               handleClose();
             } else if (finalHeight > maxHeightRef.current) {
               heightRef.current = maxHeightRef.current;
-              Animated.spring(heightAnim.current, {
+              Animated.spring(heightAnim, {
                 toValue: maxHeightRef.current,
-                useNativeDriver: false,
+                useNativeDriver: false, // height는 레이아웃 속성이므로 false
+                tension: 300,
+                friction: 25,
               }).start();
             } else {
               const clampedHeight = clampHeight(finalHeight);
               heightRef.current = clampedHeight;
-              Animated.spring(heightAnim.current, {
+              Animated.spring(heightAnim, {
                 toValue: clampedHeight,
-                useNativeDriver: false,
+                useNativeDriver: false, // height는 레이아웃 속성이므로 false
+                tension: 300,
+                friction: 25,
               }).start();
             }
           },
         }),
-      [closeThreshold, clampHeight, handleClose],
+      [closeThreshold, clampHeight, handleClose, heightAnim],
     );
 
     // 키보드 이벤트 처리
@@ -103,20 +116,20 @@ const MotionModalContent = forwardRef<
         const newHeight = maxHeight - keyboardHeight;
         maxHeightRef.current = newHeight;
         heightRef.current = clampHeight(newHeight);
-        Animated.timing(heightAnim.current, {
+        Animated.timing(heightAnim, {
           toValue: heightRef.current,
           duration: 300,
-          useNativeDriver: false,
+          useNativeDriver: false, // height는 레이아웃 속성이므로 false
         }).start();
       };
 
       const handleKeyboardHide = () => {
         maxHeightRef.current = maxHeight;
         heightRef.current = clampHeight(maxHeightRef.current);
-        Animated.timing(heightAnim.current, {
+        Animated.timing(heightAnim, {
           toValue: heightRef.current,
           duration: 300,
-          useNativeDriver: false,
+          useNativeDriver: false, // height는 레이아웃 속성이므로 false
         }).start();
       };
 
@@ -138,62 +151,58 @@ const MotionModalContent = forwardRef<
         keyboardShowListener.remove();
         keyboardHideListener.remove();
       };
-    }, [clampHeight, maxHeight]);
+    }, [clampHeight, maxHeight, heightAnim]);
 
     // 초기 애니메이션
     useEffect(() => {
-      // 초기값 설정
-      slideAnim.current.setValue(0);
-      heightAnim.current.setValue(0);
-
-      // 첫 번째로 슬라이드 애니메이션 실행
-      Animated.spring(slideAnim.current, {
+      // slideAnim만 네이티브 드라이버로 애니메이션 (transform 전용)
+      Animated.timing(slideAnim, {
         toValue: 1,
-        useNativeDriver: false,
-        stiffness: 300,
-        damping: 25,
-        mass: 0.8,
+        duration: 300,
+        useNativeDriver: true, // transform은 네이티브 드라이버 지원
       }).start();
 
-      // 동시에 높이 애니메이션도 실행
-      Animated.spring(heightAnim.current, {
-        toValue: initialHeight,
-        useNativeDriver: false,
-        stiffness: 300,
-        damping: 25,
-        mass: 0.8,
-      }).start(() => {
-        heightRef.current = initialHeight;
-      });
-    }, [initialHeight]);
+      // heightAnim은 초기값 그대로 시작 (이미 initialHeight로 설정됨)
+      heightRef.current = initialHeight;
+    }, [initialHeight, slideAnim]);
 
     return (
       <Animated.View
         style={{
           transform: [
             {
-              translateY: slideAnim.current.interpolate({
+              translateY: slideAnim.interpolate({
                 inputRange: [0, 1],
                 outputRange: [maxHeightRef.current, 0],
                 extrapolate: "clamp",
               }),
             },
           ],
-          height: heightAnim.current,
         }}
       >
-        <SafeAreaView
-          edges={["top"]}
-          className="h-full flex-1 rounded-t-[20px] border border-[#fcfcfc] bg-gray-5"
+        <Animated.View
+          style={{
+            height: heightAnim,
+          }}
         >
-          <View
-            className="w-full items-center pt-[8px] pb-[22px]"
-            {...panResponder.panHandlers}
+          <SafeAreaView
+            edges={["top"]}
+            className="h-full flex-1 rounded-t-[20px] border border-[#fcfcfc] bg-gray-5"
           >
-            <View className="h-1 w-10 rounded-[2px] bg-[#d9d9d9]" />
-          </View>
-          {children}
-        </SafeAreaView>
+            <View
+              className="w-full items-center pt-[8px] pb-[22px]"
+              {...panResponder.panHandlers}
+            >
+              <View className="h-1 w-10 rounded-[2px] bg-[#d9d9d9]" />
+            </View>
+            <Pressable
+              className="flex-1"
+              onPress={() => {}} // 빈 함수로 터치 이벤트 소비 (모달 닫기 방지)
+            >
+              {children}
+            </Pressable>
+          </SafeAreaView>
+        </Animated.View>
       </Animated.View>
     );
   },
