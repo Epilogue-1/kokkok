@@ -87,7 +87,18 @@ export default function History() {
 
         <SetRestDayButton
           onPress={() => {
-            openModal(<RestDayModal />, "bottom");
+            openModal(<RestDayModal />, "bottom", {
+              animationConfig: {
+                open: {
+                  opacity: 500,
+                  translateY: 600,
+                },
+                close: {
+                  opacity: 200,
+                  translateY: 200,
+                },
+              },
+            });
           }}
         />
       </View>

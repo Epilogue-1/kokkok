@@ -2,7 +2,6 @@ import { HeaderWithUsername } from "@/components/Header";
 import PostItem from "@/components/PostItem";
 import CommentsSection from "@/components/comments/CommentsSection";
 import { MissingPostModal } from "@/components/modals/DoubleButtonModal/MissingPostModal";
-import MotionModal from "@/components/modals/MotionModal";
 import colors from "@/constants/colors";
 import Icons from "@/constants/icons";
 import images from "@/constants/images";
@@ -21,9 +20,7 @@ const { height: deviceHeight } = Dimensions.get("window");
 export default function PostDetail() {
   const { postId, openComments } = useLocalSearchParams();
   const [userId, setUserId] = useState<string | null>(null);
-  const [isCommentsVisible, setIsCommentsVisible] = useState(false);
-  const [isLikedModalVisible, setIsLikedModalVisible] = useState(false);
-  const { openModal } = useModal();
+  const { openModal, openMotionModal } = useModal();
 
   const router = useRouter();
 
@@ -44,7 +41,6 @@ export default function PostDetail() {
       return Promise.resolve([]);
     },
     "좋아요한 사용자 정보를 불러오는데 실패했습니다.",
-    isLikedModalVisible,
   );
 
   useFocusEffect(
@@ -55,13 +51,71 @@ export default function PostDetail() {
     }, [isPostLoading, postError, post]),
   );
 
-  const onOpenLikedAuthor = useCallback(() => {
-    setIsLikedModalVisible(true);
-  }, []);
+  // 댓글 섹션을 모션 모달로 열기
+  const handleOpenComments = useCallback(() => {
+    if (post) {
+      openMotionModal(
+        <CommentsSection
+          postId={Number(postId)}
+          authorId={post.userData.id || ""}
+        />,
+        {
+          maxHeight: deviceHeight,
+          initialHeight: deviceHeight * 0.8,
+        }
+      );
+    }
+  }, [post, postId, openMotionModal]);
 
-  const onCloseComments = useCallback(() => {
-    setIsCommentsVisible(false);
-  }, []);
+  const onOpenLikedAuthor = useCallback(() => {
+    if (likedAuthorData && likedAuthorData.length > 0) {
+      openMotionModal(
+        <View className="flex-1">
+          <FlatList
+            className="w-full px-4 py-2"
+            data={likedAuthorData}
+            keyExtractor={(item, index) => `liked-author-${index}`}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                onPress={() => {
+                  if (userId === item.author?.id) router.push("/mypage");
+                  else router.push(`/user/${item.author?.id}`);
+                }}
+                className="w-full flex-1 flex-row items-center gap-2 px-2 py-4"
+              >
+                <Image
+                  source={
+                    item.author?.avatarUrl
+                      ? { uri: item.author?.avatarUrl }
+                      : images.AvaTarDefault
+                  }
+                  resizeMode="cover"
+                  className="size-10 rounded-full"
+                />
+                <Text
+                  className="flex-1 font-psemibold text-[16px] text-gray-90 leading-[150%]"
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                >
+                  {item.author?.username}
+                </Text>
+
+                <Icons.HeartFilledIcon
+                  width={24}
+                  height={24}
+                  color={colors.secondary.red}
+                />
+              </TouchableOpacity>
+            )}
+          />
+        </View>,
+        {
+          maxHeight: deviceHeight,
+          initialHeight: deviceHeight * 0.6,
+        }
+      );
+    }
+  }, [likedAuthorData, userId, router, openMotionModal]);
 
   // 유저 아이디 불러오기
   useEffect(() => {
@@ -79,12 +133,12 @@ export default function PostDetail() {
 
   // openComments 파라미터가 있으면 댓글창 자동 열기
   useEffect(() => {
-    if (openComments === "true" && post && !isCommentsVisible) {
-      setIsCommentsVisible(true);
+    if (openComments === "true" && post) {
+      handleOpenComments();
       // 파라미터 사용 후 제거하여 다시 열리지 않도록 처리
       router.setParams({ openComments: undefined });
     }
-  }, [openComments, post, isCommentsVisible, router]);
+  }, [openComments, post, handleOpenComments, router]);
 
   return (
     <SafeAreaView edges={["top"]} className="flex-1 bg-white">
@@ -118,72 +172,9 @@ export default function PostDetail() {
               : null
           }
           postId={Number(postId)}
-          onCommentsPress={() => setIsCommentsVisible(true)}
+          onCommentsPress={handleOpenComments}
           onAuthorPress={onOpenLikedAuthor}
         />
-      )}
-
-      {isCommentsVisible && (
-        <View className="flex-1">
-          <CommentsSection
-            visible={isCommentsVisible}
-            onClose={onCloseComments}
-            postId={Number(postId)}
-            authorId={post?.userData.id || ""}
-          />
-        </View>
-      )}
-
-      {isLikedModalVisible && (
-        <View className="flex-1 ">
-          <MotionModal
-            visible={isLikedModalVisible}
-            onClose={() => setIsLikedModalVisible(false)}
-            maxHeight={deviceHeight}
-            initialHeight={deviceHeight * 0.6}
-          >
-            <View className="flex-1 ">
-              <FlatList
-                className="w-full px-4 py-2 "
-                data={likedAuthorData}
-                keyExtractor={(item, index) => `liked-author-${index}`}
-                renderItem={({ item }) => (
-                  <TouchableOpacity
-                    onPress={() => {
-                      setIsLikedModalVisible(false);
-                      if (userId === item.author?.id) router.push("/mypage");
-                      else router.push(`/user/${item.author?.id}`);
-                    }}
-                    className="w-full flex-1 flex-row items-center gap-2 px-2 py-4"
-                  >
-                    <Image
-                      source={
-                        item.author?.avatarUrl
-                          ? { uri: item.author?.avatarUrl }
-                          : images.AvaTarDefault
-                      }
-                      resizeMode="cover"
-                      className="size-10 rounded-full"
-                    />
-                    <Text
-                      className="flex-1 font-psemibold text-[16px] text-gray-90 leading-[150%]"
-                      numberOfLines={1}
-                      ellipsizeMode="tail"
-                    >
-                      {item.author?.username}
-                    </Text>
-
-                    <Icons.HeartFilledIcon
-                      width={24}
-                      height={24}
-                      color={colors.secondary.red}
-                    />
-                  </TouchableOpacity>
-                )}
-              />
-            </View>
-          </MotionModal>
-        </View>
       )}
     </SafeAreaView>
   );
