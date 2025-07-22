@@ -32,6 +32,7 @@ export interface ModalConfig {
  * @property {(content: React.ReactNode, position: ModalPosition, options?: {replace?: boolean, type?: ModalType, animationConfig?: ModalAnimationConfig, motionConfig?: MotionModalConfig}) => void} openModal - 새 모달을 열거나 최상위 모달을 교체
  * @property {(children: React.ReactNode, config: MotionModalConfig, options?: {replace?: boolean, animationConfig?: ModalAnimationConfig}) => void} openMotionModal - Motion 모달을 열기
  * @property {() => void} closeModal - 최상위 모달을 닫음
+ * @property {(modalId: string) => void} closeModalById - 특정 ID의 모달을 닫음
  * @property {() => void} closeAllModals - 모든 모달을 닫음
  *
  * @example
@@ -131,10 +132,11 @@ export function useModal() {
     } = { replace: false }, // 기본값을 false로 변경
   ) => {
     const motionModalRef = React.createRef<MotionModalContentRef>();
+    const modalId = generateId(); // ID를 미리 생성
 
     const motionContent = React.createElement(MotionModalContent, {
       ...config,
-      onClose: closeModal,
+      onClose: () => closeModalById(modalId), // 특정 ID로 닫도록 수정
       children,
       ref: motionModalRef,
     });
@@ -142,7 +144,7 @@ export function useModal() {
     const newModal: InternalModal = {
       content: motionContent,
       position: "bottom",
-      id: generateId(),
+      id: modalId, // 미리 생성한 ID 사용
       type: "motion",
       animationConfig: options.animationConfig,
       motionConfig: config,
@@ -164,9 +166,20 @@ export function useModal() {
     setModalStack((prev) => prev.slice(0, -1));
   };
 
+  const closeModalById = (modalId: string) => {
+    setModalStack((prev) => prev.filter((modal) => modal.id !== modalId));
+  };
+
   const closeAllModals = () => {
     setModalStack([]);
   };
 
-  return { modalStack, openModal, openMotionModal, closeModal, closeAllModals };
+  return {
+    modalStack,
+    openModal,
+    openMotionModal,
+    closeModal,
+    closeModalById,
+    closeAllModals,
+  };
 }
