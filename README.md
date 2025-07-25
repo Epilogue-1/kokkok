@@ -14,9 +14,9 @@
 ![앱 메인 이미지](./assets/images/main-image.png)
 <br>
 
-> 🔗[안드로이드에서 설치하기](https://play.google.com/store/apps/details?id=com.epilogue.kokkok)  
+> 🔗 [안드로이드에서 설치하기](https://play.google.com/store/apps/details?id=com.epilogue.kokkok)  
 
-> 🔗[iOS에서 설치하기](https://apps.apple.com/kr/app/%EC%BD%95%EC%BD%95/id6739578519)  
+> 🔗 [iOS에서 설치하기](https://apps.apple.com/kr/app/%EC%BD%95%EC%BD%95/id6739578519)  
 <br>
 
 ## 👀 About 콕콕
