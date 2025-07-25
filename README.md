@@ -28,7 +28,7 @@
 <br>
 
 ### 📱App Preview
-<img src="./assets/images/screenshot1.png" width="200"/>  <img src="./assets/images/screenshot2.png" width="200"/>  <img src="./assets/images/screenshot3.png" width="200"/>  <img src="./assets/images/screenshot4.png" width="200"/>
+<img src="./assets/images/screenshot1.png" width="200"/>  <img src="./assets/images/screenshot2.png" style="width:200px; height:432px;"/>  <img src="./assets/images/screenshot3.png" width="200"/>  <img src="./assets/images/screenshot4.png" width="200"/>
 <br>
 <br>
 <br>
