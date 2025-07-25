@@ -1,13 +1,13 @@
 # 콕콕 👉
 <p align="left">
-  <img src="https://img.shields.io/badge/-React_Native-222?logo=react&logoColor=61DAFB"/>
-  <img src="https://img.shields.io/badge/-Expo-222?logo=expo"/>
-  <img src="https://img.shields.io/badge/-TypeScript-222?logo=typescript&logoColor=3178C6"/>
-  <img src="https://img.shields.io/badge/-Supabase-222?logo=supabase&logoColor=3FCF8E"/>
-  <img src="https://img.shields.io/badge/-Firebase-222?logo=firebase&logoColor=FFCA28"/>
-  <img src="https://img.shields.io/badge/-NativeWind-222"/>
-  <img src="https://img.shields.io/badge/-React_Query-222?logo=react-query"/>
-  <img src="https://img.shields.io/badge/-Jotai-222"/>
+<img src="https://img.shields.io/badge/-React_Native-222?logo=react&logoColor=61DAFB" alt="React Native Badge"/>
+<img src="https://img.shields.io/badge/-Expo-222?logo=expo" alt="Expo Badge"/>
+<img src="https://img.shields.io/badge/-TypeScript-222?logo=typescript&logoColor=3178C6" alt="TypeScript Badge"/>
+<img src="https://img.shields.io/badge/-Supabase-222?logo=supabase&logoColor=3FCF8E" alt="Supabase Badge"/>
+<img src="https://img.shields.io/badge/-Firebase-222?logo=firebase&logoColor=FFCA28" alt="Firebase Badge"/>
+<img src="https://img.shields.io/badge/-NativeWind-222" alt="NativeWind Badge"/>
+<img src="https://img.shields.io/badge/-React_Query-222?logo=react-query" alt="React Query Badge"/>
+<img src="https://img.shields.io/badge/-Jotai-222" alt="Jotai Badge"/>
 </p>
 
 
