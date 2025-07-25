@@ -28,7 +28,7 @@
 <br>
 
 ### 📱App Preview
-<img src="./assets/images/screenshot1.png" width="200"/>  <img src="./assets/images/screenshot2.png" style="width:200px; height:432px;"/>  <img src="./assets/images/screenshot3.png" width="200"/>  <img src="./assets/images/screenshot4.png" width="200"/>
+<img src="./assets/images/screenshot1.png" width="200" alt="운동 인증 피드 화면"/> <img src="./assets/images/screenshot2.png" style="width:200px; height:432px;" alt="운동 인증 업로드 화면"/> <img src="./assets/images/screenshot3.png" width="200" alt="운동 기록이 이모지로 표시된 달력 화면"/> <img src="./assets/images/screenshot4.png" width="200" alt="친구 목록 화면"/>
 <br>
 <br>
 <br>
